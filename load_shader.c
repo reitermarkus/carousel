@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "helper.h"
+
 /*----------------------------------------------------------------*/
 
 
@@ -38,7 +40,7 @@ const char* load_shader(const char* filename) {
   FILE* infile = fopen(filename, "rb");
   #endif // WIN32
 
-  if (!infile) {
+  unless (infile) {
     fprintf(stderr, "Could not open shader file %s\n", filename);
     exit(0);
   }

@@ -37,6 +37,7 @@
 /* Local includes */
 #include "load_shader.h"   /* Provides loading function for shader code */
 #include "matrix.h"
+#include "helper.h"
 
 
 /*----------------------------------------------------------------*/
@@ -253,7 +254,7 @@ void add_shader(GLuint shader_program, const char* ShaderCode, GLenum ShaderType
   glCompileShader(ShaderObj);
   glGetShaderiv(ShaderObj, GL_COMPILE_STATUS, &success);
 
-  if (!success) {
+  unless (success) {
     glGetShaderInfoLog(ShaderObj, 1024, NULL, InfoLog);
     fprintf(stderr, "Error compiling shader type %d: '%s'\n", ShaderType, InfoLog);
     exit(1);
@@ -310,7 +311,7 @@ void create_shader_program() {
   glValidateProgram(shader_program);
   glGetProgramiv(shader_program, GL_VALIDATE_STATUS, &success);
 
-  if (!success) {
+  unless (success) {
     glGetProgramInfoLog(shader_program, sizeof(ErrorLog), NULL, ErrorLog);
     fprintf(stderr, "Invalid shader program: '%s'\n", ErrorLog);
     exit(1);
