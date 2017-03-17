@@ -1,0 +1,15 @@
+language: c
+
+matrix:
+  include:
+   - os: osx
+   - os: linux
+
+addons:
+  apt:
+    packages:
+     - freeglut3-dev
+     - libglew-dev
+
+script:
+  - make
