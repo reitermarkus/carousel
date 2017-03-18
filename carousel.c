@@ -397,8 +397,13 @@ int main(int argc, char** argv) {
     | GLUT_3_2_CORE_PROFILE // macOS
     #endif
   );
-  glutInitWindowSize(600, 600);
-  glutInitWindowPosition(400, 400);
+
+  int window_width = 600;
+  int window_height = 600;
+  int window_position_x = (glutGet(GLUT_SCREEN_WIDTH) - window_width) / 2;
+  int window_position_y = (glutGet(GLUT_SCREEN_HEIGHT) - window_height) / 2;
+  glutInitWindowSize(window_width, window_height);
+  glutInitWindowPosition(window_position_x, window_position_y);
   glutCreateWindow("CG Proseminar - Rotating Cube");
 
   #ifdef __GLEW_H__
