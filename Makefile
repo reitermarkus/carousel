@@ -1,5 +1,7 @@
+PROGRAM = carousel
+
 CC = gcc
-OBJ = carousel.o load_shader.o matrix.o
+OBJ = $(PROGRAM).o load_shader.o matrix.o
 CFLAGS = -g -Wall -Wextra
 
 LDLIBS=-lm
@@ -14,9 +16,13 @@ ifneq ($(OS),Windows_NT)
 	endif
 endif
 
-carousel: $(OBJ)
+.PHONY: all clean run
+
+$(PROGRAM): $(OBJ)
 	 $(CC) -o $@ $^ -O2 $(CFLAGS) $(LDLIBS)
 
 clean:
-	rm -f *.o carousel
-.PHONY: all clean
+	rm -f *.o $(PROGRAM)
+
+run: $(PROGRAM)
+	./$(PROGRAM)
