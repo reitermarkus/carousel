@@ -407,6 +407,7 @@ int main(int argc, char** argv) {
 
   #ifdef __GLEW_H__
   /* Initialize GL extension wrangler */
+  glewExperimental = GL_TRUE;
   GLenum res = glewInit();
   if (res != GLEW_OK) {
     fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
