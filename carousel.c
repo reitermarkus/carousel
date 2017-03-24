@@ -24,7 +24,7 @@
 
 /* OpenGL includes */
 #if __APPLE__
-  #include "TargetConditionals.h"
+  #include <TargetConditionals.h>
   #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
   #include <OpenGL/gl3.h>
   #include <GLUT/glut.h>
@@ -74,7 +74,6 @@ float translate_down[16];
 float rotate_x[16];
 float rotate_z[16];
 float initial_transform[16];
-
 
 GLfloat vertex_buffer_data[] = { /* 8 cube vertices XYZ */
   -1.0, -1.0,  1.0,
@@ -144,29 +143,29 @@ void display() {
   glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 
   /* Associate program with shader matrices */
-  GLint projectionUniform = glGetUniformLocation(shader_program, "projection_matrix");
-  if (projectionUniform == -1) {
+  GLint projection_unifom = glGetUniformLocation(shader_program, "projection_matrix");
+  if (projection_unifom == -1) {
     fprintf(stderr, "Could not bind uniform projection_matrix\n");
     exit(EXIT_FAILURE);
   }
-  glUniformMatrix4fv(projectionUniform, 1, GL_TRUE, projection_matrix);
+  glUniformMatrix4fv(projection_unifom, 1, GL_TRUE, projection_matrix);
 
-  GLint ViewUniform = glGetUniformLocation(shader_program, "view_matrix");
-  if (ViewUniform == -1) {
+  GLint view_uniform = glGetUniformLocation(shader_program, "view_matrix");
+  if (view_uniform == -1) {
     fprintf(stderr, "Could not bind uniform view_matrix\n");
     exit(EXIT_FAILURE);
   }
-  glUniformMatrix4fv(ViewUniform, 1, GL_TRUE, view_matrix);
+  glUniformMatrix4fv(view_uniform, 1, GL_TRUE, view_matrix);
 
-  GLint RotationUniform = glGetUniformLocation(shader_program, "model_matrix");
-  if (RotationUniform == -1) {
+  GLint rotation_uniform = glGetUniformLocation(shader_program, "model_matrix");
+  if (rotation_uniform == -1) {
     fprintf(stderr, "Could not bind uniform model_matrix\n");
     exit(EXIT_FAILURE);
   }
-  glUniformMatrix4fv(RotationUniform, 1, GL_TRUE, model_matrix);
+  glUniformMatrix4fv(rotation_uniform, 1, GL_TRUE, model_matrix);
 
   /* Issue draw command, using indexed triangle list */
-  glDrawElements(GL_TRIANGLES, size/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+  glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 
   /* Disable attributes */
   glDisableVertexAttribArray(v_position);
@@ -187,13 +186,13 @@ void display() {
 
 void on_idle() {
   float angle = (glutGet(GLUT_ELAPSED_TIME) / 1000.0) * (180.0/M_PI);
-  float RotationMatrixAnim[16];
+  float rotation_matrix_anim[16];
 
   /* Time dependent rotation */
-  set_rotation_y(angle, RotationMatrixAnim);
+  set_rotation_y(angle, rotation_matrix_anim);
 
   /* Apply model rotation; finally move cube down */
-  multiply_matrix(RotationMatrixAnim, initial_transform, model_matrix);
+  multiply_matrix(rotation_matrix_anim, initial_transform, model_matrix);
   multiply_matrix(translate_down, model_matrix, model_matrix);
 
   /* Request redrawing forof window content */
@@ -235,33 +234,33 @@ void setup_data_buffers() {
 *
 *******************************************************************/
 
-void add_shader(GLuint shader_program, const char* ShaderCode, GLenum ShaderType) {
+void add_shader(GLuint shader_program, const char* shader_code, GLenum shader_type) {
   /* Create shader object */
-  GLuint ShaderObj = glCreateShader(ShaderType);
+  GLuint shader_obj = glCreateShader(shader_type);
 
-  if (ShaderObj == 0) {
-    fprintf(stderr, "Error creating shader type %d\n", ShaderType);
-    exit(0);
+  if (shader_obj == 0) {
+    fprintf(stderr, "Error creating shader type %d\n", shader_type);
+    exit(EXIT_FAILURE);
   }
 
   /* Associate shader source code string with shader object */
-  glShaderSource(ShaderObj, 1, &ShaderCode, NULL);
+  glShaderSource(shader_obj, 1, &shader_code, NULL);
 
   GLint success = 0;
-  GLchar InfoLog[1024];
+  GLchar info_log[1024];
 
   /* Compile shader source code */
-  glCompileShader(ShaderObj);
-  glGetShaderiv(ShaderObj, GL_COMPILE_STATUS, &success);
+  glCompileShader(shader_obj);
+  glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &success);
 
   unless (success) {
-    glGetShaderInfoLog(ShaderObj, 1024, NULL, InfoLog);
-    fprintf(stderr, "Error compiling shader type %d: '%s'\n", ShaderType, InfoLog);
-    exit(1);
+    glGetShaderInfoLog(shader_obj, 1024, NULL, info_log);
+    fprintf(stderr, "Error compiling shader type %d: '%s'\n", shader_type, info_log);
+    exit(EXIT_FAILURE);
   }
 
   /* Associate shader with shader program */
-  glAttachShader(shader_program, ShaderObj);
+  glAttachShader(shader_program, shader_obj);
 }
 
 
@@ -281,7 +280,7 @@ void create_shader_program() {
 
   if (shader_program == 0) {
     fprintf(stderr, "Error creating shader program\n");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   /* Load shader code from file */
@@ -293,7 +292,7 @@ void create_shader_program() {
   add_shader(shader_program, fragment_shader_string, GL_FRAGMENT_SHADER);
 
   GLint success = 0;
-  GLchar ErrorLog[1024];
+  GLchar error_log[1024];
 
   /* Link shader code into executable shader program */
   glLinkProgram(shader_program);
@@ -302,9 +301,9 @@ void create_shader_program() {
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
 
   if (success == 0) {
-    glGetProgramInfoLog(shader_program, sizeof(ErrorLog), NULL, ErrorLog);
-    fprintf(stderr, "Error linking shader program: '%s'\n", ErrorLog);
-    exit(1);
+    glGetProgramInfoLog(shader_program, sizeof(error_log), NULL, error_log);
+    fprintf(stderr, "Error linking shader program: '%s'\n", error_log);
+    exit(EXIT_FAILURE);
   }
 
   /* Check if shader program can be executed */
@@ -312,9 +311,9 @@ void create_shader_program() {
   glGetProgramiv(shader_program, GL_VALIDATE_STATUS, &success);
 
   unless (success) {
-    glGetProgramInfoLog(shader_program, sizeof(ErrorLog), NULL, ErrorLog);
-    fprintf(stderr, "Invalid shader program: '%s'\n", ErrorLog);
-    exit(1);
+    glGetProgramInfoLog(shader_program, sizeof(error_log), NULL, error_log);
+    fprintf(stderr, "Invalid shader program: '%s'\n", error_log);
+    exit(EXIT_FAILURE);
   }
 
   /* Put linked shader program into drawing pipeline */
