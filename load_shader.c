@@ -38,11 +38,11 @@ const char* load_shader(const char* filename) {
   fopen_s(&infile, filename, "rb");
   #else
   FILE* infile = fopen(filename, "rb");
-  #endif // WIN32
+  #endif
 
   unless (infile) {
     fprintf(stderr, "Could not open shader file %s\n", filename);
-    exit(0);
+    exit(EXIT_FAILURE);
   }
 
   fseek(infile, 0, SEEK_END);
