@@ -403,7 +403,7 @@ int main(int argc, char** argv) {
   int window_position_y = (glutGet(GLUT_SCREEN_HEIGHT) - window_height) / 2;
   glutInitWindowSize(window_width, window_height);
   glutInitWindowPosition(window_position_x, window_position_y);
-  glutCreateWindow("CG Proseminar - Rotating Cube");
+  glutCreateWindow("Carousel");
 
   #ifdef __GLEW_H__
   /* Initialize GL extension wrangler */
