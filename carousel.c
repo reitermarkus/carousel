@@ -185,7 +185,10 @@ void display() {
 *******************************************************************/
 
 void on_idle() {
-  float angle = (glutGet(GLUT_ELAPSED_TIME) / 1000.0) * (180.0/M_PI);
+  float rotations_per_second = 0.25f;
+  float elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
+  float angle = elapsed_time * rotations_per_second * 360.0 / 1000.0; // deg
+
   float rotation_matrix_anim[16];
 
   /* Time dependent rotation */
