@@ -76,40 +76,27 @@ float rotate_z[16];
 float initial_transform[16];
 
 GLfloat vertex_buffer_data[] = { /* 8 cube vertices XYZ */
-  -1.0, -1.0,  1.0,
-   1.0, -1.0,  1.0,
-   1.0,  1.0,  1.0,
-  -1.0,  1.0,  1.0,
-  -1.0, -1.0, -1.0,
-   1.0, -1.0, -1.0,
-   1.0,  1.0, -1.0,
-  -1.0,  1.0, -1.0,
+  0,  0,  0, // origin connected to every triangle of the ground plane
+
+  -1, 0,  1,
+   1, 0,  1,
+   1, 0, -1,
+  -1, 0, -1,
 };
 
 GLfloat color_buffer_data[] = { /* RGB color values for 8 vertices */
-  0.0, 0.0, 1.0,
-  1.0, 0.0, 1.0,
-  1.0, 1.0, 1.0,
-  0.0, 1.0, 1.0,
-  0.0, 0.0, 0.0,
-  1.0, 0.0, 0.0,
-  1.0, 1.0, 0.0,
-  0.0, 1.0, 0.0,
+  0, 1, 1,
+  1, 0, 0,
+  0, 0, 1,
+  0, 1, 0,
+  1, 1, 0,
 };
 
 GLushort index_buffer_data[] = { /* Indices of 6*2 triangles (6 sides) */
   0, 1, 2,
-  2, 3, 0,
-  1, 5, 6,
-  6, 2, 1,
-  7, 6, 5,
-  5, 4, 7,
-  4, 0, 3,
-  3, 7, 4,
-  4, 5, 1,
-  1, 0, 4,
-  3, 2, 6,
-  6, 7, 3,
+  0, 2, 3,
+  0, 3, 4,
+  0, 4, 1,
 };
 
 /*----------------------------------------------------------------*/
@@ -200,7 +187,7 @@ void on_idle() {
   float rotation_matrix_anim[16];
 
   /* Time dependent rotation */
-  set_rotation_y(angle, rotation_matrix_anim);
+  set_rotation_y(-angle, rotation_matrix_anim);
 
   /* Apply model rotation; finally move cube down */
   multiply_matrix(rotation_matrix_anim, initial_transform, model_matrix);
@@ -373,13 +360,13 @@ void initialize(int window_width, int window_height) {
   set_perspective_matrix(fovy, aspect, nearPlane, farPlane, projection_matrix);
 
   /* Set viewing transform */
-  float camera_disp = -10.0;
+  float camera_disp = -5.0;
   set_translation(0.0, 0.0, camera_disp, view_matrix);
 
   /* Translate and rotate cube onto tip */
-  set_translation(1, 1, 1, translate_origin);
-  set_rotation_x(-45, rotate_x);
-  set_rotation_z(35, rotate_z);
+  set_translation(0, 0, 0, translate_origin);
+  set_rotation_x(0, rotate_x);
+  set_rotation_z(0, rotate_z);
 
   /* Translate down */
   set_translation(0, -sqrtf(sqrtf(2.0) * 1.0), 0, translate_down);
