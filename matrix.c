@@ -70,9 +70,9 @@ void set_rotation_y(float angley, float* result) {
 
   float temp[16] = {
      cosf(angley), 0.0, sinf(angley), 0.0,
-        0.0,  1.0,         0.0,  0.0,
+              0.0, 1.0,          0.0, 0.0,
     -sinf(angley), 0.0, cosf(angley), 0.0,
-        0.0,  0.0,         0.0,  1.0
+              0.0, 0.0,          0.0, 1.0
   };
 
   memcpy(result, temp, 16 * sizeof(float));
