@@ -1,3 +1,5 @@
+#include "helper.h"
+
 /******************************************************************
 *
 * matrix.c
@@ -44,7 +46,7 @@ void set_identity_matrix(float* result) {
 *******************************************************************/
 
 void set_rotation_x(float anglex, float* result) {
-  anglex = M_PI / 180 * anglex; /* Conversion angle from degree to radians */
+  anglex = deg_to_rad(anglex);
 
   float temp[16] = {
     1.0,          0.0,           0.0, 0.0,
@@ -64,7 +66,7 @@ void set_rotation_x(float anglex, float* result) {
 *******************************************************************/
 
 void set_rotation_y(float angley, float* result) {
-  angley = M_PI / 180 * angley; /* Conversion angle from degree to radians */
+  angley = deg_to_rad(angley);
 
   float temp[16] = {
      cosf(angley), 0.0, sinf(angley), 0.0,
@@ -84,7 +86,7 @@ void set_rotation_y(float angley, float* result) {
 *******************************************************************/
 
 void set_rotation_z(float anglez, float* result) {
-  anglez = M_PI / 180 * anglez;   /* Conversion angle from degree to radian */
+  anglez = deg_to_rad(anglez);
 
   float temp[16] = {
     cosf(anglez), -sinf(anglez), 0.0, 0.0,
