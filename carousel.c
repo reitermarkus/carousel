@@ -333,7 +333,7 @@ void create_shader_program() {
 *
 *******************************************************************/
 
-void initialize(void) {
+void initialize(int window_width, int window_height) {
   /* Set background (clear) color to dark blue */
   glClearColor(0.0, 0.0, 0.4, 0.0);
 
@@ -354,7 +354,7 @@ void initialize(void) {
 
   /* Set projection transform */
   float fovy = 45.0;
-  float aspect = 1.0;
+  float aspect = (float)window_width / (float)window_height;
   float nearPlane = 1.0;
   float farPlane = 50.0;
   set_perspective_matrix(fovy, aspect, nearPlane, farPlane, projection_matrix);
@@ -400,7 +400,7 @@ int main(int argc, char** argv) {
     #endif
   );
 
-  int window_width = 600;
+  int window_width = 800;
   int window_height = 600;
   int window_position_x = (glutGet(GLUT_SCREEN_WIDTH) - window_width) / 2;
   int window_position_y = (glutGet(GLUT_SCREEN_HEIGHT) - window_height) / 2;
@@ -419,7 +419,7 @@ int main(int argc, char** argv) {
   #endif
 
   /* Setup scene and rendering parameters */
-  initialize();
+  initialize(window_width, window_height);
 
   /* Specify callback functions;enter GLUT event processing loop,
    * handing control over to GLUT */
