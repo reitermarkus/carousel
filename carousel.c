@@ -249,14 +249,14 @@ void add_shader(GLuint shader_program, const char* shader_code, GLenum shader_ty
   /* Associate shader source code string with shader object */
   glShaderSource(shader_obj, 1, &shader_code, NULL);
 
-  GLint success = 0;
+  GLint status;
   GLchar info_log[1024];
 
   /* Compile shader source code */
   glCompileShader(shader_obj);
-  glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &success);
+  glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &status);
 
-  unless (success) {
+  unless (status == GL_TRUE) {
     glGetShaderInfoLog(shader_obj, 1024, NULL, info_log);
     fprintf(stderr, "Error compiling shader type %d: '%s'\n", shader_type, info_log);
     exit(EXIT_FAILURE);
