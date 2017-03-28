@@ -22,22 +22,13 @@
 #include <string.h>
 #include <math.h>
 
-/* OpenGL includes */
-#if __APPLE__
-  #include <TargetConditionals.h>
-  #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-  #include <OpenGL/gl3.h>
-  #include <GLUT/glut.h>
-#else
-  #include <GL/glew.h>
-  #include <GL/freeglut.h>
-#endif
-
+#include "opengl.h"
 
 /* Local includes */
 #include "load_shader.h"   /* Provides loading function for shader code */
 #include "matrix.h"
 #include "helper.h"
+#include "circle.h"
 
 
 /*----------------------------------------------------------------*/
@@ -75,29 +66,11 @@ float rotate_x[16];
 float rotate_z[16];
 float initial_transform[16];
 
-GLfloat vertex_buffer_data[] = { /* 8 cube vertices XYZ */
-  0,  0,  0, // origin connected to every triangle of the ground plane
+struct position* vertex_buffer_data;
 
-  -1, 0,  1,
-   1, 0,  1,
-   1, 0, -1,
-  -1, 0, -1,
-};
+struct color* color_buffer_data;
 
-GLfloat color_buffer_data[] = { /* RGB color values for 8 vertices */
-  0, 1, 1,
-  1, 0, 0,
-  0, 0, 1,
-  0, 1, 0,
-  1, 1, 0,
-};
-
-GLushort index_buffer_data[] = { /* Indices of 6*2 triangles (6 sides) */
-  0, 1, 2,
-  0, 2, 3,
-  0, 3, 4,
-  0, 4, 1,
-};
+GLushort* index_buffer_data;
 
 /*----------------------------------------------------------------*/
 
@@ -127,7 +100,6 @@ void display() {
     GL_FALSE,   // whether the points should be normalized
     0,0         // see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml
   );
-
 
   glEnableVertexAttribArray(v_color);
   glBindBuffer(GL_ARRAY_BUFFER, CBO);
@@ -207,12 +179,18 @@ void on_idle() {
 *******************************************************************/
 
 void setup_data_buffers() {
+  long vertex_buffer_size;
+  long color_buffer_size;
+  long index_buffer_size;
+
+  circle(5, 1.5, &vertex_buffer_data, &vertex_buffer_size, &color_buffer_data, &color_buffer_size, &index_buffer_data, &index_buffer_size);
+
   // generates 1 object name and stores it in VBO
   glGenBuffers(1, &VBO);
   // creates an ARRAY_BUFFER and names it VBO
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   // this function allocates memory on the GPU for our data and returns a pointer to the array, holding the data
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_buffer_data), vertex_buffer_data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, vertex_buffer_size, vertex_buffer_data, GL_STATIC_DRAW);
 
   // generates 1 array object name and stores it in VAO
   glGenVertexArrays(1, &VAO);
@@ -221,11 +199,15 @@ void setup_data_buffers() {
 
   glGenBuffers(1, &IBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index_buffer_data), index_buffer_data, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_size, index_buffer_data, GL_STATIC_DRAW);
 
   glGenBuffers(1, &CBO);
   glBindBuffer(GL_ARRAY_BUFFER, CBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(color_buffer_data), color_buffer_data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, color_buffer_size, color_buffer_data, GL_STATIC_DRAW);
+
+  free(vertex_buffer_data);
+  free(color_buffer_data);
+  free(index_buffer_data);
 }
 
 
