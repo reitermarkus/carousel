@@ -132,7 +132,15 @@ void display() {
 
   glEnableVertexAttribArray(v_position);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glVertexAttribPointer(v_position, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  // second and third parameter specify, that the array points are 3 dimensional of type GL_FLOAT
+  glVertexAttribPointer(
+    v_position,
+    3,          // dimension of array points
+    GL_FLOAT,   // type of the points
+    GL_FALSE,   // whether the points should be normalized
+    0,0         // see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml
+  );
+
 
   glEnableVertexAttribArray(v_color);
   glBindBuffer(GL_ARRAY_BUFFER, CBO);
@@ -212,11 +220,16 @@ void on_idle() {
 *******************************************************************/
 
 void setup_data_buffers() {
+  // generates 1 object name and stores it in VBO
   glGenBuffers(1, &VBO);
+  // creates an ARRAY_BUFFER and names it VBO
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  // this function allocates memory on the GPU for our data and returns a pointer to the array, holding the data
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_buffer_data), vertex_buffer_data, GL_STATIC_DRAW);
 
+  // generates 1 array object name and stores it in VAO
   glGenVertexArrays(1, &VAO);
+  // binds the vertex array to given name -> VAO
   glBindVertexArray(VAO);
 
   glGenBuffers(1, &IBO);
