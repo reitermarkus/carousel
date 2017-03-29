@@ -182,7 +182,7 @@ void setup_data_buffers() {
   long vertex_buffer_size;
   long index_buffer_size;
 
-  polygon(25, 1.5, &vertex_buffer_data, &vertex_buffer_size, &index_buffer_data, &index_buffer_size);
+  polygon(7, 1.5, .25, &vertex_buffer_data, &vertex_buffer_size, &index_buffer_data, &index_buffer_size);
 
   // generates 1 object name and stores it in VBO
   glGenBuffers(1, &VBO);

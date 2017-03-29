@@ -3,6 +3,6 @@
 
 #include "vertex.h"
 
-void polygon(int detail, double radius, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size);
+void polygon(int detail, double radius, double height, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size);
 
 #endif
