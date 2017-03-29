@@ -8,7 +8,7 @@
 #include "helper.h"
 #include "vertex.h"
 
-void circle(int detail, double radius, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
+void polygon(int detail, double radius, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
   float step = 2.0 * M_PI / (float)detail; // circumfence divided by parts
 
   *vertices_size = (detail + 1) * sizeof(struct vertex);

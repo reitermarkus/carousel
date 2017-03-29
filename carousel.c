@@ -28,7 +28,7 @@
 #include "load_shader.h"   /* Provides loading function for shader code */
 #include "matrix.h"
 #include "helper.h"
-#include "circle.h"
+#include "polygon.h"
 #include "vertex.h"
 
 
@@ -182,7 +182,7 @@ void setup_data_buffers() {
   long vertex_buffer_size;
   long index_buffer_size;
 
-  circle(25, 1.5, &vertex_buffer_data, &vertex_buffer_size, &index_buffer_data, &index_buffer_size);
+  polygon(25, 1.5, &vertex_buffer_data, &vertex_buffer_size, &index_buffer_data, &index_buffer_size);
 
   // generates 1 object name and stores it in VBO
   glGenBuffers(1, &VBO);
