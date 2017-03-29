@@ -3,7 +3,6 @@
 
 #include "vertex.h"
 
-
-void circle(int detail, double radius, struct position** vertices, long* vertices_size, struct color** colors, long* colors_size, GLushort** indices, long* indices_size);
+void circle(int detail, double radius, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size);
 
 #endif

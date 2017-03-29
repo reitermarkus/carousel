@@ -1,7 +1,6 @@
 #ifndef __H_VERTEX__
 #define __H_VERTEX__
 
-
 struct position {
   GLfloat x, y, z;
 };

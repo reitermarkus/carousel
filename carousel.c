@@ -29,6 +29,7 @@
 #include "matrix.h"
 #include "helper.h"
 #include "circle.h"
+#include "vertex.h"
 
 
 /*----------------------------------------------------------------*/
@@ -39,15 +40,15 @@ GLuint VBO;
 /* Define handle to a vertex array object */
 GLuint VAO;
 
-/* Define handle to a color buffer object */
-GLuint CBO;
-
 /* Define handle to an index buffer object */
 GLuint IBO;
 
 
 /* Indices to vertex attributes; in this case positon and color */
-enum data_id {v_position = 0, v_color = 1};
+enum data_id {
+  v_position = 0,
+  v_color = 1
+};
 
 /* Strings for loading and storing shader code */
 static const char* vertex_shader_string;
@@ -66,9 +67,7 @@ float rotate_x[16];
 float rotate_z[16];
 float initial_transform[16];
 
-struct position* vertex_buffer_data;
-
-struct color* color_buffer_data;
+struct vertex* vertex_buffer_data;
 
 GLushort* index_buffer_data;
 
@@ -98,12 +97,13 @@ void display() {
     3,          // dimension of array points
     GL_FLOAT,   // type of the points
     GL_FALSE,   // whether the points should be normalized
-    0,0         // see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml
+    sizeof(struct vertex),
+    0         // see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml
   );
 
   glEnableVertexAttribArray(v_color);
-  glBindBuffer(GL_ARRAY_BUFFER, CBO);
-  glVertexAttribPointer(v_color, 3, GL_FLOAT,GL_FALSE, 0, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glVertexAttribPointer(v_color, 3, GL_FLOAT, GL_FALSE, sizeof(struct vertex), (void*)sizeof(struct position));
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
   GLint size;
@@ -180,10 +180,9 @@ void on_idle() {
 
 void setup_data_buffers() {
   long vertex_buffer_size;
-  long color_buffer_size;
   long index_buffer_size;
 
-  circle(5, 1.5, &vertex_buffer_data, &vertex_buffer_size, &color_buffer_data, &color_buffer_size, &index_buffer_data, &index_buffer_size);
+  circle(25, 1.5, &vertex_buffer_data, &vertex_buffer_size, &index_buffer_data, &index_buffer_size);
 
   // generates 1 object name and stores it in VBO
   glGenBuffers(1, &VBO);
@@ -201,12 +200,7 @@ void setup_data_buffers() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_size, index_buffer_data, GL_STATIC_DRAW);
 
-  glGenBuffers(1, &CBO);
-  glBindBuffer(GL_ARRAY_BUFFER, CBO);
-  glBufferData(GL_ARRAY_BUFFER, color_buffer_size, color_buffer_data, GL_STATIC_DRAW);
-
   free(vertex_buffer_data);
-  free(color_buffer_data);
   free(index_buffer_data);
 }
 
