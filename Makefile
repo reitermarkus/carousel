@@ -1,6 +1,5 @@
 PROGRAM = carousel
 
-CC = gcc
 OBJ = $(PROGRAM).o load_shader.o matrix.o
 CFLAGS = -g -Wall -Wextra
 
