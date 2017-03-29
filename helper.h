@@ -1,7 +1,9 @@
 #ifndef __HELPER_H__
 #define __HELPER_H__
 
-#include <math.h>
+#ifndef M_PI
+#define M_PI (3.14159265358979323846264338327950288)
+#endif
 
 #define unless(...) if (!(__VA_ARGS__))
 
