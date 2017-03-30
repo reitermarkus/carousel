@@ -4,6 +4,17 @@
 #include "opengl.h"
 #include "vertex.h"
 
+static void set_shader_matrix(GLuint shader_program, const char* matrix_name, float* matrix) {
+  GLint uniform_location = glGetUniformLocation(shader_program, matrix_name);
+
+  if (uniform_location == -1) {
+    fprintf(stderr, "Could not bind uniform '%s'.\n", matrix_name);
+    exit(EXIT_FAILURE);
+  }
+
+  glUniformMatrix4fv(uniform_location, 1, GL_TRUE, matrix);
+}
+
 void draw(GLuint vbo, GLuint ibo, GLuint shader_program, float* projection_matrix, float* view_matrix, float* model_matrix) {
   glEnableVertexAttribArray(v_position);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -26,26 +37,9 @@ void draw(GLuint vbo, GLuint ibo, GLuint shader_program, float* projection_matri
   glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 
   // Associate program with shader matrices
-  GLint projection_unifom = glGetUniformLocation(shader_program, "projection_matrix");
-  if (projection_unifom == -1) {
-    fprintf(stderr, "Could not bind uniform projection_matrix\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniformMatrix4fv(projection_unifom, 1, GL_TRUE, projection_matrix);
-
-  GLint view_uniform = glGetUniformLocation(shader_program, "view_matrix");
-  if (view_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform view_matrix\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniformMatrix4fv(view_uniform, 1, GL_TRUE, view_matrix);
-
-  GLint rotation_uniform = glGetUniformLocation(shader_program, "model_matrix");
-  if (rotation_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform model_matrix\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniformMatrix4fv(rotation_uniform, 1, GL_TRUE, model_matrix);
+  set_shader_matrix(shader_program, "projection_matrix", projection_matrix);
+  set_shader_matrix(shader_program, "view_matrix", view_matrix);
+  set_shader_matrix(shader_program, "model_matrix", model_matrix);
 
   // Issue draw command, using indexed triangle list
   glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
