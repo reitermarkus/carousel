@@ -34,12 +34,6 @@
 
 /*----------------------------------------------------------------*/
 
-/* Define handle to a vertex buffer object */
-GLuint VBO;
-
-/* Define handle to an index buffer object */
-GLuint IBO;
-
 float projection_matrix[16]; /* Perspective projection matrix */
 float view_matrix[16]; /* Camera view matrix */
 float model_matrix[16]; /* Model matrix */
@@ -51,12 +45,32 @@ float rotate_x[16];
 float rotate_z[16];
 float initial_transform[16];
 
-struct vertex* vertex_buffer_data;
-
-GLushort* index_buffer_data;
-
 /*----------------------------------------------------------------*/
 
+/******************************************************************
+*
+* setup_data_buffers
+*
+* Create buffer objects and load data into buffers
+*
+*******************************************************************/
+
+void setup_data_buffers(struct object_data* object) {
+  glGenBuffers(1, &(object->vbo));
+  glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
+  glBufferData(GL_ARRAY_BUFFER, object->vertices_size, object->vertices, GL_STATIC_DRAW);
+
+  GLuint vao;
+  glGenVertexArrays(1, &vao); // generates 1 array object name and stores it in VAO
+  glBindVertexArray(vao); // binds the vertex array to given name -> VAO
+
+  glGenBuffers(1, &(object->ibo));
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->indices_size, object->indices, GL_STATIC_DRAW);
+
+  free(object->vertices);
+  free(object->indices);
+}
 
 /******************************************************************
 *
@@ -69,35 +83,34 @@ GLushort* index_buffer_data;
 *
 *******************************************************************/
 
-struct object_data{
-  GLuint vbo, ibo;
-  float projection_matrix[16]; /* Perspective projection matrix */
-  float view_matrix[16]; 			 /* Camera view matrix */
-  float model_matrix[16]; 		 /* Model matrix */
-};
-
-void display_test(struct object_data* od) {
-  /* Clear window; color specified in 'initialize()' */
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  od->vbo = VBO;
-  od->ibo = IBO;
-
+void display_object(struct object_data* object) {
   /* Put linked shader program into drawing pipeline */
-  GLuint shader_program = create_shader_program("vertexshader.vs", "fragmentshader.fs");
-  draw(od->vbo, od->ibo, shader_program, od->projection_matrix, od->view_matrix, od->model_matrix);
-
-  /* Swap between front and back buffer */
-  glutSwapBuffers();
+  GLuint shader_program = create_shader_program(object->vertex_shader_file, object->fragment_shader_file);
+  draw(object->vbo, object->ibo, shader_program, projection_matrix, view_matrix, model_matrix);
 }
 
 void display() {
   /* Clear window; color specified in 'initialize()' */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  /* Put linked shader program into drawing pipeline */
-  GLuint shader_program = create_shader_program("vertexshader.vs", "fragmentshader.fs");
-  draw(VBO, IBO, shader_program, projection_matrix, view_matrix, model_matrix);
+  struct object_data object;
+  polygon(7, 1.5, .25, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+
+  /* Setup vertex, color, and index buffer objects */
+  setup_data_buffers(&object);
+  object.vertex_shader_file = "vertexshader.vs";
+  object.fragment_shader_file = "fragmentshader.fs";
+  set_identity_matrix(object.translation_matrix);
+  display_object(&object);
+
+  polygon(5, 1, 1, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+
+  /* Setup vertex, color, and index buffer objects */
+  setup_data_buffers(&object);
+  object.vertex_shader_file = "vertexshader.vs";
+  object.fragment_shader_file = "fragmentshader.fs";
+  set_identity_matrix(object.translation_matrix);
+  display_object(&object);
 
   /* Swap between front and back buffer */
   glutSwapBuffers();
@@ -128,40 +141,6 @@ void on_idle() {
 
   /* Request redrawing forof window content */
   glutPostRedisplay();
-}
-
-
-/******************************************************************
-*
-* setup_data_buffers
-*
-* Create buffer objects and load data into buffers
-*
-*******************************************************************/
-
-void setup_data_buffers() {
-  long vertex_buffer_size;
-  long index_buffer_size;
-
-  polygon(7, 1.5, .25, &vertex_buffer_data, &vertex_buffer_size, &index_buffer_data, &index_buffer_size);
-
-  // generates 1 object name and stores it in VBO
-  glGenBuffers(1, &VBO);
-  // creates an ARRAY_BUFFER and names it VBO
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  // this function allocates memory on the GPU for our data and returns a pointer to the array, holding the data
-  glBufferData(GL_ARRAY_BUFFER, vertex_buffer_size, vertex_buffer_data, GL_STATIC_DRAW);
-
-  GLuint vao;
-  glGenVertexArrays(1, &vao); // generates 1 array object name and stores it in VAO
-  glBindVertexArray(vao); // binds the vertex array to given name -> VAO
-
-  glGenBuffers(1, &IBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_size, index_buffer_data, GL_STATIC_DRAW);
-
-  free(vertex_buffer_data);
-  free(index_buffer_data);
 }
 
 
@@ -209,9 +188,6 @@ void initialize(int window_width, int window_height) {
   /* Initial transformation matrix */
   multiply_matrix(rotate_x, translate_origin, initial_transform);
   multiply_matrix(rotate_z, initial_transform, initial_transform);
-
-  /* Setup vertex, color, and index buffer objects */
-  setup_data_buffers();
 }
 
 
@@ -258,11 +234,11 @@ int main(int argc, char** argv) {
 
   /* Setup scene and rendering parameters */
   initialize(window_width, window_height);
-  	struct object_data od;
+
   /* Specify callback functions;enter GLUT event processing loop,
    * handing control over to GLUT */
   glutIdleFunc(on_idle);
-  glutDisplayFunc(display_test(&od));
+  glutDisplayFunc(display);
   glutMainLoop();
 
   return EXIT_SUCCESS;

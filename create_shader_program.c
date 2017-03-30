@@ -53,7 +53,7 @@ void add_shader(GLuint shader_program, const char* shader_code, GLenum shader_ty
 *
 *******************************************************************/
 
-GLuint create_shader_program(char* vertexshader, char* fragmentshader) {
+GLuint create_shader_program(const char* vertexshader, const char* fragmentshader) {
   /* Allocate shader object */
   GLuint shader_program = glCreateProgram();
 
