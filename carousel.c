@@ -69,6 +69,28 @@ GLushort* index_buffer_data;
 *
 *******************************************************************/
 
+struct object_data{
+  GLuint vbo, ibo;
+  float projection_matrix[16]; /* Perspective projection matrix */
+  float view_matrix[16]; 			 /* Camera view matrix */
+  float model_matrix[16]; 		 /* Model matrix */
+};
+
+void display_test(struct object_data* od) {
+  /* Clear window; color specified in 'initialize()' */
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  od->vbo = VBO;
+  od->ibo = IBO;
+
+  /* Put linked shader program into drawing pipeline */
+  GLuint shader_program = create_shader_program("vertexshader.vs", "fragmentshader.fs");
+  draw(od->vbo, od->ibo, shader_program, od->projection_matrix, od->view_matrix, od->model_matrix);
+
+  /* Swap between front and back buffer */
+  glutSwapBuffers();
+}
+
 void display() {
   /* Clear window; color specified in 'initialize()' */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -236,11 +258,11 @@ int main(int argc, char** argv) {
 
   /* Setup scene and rendering parameters */
   initialize(window_width, window_height);
-
+  	struct object_data od;
   /* Specify callback functions;enter GLUT event processing loop,
    * handing control over to GLUT */
   glutIdleFunc(on_idle);
-  glutDisplayFunc(display);
+  glutDisplayFunc(display_test(&od));
   glutMainLoop();
 
   return EXIT_SUCCESS;
