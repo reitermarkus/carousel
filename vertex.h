@@ -14,4 +14,9 @@ struct vertex {
   struct color color;
 };
 
+enum data_id {
+  v_position = 0,
+  v_color = 1
+};
+
 #endif
