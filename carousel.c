@@ -85,8 +85,8 @@ void setup_data_buffers(struct object_data* object) {
 
 void display_object(struct object_data* object) {
   /* Put linked shader program into drawing pipeline */
-  GLuint shader_program = create_shader_program(object->vertex_shader_file, object->fragment_shader_file);
-  draw(object->vbo, object->ibo, shader_program, projection_matrix, view_matrix, model_matrix);
+  object->shader_program = create_shader_program(object->vertex_shader_file, object->fragment_shader_file);
+  draw(object, projection_matrix, view_matrix, model_matrix);
 }
 
 void display() {
