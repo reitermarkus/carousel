@@ -38,9 +38,6 @@
 /* Define handle to a vertex buffer object */
 GLuint VBO;
 
-/* Define handle to a vertex array object */
-GLuint VAO;
-
 /* Define handle to an index buffer object */
 GLuint IBO;
 
@@ -138,10 +135,9 @@ void setup_data_buffers() {
   // this function allocates memory on the GPU for our data and returns a pointer to the array, holding the data
   glBufferData(GL_ARRAY_BUFFER, vertex_buffer_size, vertex_buffer_data, GL_STATIC_DRAW);
 
-  // generates 1 array object name and stores it in VAO
-  glGenVertexArrays(1, &VAO);
-  // binds the vertex array to given name -> VAO
-  glBindVertexArray(VAO);
+  GLuint vao;
+  glGenVertexArrays(1, &vao); // generates 1 array object name and stores it in VAO
+  glBindVertexArray(vao); // binds the vertex array to given name -> VAO
 
   glGenBuffers(1, &IBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
