@@ -260,12 +260,6 @@ void initialize(int window_width, int window_height) {
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
-  /* Setup vertex, color, and index buffer objects */
-  setup_data_buffers();
-
-  /* Setup shaders and shader program */
-  create_shader_program();
-
   /* Initialize matrices */
   set_identity_matrix(projection_matrix);
   set_identity_matrix(view_matrix);
@@ -293,6 +287,12 @@ void initialize(int window_width, int window_height) {
   /* Initial transformation matrix */
   multiply_matrix(rotate_x, translate_origin, initial_transform);
   multiply_matrix(rotate_z, initial_transform, initial_transform);
+
+  /* Setup vertex, color, and index buffer objects */
+  setup_data_buffers();
+
+  /* Setup shaders and shader program */
+  create_shader_program();
 }
 
 
