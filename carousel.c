@@ -40,8 +40,6 @@ GLuint VBO;
 /* Define handle to an index buffer object */
 GLuint IBO;
 
-GLuint shader_program;
-
 float projection_matrix[16]; /* Perspective projection matrix */
 float view_matrix[16]; /* Camera view matrix */
 float model_matrix[16]; /* Model matrix */
@@ -75,6 +73,8 @@ void display() {
   /* Clear window; color specified in 'initialize()' */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  /* Put linked shader program into drawing pipeline */
+  GLuint shader_program = create_shader_program("vertexshader.vs", "fragmentshader.fs");
   draw(VBO, IBO, shader_program, projection_matrix, view_matrix, model_matrix);
 
   /* Swap between front and back buffer */
@@ -190,11 +190,6 @@ void initialize(int window_width, int window_height) {
 
   /* Setup vertex, color, and index buffer objects */
   setup_data_buffers();
-
-  /* Setup shaders and shader program */
-
-  /* Put linked shader program into drawing pipeline */
-  shader_program = create_shader_program("vertexshader.vs", "fragmentshader.fs");
 }
 
 
