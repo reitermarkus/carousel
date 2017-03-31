@@ -58,19 +58,20 @@ struct object_data objects[number_of_objects];
 *******************************************************************/
 
 void setup_data_buffers(struct object_data* object) {
+  GLuint vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+
+  // Bind buffer object for vertices and colors.
   glGenBuffers(1, &(object->vbo));
   glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
   glBufferData(GL_ARRAY_BUFFER, object->vertices_size, object->vertices, GL_STATIC_DRAW);
+  free(object->vertices);
 
-  GLuint vao;
-  glGenVertexArrays(1, &vao); // generates 1 array object name and stores it in VAO
-  glBindVertexArray(vao); // binds the vertex array to given name -> VAO
-
+  // Bind buffer object for indices.
   glGenBuffers(1, &(object->ibo));
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->indices_size, object->indices, GL_STATIC_DRAW);
-
-  free(object->vertices);
   free(object->indices);
 }
 
