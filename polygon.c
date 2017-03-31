@@ -23,9 +23,9 @@ void polygon(int detail, double radius, double height, struct vertex** vertices,
   (*vertex).position.y = 0.0;
   (*vertex).position.z = 0.0;
 
-  (*vertex).color.r = (double)rand() / (double)RAND_MAX;
-  (*vertex).color.g = (double)rand() / (double)RAND_MAX;
-  (*vertex).color.b = (double)rand() / (double)RAND_MAX;
+  (*vertex).color.r = R(rand() % 256);
+  (*vertex).color.g = G(rand() % 256);
+  (*vertex).color.b = B(rand() % 256);
 
   unless (height == 0) {
     vertex = (struct vertex*)(*vertices + (detail + 1));
@@ -34,9 +34,9 @@ void polygon(int detail, double radius, double height, struct vertex** vertices,
     (*vertex).position.y = height;
     (*vertex).position.z = 0.0;
 
-    (*vertex).color.r = (double)rand() / (double)RAND_MAX;
-    (*vertex).color.g = (double)rand() / (double)RAND_MAX;
-    (*vertex).color.b = (double)rand() / (double)RAND_MAX;
+    (*vertex).color.r = R(rand() % 256);
+    (*vertex).color.g = G(rand() % 256);
+    (*vertex).color.b = B(rand() % 256);
   }
 
   float angle = -(M_PI / 2.0); // start with first edge on top
@@ -49,9 +49,9 @@ void polygon(int detail, double radius, double height, struct vertex** vertices,
 
     printf("Angle: %8.2f, Position: (%8.2f, %8.2f, %8.2f)\n", rad_to_deg(angle), (*vertex).position.x, (*vertex).position.y, (*vertex).position.z);
 
-    (*vertex).color.r = (double)rand() / (double)RAND_MAX;
-    (*vertex).color.g = (double)rand() / (double)RAND_MAX;
-    (*vertex).color.b = (double)rand() / (double)RAND_MAX;
+    (*vertex).color.r = R(rand() % 256);
+    (*vertex).color.g = G(rand() % 256);
+    (*vertex).color.b = B(rand() % 256);
 
     // top circle
     unless (height == 0) {
@@ -61,9 +61,9 @@ void polygon(int detail, double radius, double height, struct vertex** vertices,
       (*vertex).position.y = height;
       (*vertex).position.z = sinf(angle) * radius;
 
-      (*vertex).color.r = (double)rand() / (double)RAND_MAX;
-      (*vertex).color.g = (double)rand() / (double)RAND_MAX;
-      (*vertex).color.b = (double)rand() / (double)RAND_MAX;
+      (*vertex).color.r = R(rand() % 256);
+      (*vertex).color.g = G(rand() % 256);
+      (*vertex).color.b = B(rand() % 256);
     }
 
     int bottom_curr_i = i + 1;
