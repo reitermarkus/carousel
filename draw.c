@@ -15,7 +15,7 @@ static void set_shader_matrix(GLuint shader_program, const char* matrix_name, fl
   glUniformMatrix4fv(uniform_location, 1, GL_TRUE, matrix);
 }
 
-void draw(struct object_data* object, float* projection_matrix, float* view_matrix, float* model_matrix) {
+void draw(struct object_data* object, float* projection_matrix, float* view_matrix) {
   glEnableVertexAttribArray(v_position);
   glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
   // second and third parameter specify, that the array points are 3 dimensional of type GL_FLOAT
@@ -39,7 +39,7 @@ void draw(struct object_data* object, float* projection_matrix, float* view_matr
   // Associate program with shader matrices
   set_shader_matrix(object->shader_program, "projection_matrix", projection_matrix);
   set_shader_matrix(object->shader_program, "view_matrix", view_matrix);
-  set_shader_matrix(object->shader_program, "model_matrix", model_matrix);
+  set_shader_matrix(object->shader_program, "model_matrix", object->translation_matrix);
 
   // Issue draw command, using indexed triangle list
   glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);

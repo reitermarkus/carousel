@@ -36,7 +36,6 @@
 
 float projection_matrix[16]; /* Perspective projection matrix */
 float view_matrix[16]; /* Camera view matrix */
-float model_matrix[16]; /* Model matrix */
 
 /* Transformation matrices for initial position */
 float translate_origin[16];
@@ -44,6 +43,9 @@ float translate_down[16];
 float rotate_x[16];
 float rotate_z[16];
 float initial_transform[16];
+
+enum { number_of_objects = 2 };
+struct object_data objects[number_of_objects];
 
 /*----------------------------------------------------------------*/
 
@@ -86,31 +88,16 @@ void setup_data_buffers(struct object_data* object) {
 void display_object(struct object_data* object) {
   /* Put linked shader program into drawing pipeline */
   object->shader_program = create_shader_program(object->vertex_shader_file, object->fragment_shader_file);
-  draw(object, projection_matrix, view_matrix, model_matrix);
+  draw(object, projection_matrix, view_matrix);
 }
 
 void display() {
   /* Clear window; color specified in 'initialize()' */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  struct object_data object;
-  polygon(7, 1.5, .25, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
-
-  /* Setup vertex, color, and index buffer objects */
-  setup_data_buffers(&object);
-  object.vertex_shader_file = "vertexshader.vs";
-  object.fragment_shader_file = "fragmentshader.fs";
-  set_identity_matrix(object.translation_matrix);
-  display_object(&object);
-
-  polygon(5, 1, 1, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
-
-  /* Setup vertex, color, and index buffer objects */
-  setup_data_buffers(&object);
-  object.vertex_shader_file = "vertexshader.vs";
-  object.fragment_shader_file = "fragmentshader.fs";
-  set_identity_matrix(object.translation_matrix);
-  display_object(&object);
+  for (int i = 0; i < number_of_objects; i++) {
+    display_object(&(objects[i]));
+  }
 
   /* Swap between front and back buffer */
   glutSwapBuffers();
@@ -135,9 +122,13 @@ void on_idle() {
   /* Time dependent rotation */
   set_rotation_y(-angle, rotation_matrix_anim);
 
-  /* Apply model rotation; finally move cube down */
-  multiply_matrix(rotation_matrix_anim, initial_transform, model_matrix);
-  multiply_matrix(translate_down, model_matrix, model_matrix);
+  for (int i = 0; i < number_of_objects; i++) {
+    /* Apply model rotation; finally move objects down */
+    multiply_matrix(rotation_matrix_anim, initial_transform, objects[i].translation_matrix);
+    multiply_matrix(translate_down, objects[i].translation_matrix, objects[i].translation_matrix);
+  }
+
+  translate_y(1, (objects[1]).translation_matrix);
 
   /* Request redrawing forof window content */
   glutPostRedisplay();
@@ -164,7 +155,6 @@ void initialize(int window_width, int window_height) {
   /* Initialize matrices */
   set_identity_matrix(projection_matrix);
   set_identity_matrix(view_matrix);
-  set_identity_matrix(model_matrix);
 
   /* Set projection transform */
   float fovy = 45.0;
@@ -188,6 +178,25 @@ void initialize(int window_width, int window_height) {
   /* Initial transformation matrix */
   multiply_matrix(rotate_x, translate_origin, initial_transform);
   multiply_matrix(rotate_z, initial_transform, initial_transform);
+
+  struct object_data object;
+  polygon(7, 1.5, .25, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+
+  /* Setup vertex, color, and index buffer objects */
+  setup_data_buffers(&object);
+  object.vertex_shader_file = "vertexshader.vs";
+  object.fragment_shader_file = "fragmentshader.fs";
+  set_identity_matrix(object.translation_matrix);
+  objects[0] = object;
+
+  polygon(5, 1, 1, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+
+  /* Setup vertex, color, and index buffer objects */
+  setup_data_buffers(&object);
+  object.vertex_shader_file = "vertexshader.vs";
+  object.fragment_shader_file = "fragmentshader.fs";
+  set_identity_matrix(object.translation_matrix);
+  objects[1] = object;
 }
 
 

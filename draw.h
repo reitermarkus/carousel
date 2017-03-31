@@ -3,6 +3,6 @@
 
 #include "vertex.h"
 
-void draw(struct object_data* object, float* projection_matrix, float* view_matrix, float* model_matrix);
+void draw(struct object_data* object, float* projection_matrix, float* view_matrix);
 
 #endif
