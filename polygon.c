@@ -41,7 +41,7 @@ void polygon(int detail, double radius, double height, struct vertex** vertices,
     (*vertex).color.b = (double)rand() / (double)RAND_MAX;
   }
 
-  float angle = 0;
+  float angle = -(M_PI / 2.0); // start with first edge on top
   for (int i = 0; i < detail; i++) {
     vertex = (struct vertex*)(*vertices + i + 1);
 
