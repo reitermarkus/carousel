@@ -44,8 +44,10 @@ float rotate_x[16];
 float rotate_z[16];
 float initial_transform[16];
 
-enum { number_of_objects = 2 };
-struct object_data objects[number_of_objects];
+enum { number_of_sides = 7 };
+enum { number_of_objects = 1 };
+struct object_data objects[1];
+struct object_data pillars[number_of_sides];
 
 /*----------------------------------------------------------------*/
 
@@ -100,6 +102,10 @@ void display() {
     display_object(&(objects[i]));
   }
 
+  for (int i = 0; i < number_of_sides; i++) {
+    display_object(&(pillars[i]));
+  }
+
   /* Swap between front and back buffer */
   glutSwapBuffers();
 }
@@ -121,18 +127,21 @@ void on_idle() {
   float rotation_matrix_anim[16];
   float transform_matrix[16];
 
-  /* Time dependent rotation */
+  // Time dependent rotation.
   set_rotation_y(-angle, rotation_matrix_anim);
 
   multiply_matrix(rotation_matrix_anim, initial_transform, objects[0].translation_matrix);
   multiply_matrix(translate_down, objects[0].translation_matrix, objects[0].translation_matrix);
 
-  set_translation(0, 0, 1.25, transform_matrix);
-  multiply_matrix(transform_matrix, initial_transform, objects[1].translation_matrix);
-  set_rotation_y(360 / 9 * (elapsed_time / 1000), transform_matrix);
-  multiply_matrix(transform_matrix, objects[1].translation_matrix, objects[1].translation_matrix);
-  multiply_matrix(rotation_matrix_anim, objects[1].translation_matrix, objects[1].translation_matrix);
-  multiply_matrix(translate_down, objects[1].translation_matrix, objects[1].translation_matrix);
+  for (int i = 0; i < number_of_sides; i++) {
+    set_translation(0, 0, -1.3, transform_matrix);
+
+    multiply_matrix(transform_matrix, initial_transform, pillars[i].translation_matrix);
+    set_rotation_y(360.0 / (float)number_of_sides * (float)i, transform_matrix);
+    multiply_matrix(transform_matrix, pillars[i].translation_matrix, pillars[i].translation_matrix);
+    multiply_matrix(rotation_matrix_anim, pillars[i].translation_matrix, pillars[i].translation_matrix);
+    multiply_matrix(translate_down, pillars[i].translation_matrix, pillars[i].translation_matrix);
+  }
 
   /* Request redrawing forof window content */
   glutPostRedisplay();
@@ -184,7 +193,7 @@ void initialize(int window_width, int window_height) {
   multiply_matrix(rotate_z, initial_transform, initial_transform);
 
   struct object_data object;
-  polygon(9, 1.5, .15, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+  polygon(number_of_sides, 1.5, .15, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
 
   /* Setup vertex, color, and index buffer objects */
   setup_data_buffers(&object);
@@ -193,14 +202,18 @@ void initialize(int window_width, int window_height) {
   set_identity_matrix(object.translation_matrix);
   objects[0] = object;
 
-  polygon(100, .1, 1.5, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+  for (int i = 0; i < number_of_sides; i++) {
+    struct object_data pillar;
 
-  /* Setup vertex, color, and index buffer objects */
-  setup_data_buffers(&object);
-  object.vertex_shader_file = "vertexshader.vs";
-  object.fragment_shader_file = "fragmentshader.fs";
-  set_identity_matrix(object.translation_matrix);
-  objects[1] = object;
+    polygon(7, .1, 1.5, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size));
+
+    /* Setup vertex, color, and index buffer objects */
+    setup_data_buffers(&pillar);
+    pillar.vertex_shader_file = "vertexshader.vs";
+    pillar.fragment_shader_file = "fragmentshader.fs";
+    set_identity_matrix(pillar.translation_matrix);
+    pillars[i] = pillar;
+  }
 }
 
 
