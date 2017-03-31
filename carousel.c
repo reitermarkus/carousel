@@ -115,21 +115,24 @@ void display() {
 
 void on_idle() {
   float rotations_per_second = 0.25f;
-  float elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
+  long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
   float angle = elapsed_time * rotations_per_second * 360.0 / 1000.0; // deg
 
   float rotation_matrix_anim[16];
+  float transform_matrix[16];
 
   /* Time dependent rotation */
   set_rotation_y(-angle, rotation_matrix_anim);
 
-  for (int i = 0; i < number_of_objects; i++) {
-    /* Apply model rotation; finally move objects down */
-    multiply_matrix(rotation_matrix_anim, initial_transform, objects[i].translation_matrix);
-    multiply_matrix(translate_down, objects[i].translation_matrix, objects[i].translation_matrix);
-  }
+  multiply_matrix(rotation_matrix_anim, initial_transform, objects[0].translation_matrix);
+  multiply_matrix(translate_down, objects[0].translation_matrix, objects[0].translation_matrix);
 
-  translate_y(1, (objects[1]).translation_matrix);
+  set_translation(0, 0, 1.25, transform_matrix);
+  multiply_matrix(transform_matrix, initial_transform, objects[1].translation_matrix);
+  set_rotation_y(360 / 9 * (elapsed_time / 1000), transform_matrix);
+  multiply_matrix(transform_matrix, objects[1].translation_matrix, objects[1].translation_matrix);
+  multiply_matrix(rotation_matrix_anim, objects[1].translation_matrix, objects[1].translation_matrix);
+  multiply_matrix(translate_down, objects[1].translation_matrix, objects[1].translation_matrix);
 
   /* Request redrawing forof window content */
   glutPostRedisplay();
@@ -181,7 +184,7 @@ void initialize(int window_width, int window_height) {
   multiply_matrix(rotate_z, initial_transform, initial_transform);
 
   struct object_data object;
-  polygon(7, 1.5, .25, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+  polygon(9, 1.5, .15, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
 
   /* Setup vertex, color, and index buffer objects */
   setup_data_buffers(&object);
@@ -190,7 +193,7 @@ void initialize(int window_width, int window_height) {
   set_identity_matrix(object.translation_matrix);
   objects[0] = object;
 
-  polygon(5, 1, 1, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+  polygon(100, .1, 1.5, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
 
   /* Setup vertex, color, and index buffer objects */
   setup_data_buffers(&object);
