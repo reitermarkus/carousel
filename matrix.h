@@ -17,6 +17,7 @@
 #ifndef __MATRIX_H__
 #define __MATRIX_H__
 
+void print_matrix(float* matrix);
 void set_identity_matrix(float* result);
 void set_rotation_x(float anglex, float* result);
 void set_rotation_y(float angley, float* result);

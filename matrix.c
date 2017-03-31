@@ -22,6 +22,22 @@
 #include "helper.h"
 #include "matrix.h"
 
+
+/******************************************************************
+*
+* print_matrix
+*
+*******************************************************************/
+
+void print_matrix(float* matrix) {
+  printf("[\n");
+  for (int i = 0; i < 4; i++) {
+    printf("  [%8f,\t%8f,\t%8f,\t%8f],\n", matrix[i], matrix[i + 1], matrix[i + 2], matrix[i + 3]);
+  }
+  printf("]\n");
+}
+
+
 /******************************************************************
 *
 * set_identity_matrix
