@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #include "opengl.h"
 
@@ -226,6 +227,8 @@ void initialize(int window_width, int window_height) {
 *******************************************************************/
 
 int main(int argc, char** argv) {
+  srand(time(NULL));
+
   /* Initialize GLUT; set double buffered window and RGBA color model */
   glutInit(&argc, argv);
 

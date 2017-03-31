@@ -23,8 +23,6 @@ void polygon(int detail, double radius, double height, struct vertex** vertices,
   (*vertex).position.y = 0.0;
   (*vertex).position.z = 0.0;
 
-  srand(time(NULL));
-
   (*vertex).color.r = (double)rand() / (double)RAND_MAX;
   (*vertex).color.g = (double)rand() / (double)RAND_MAX;
   (*vertex).color.b = (double)rand() / (double)RAND_MAX;
