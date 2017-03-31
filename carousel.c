@@ -150,7 +150,7 @@ void on_idle() {
 
 void initialize(int window_width, int window_height) {
   /* Set background (clear) color to dark blue */
-  glClearColor(0.0, 0.0, 0.4, 0.0);
+  glClearColor(R(220), G(220), B(220), 0.0);
 
   /* Enable depth testing */
   glEnable(GL_DEPTH_TEST);

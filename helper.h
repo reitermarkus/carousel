@@ -10,4 +10,8 @@
 #define deg_to_rad(degrees) (degrees * M_PI / 180.0)
 #define rad_to_deg(radians) (radians * 180.0 / M_PI)
 
+#define R(r) ((r) / 255.0)
+#define G(g) ((g) / 255.0)
+#define B(b) ((b) / 255.0)
+
 #endif // __HELPER_H__
