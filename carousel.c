@@ -127,36 +127,50 @@ void display() {
 void on_idle() {
   float rotations_per_second = 1.0f / 8;
   long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
-  float angle = elapsed_time * rotations_per_second * 360.0 / 1000.0; // deg
+  float angle = elapsed_time * rotations_per_second * 360.0 / 1000; // deg
 
-  float rotation_matrix_anim[16];
-  float transform_matrix[16];
+  // Rotate clock-wise by using negative angle.
+  float rotation = -angle;
 
-  // Time dependent rotation.
-  set_rotation_y(-angle, rotation_matrix_anim);
-
-  multiply_matrix(rotation_matrix_anim, initial_transform, base.translation_matrix);
+  // Initialize base matrix.
+  set_identity_matrix(base.translation_matrix);
   multiply_matrix(translate_down, base.translation_matrix, base.translation_matrix);
+  multiply_matrix(initial_transform, base.translation_matrix, base.translation_matrix);
 
-  multiply_matrix(rotation_matrix_anim, initial_transform, top.translation_matrix);
+  // Rotate base.
+  rotate_y(rotation, base.translation_matrix);
+
+  // Initialize roof matrix.
+  set_identity_matrix(top.translation_matrix);
   multiply_matrix(translate_down, top.translation_matrix, top.translation_matrix);
+  multiply_matrix(initial_transform, top.translation_matrix, top.translation_matrix);
+
+  // Rotate roof.
+  rotate_y(rotation, top.translation_matrix);
 
   // Move roof up above the pillars.
-  set_translation(0, PILLAR_HEIGHT + BASE_HEIGHT, 0, transform_matrix);
-  multiply_matrix(transform_matrix, top.translation_matrix, top.translation_matrix);
+  translate_y(PILLAR_HEIGHT + BASE_HEIGHT, top.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
-    // Move pillars onto the base and outwards.
-    set_translation(0, BASE_HEIGHT, -(BASE_RADIUS / 7 * 6), transform_matrix);
-
-    multiply_matrix(transform_matrix, initial_transform, pillars[i].translation_matrix);
-    set_rotation_y(360.0 / (float)number_of_sides * (float)i, transform_matrix);
-    multiply_matrix(transform_matrix, pillars[i].translation_matrix, pillars[i].translation_matrix);
-    multiply_matrix(rotation_matrix_anim, pillars[i].translation_matrix, pillars[i].translation_matrix);
+    // Initialize pillar matrix.
+    set_identity_matrix(pillars[i].translation_matrix);
     multiply_matrix(translate_down, pillars[i].translation_matrix, pillars[i].translation_matrix);
+    multiply_matrix(initial_transform, pillars[i].translation_matrix, pillars[i].translation_matrix);
+
+    // Move pillar onto the base.
+    translate_y(BASE_HEIGHT, pillars[i].translation_matrix);
+
+    // Move pillar towards the edge.
+    translate_z(-(BASE_RADIUS / 7 * 6), pillars[i].translation_matrix);
+
+    // Rotate pillar around the center to the corresponding edge.
+    rotate_y(360.0 / (float)number_of_sides * (float)i, pillars[i].translation_matrix);
+
+    // Apply general rotation to pillar.
+    rotate_y(rotation, pillars[i].translation_matrix);
   }
 
-  /* Request redrawing forof window content */
+  // Request redrawing of window content.
   glutPostRedisplay();
 }
 
