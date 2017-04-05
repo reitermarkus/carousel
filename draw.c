@@ -16,35 +16,43 @@ static void set_shader_matrix(GLuint shader_program, const char* matrix_name, fl
 }
 
 void draw(struct object_data* object, float* projection_matrix, float* view_matrix) {
+  // Bind vertex array.
   glEnableVertexAttribArray(v_position);
-  glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
-  // second and third parameter specify, that the array points are 3 dimensional of type GL_FLOAT
+  glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);
   glVertexAttribPointer(
-    v_position,
-    3,          // dimension of array points
-    GL_FLOAT,   // type of the points
-    GL_FALSE,   // whether the points should be normalized
-    sizeof(struct vertex),
-    0           // see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml
+    v_position,                    // attribute index
+    3,                             // attribute length (x, y, z)
+    GL_FLOAT,                      // attribute type
+    GL_FALSE,                      // normalize points
+    sizeof(struct vertex),         // offset between indices
+    0                              // offset to vertex values
   );
 
+  // Bind color array.
   glEnableVertexAttribArray(v_color);
-  glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
-  glVertexAttribPointer(v_color, 3, GL_FLOAT, GL_FALSE, sizeof(struct vertex), (void*)sizeof(struct position));
+  glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);
+  glVertexAttribPointer(
+    v_color,                       // attribute index
+    3,                             // attribute length (r, g, b)
+    GL_FLOAT,                      // attribute type
+    GL_FALSE,                      // normalize points
+    sizeof(struct vertex),         // offset between indices
+    (void*)sizeof(struct position) // offset to color values
+  );
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
-  GLint size;
-  glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+  // Bind index array.
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (*object).ibo);
 
-  // Associate program with shader matrices
+  // Associate program with shader matrices.
   set_shader_matrix(object->shader_program, "projection_matrix", projection_matrix);
   set_shader_matrix(object->shader_program, "view_matrix", view_matrix);
-  set_shader_matrix(object->shader_program, "model_matrix", object->translation_matrix);
+  set_shader_matrix(object->shader_program, "model_matrix", (*object).translation_matrix);
 
-  // Issue draw command, using indexed triangle list
+  // Draw triangles using index array.
+  GLint size;
+  glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
   glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 
-  // Disable attributes
   glDisableVertexAttribArray(v_position);
   glDisableVertexAttribArray(v_color);
 }

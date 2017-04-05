@@ -18,7 +18,7 @@ struct vertex {
   struct color color;
 };
 
-enum data_id {
+enum attribute_index {
   v_position = 0,
   v_color = 1
 };
