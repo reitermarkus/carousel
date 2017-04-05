@@ -78,6 +78,19 @@ void set_rotation_x(float anglex, float* result) {
 
 /******************************************************************
 *
+* rotate_y
+*
+*******************************************************************/
+
+void rotate_x(float anglex, float* matrix) {
+  float rotation[16];
+  set_rotation_x(anglex, rotation);
+  multiply_matrix(rotation, matrix, matrix);
+}
+
+
+/******************************************************************
+*
 * set_rotation_y
 *
 *******************************************************************/
@@ -98,6 +111,19 @@ void set_rotation_y(float angley, float* result) {
 
 /******************************************************************
 *
+* rotate_y
+*
+*******************************************************************/
+
+void rotate_y(float angley, float* matrix) {
+  float rotation[16];
+  set_rotation_y(angley, rotation);
+  multiply_matrix(rotation, matrix, matrix);
+}
+
+
+/******************************************************************
+*
 * set_rotation_z
 *
 *******************************************************************/
@@ -113,6 +139,19 @@ void set_rotation_z(float anglez, float* result) {
   };
 
   memcpy(result, temp, 16 * sizeof(float));
+}
+
+
+/******************************************************************
+*
+* rotate_z
+*
+*******************************************************************/
+
+void rotate_z(float anglez, float* matrix) {
+  float rotation[16];
+  set_rotation_z(anglez, rotation);
+  multiply_matrix(rotation, matrix, matrix);
 }
 
 
@@ -141,7 +180,9 @@ void set_translation(float x, float y, float z, float* result) {
 *******************************************************************/
 
 void translate_x(float x, float* matrix) {
-  matrix[3] += x;
+  float temp[16];
+  set_translation(x, 0, 0, temp);
+  multiply_matrix(temp, matrix, matrix);
 }
 
 
@@ -152,7 +193,9 @@ void translate_x(float x, float* matrix) {
 *******************************************************************/
 
 void translate_y(float y, float* matrix) {
-  matrix[7] += y;
+  float temp[16];
+  set_translation(0, y, 0, temp);
+  multiply_matrix(temp, matrix, matrix);
 }
 
 
@@ -163,7 +206,9 @@ void translate_y(float y, float* matrix) {
 *******************************************************************/
 
 void translate_z(float z, float* matrix) {
-  matrix[11] += z;
+  float temp[16];
+  set_translation(0, 0, z, temp);
+  multiply_matrix(temp, matrix, matrix);
 }
 
 
@@ -174,10 +219,9 @@ void translate_z(float z, float* matrix) {
 *******************************************************************/
 
 void multiply_matrix(float* m1, float* m2, float* result) {
-  int i;
   float temp[16];
 
-  for (i = 0; i < 16; i++) {
+  for (int i = 0; i < 16; i++) {
     temp[i] = 0.0;
   }
 

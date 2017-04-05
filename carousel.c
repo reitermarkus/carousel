@@ -42,8 +42,8 @@ float view_matrix[16]; /* Camera view matrix */
 /* Transformation matrices for initial position */
 float translate_origin[16];
 float translate_down[16];
-float rotate_x[16];
-float rotate_z[16];
+float rotation_x[16];
+float rotation_z[16];
 float initial_transform[16];
 
 enum { number_of_sides = 7 };
@@ -195,15 +195,15 @@ void initialize(int window_width, int window_height) {
 
   /* Translate and rotate cube onto tip */
   set_translation(0, 0, 0, translate_origin);
-  set_rotation_x(0, rotate_x);
-  set_rotation_z(0, rotate_z);
+  set_rotation_x(0, rotation_x);
+  set_rotation_z(0, rotation_z);
 
   /* Translate down */
-  set_translation(0, -sqrtf(sqrtf(2.0) * 1.0), 0, translate_down);
+  set_translation(0, -sqrtf(sqrtf(2.0)), 0, translate_down);
 
   /* Initial transformation matrix */
-  multiply_matrix(rotate_x, translate_origin, initial_transform);
-  multiply_matrix(rotate_z, initial_transform, initial_transform);
+  multiply_matrix(rotation_x, translate_origin, initial_transform);
+  multiply_matrix(rotation_z, initial_transform, initial_transform);
 
   cylinder(number_of_sides, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
 
