@@ -48,7 +48,11 @@ float initial_transform[16];
 
 enum { number_of_sides = 7 };
 struct object_data base;
+struct object_data top;
 struct object_data pillars[number_of_sides];
+const float PILLAR_HEIGHT = 1.5;
+const float BASE_HEIGHT = .15;
+const float BASE_RADIUS = 1.5;
 
 /*----------------------------------------------------------------*/
 
@@ -105,6 +109,8 @@ void display() {
     display_object(&(pillars[i]));
   }
 
+  display_object(&top);
+
   /* Swap between front and back buffer */
   glutSwapBuffers();
 }
@@ -119,7 +125,7 @@ void display() {
 *******************************************************************/
 
 void on_idle() {
-  float rotations_per_second = 0.25f;
+  float rotations_per_second = 1.0f / 8;
   long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
   float angle = elapsed_time * rotations_per_second * 360.0 / 1000.0; // deg
 
@@ -132,8 +138,16 @@ void on_idle() {
   multiply_matrix(rotation_matrix_anim, initial_transform, base.translation_matrix);
   multiply_matrix(translate_down, base.translation_matrix, base.translation_matrix);
 
+  multiply_matrix(rotation_matrix_anim, initial_transform, top.translation_matrix);
+  multiply_matrix(translate_down, top.translation_matrix, top.translation_matrix);
+
+  // Move roof up above the pillars.
+  set_translation(0, PILLAR_HEIGHT + BASE_HEIGHT, 0, transform_matrix);
+  multiply_matrix(transform_matrix, top.translation_matrix, top.translation_matrix);
+
   for (int i = 0; i < number_of_sides; i++) {
-    set_translation(0, 0, -1.3, transform_matrix);
+    // Move pillars onto the base and outwards.
+    set_translation(0, BASE_HEIGHT, -(BASE_RADIUS / 7 * 6), transform_matrix);
 
     multiply_matrix(transform_matrix, initial_transform, pillars[i].translation_matrix);
     set_rotation_y(360.0 / (float)number_of_sides * (float)i, transform_matrix);
@@ -191,7 +205,7 @@ void initialize(int window_width, int window_height) {
   multiply_matrix(rotate_x, translate_origin, initial_transform);
   multiply_matrix(rotate_z, initial_transform, initial_transform);
 
-  cylinder(number_of_sides, 1.5, .15, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
+  cylinder(number_of_sides, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
 
   /* Setup vertex, color, and index buffer objects */
   setup_data_buffers(&base);
@@ -199,10 +213,18 @@ void initialize(int window_width, int window_height) {
   base.fragment_shader_file = "fragmentshader.fs";
   set_identity_matrix(base.translation_matrix);
 
+
+  cylinder(number_of_sides, BASE_RADIUS, BASE_HEIGHT, &(top.vertices), &(top.vertices_size), &(top.indices), &(top.indices_size));
+  setup_data_buffers(&top);
+  top.vertex_shader_file = "vertexshader.vs";
+  top.fragment_shader_file = "fragmentshader.fs";
+  set_identity_matrix(top.translation_matrix);
+
+
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data pillar;
 
-    cylinder(7, .1, 1.5, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size));
+    cylinder(7, .1, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size));
 
     /* Setup vertex, color, and index buffer objects */
     setup_data_buffers(&pillar);
