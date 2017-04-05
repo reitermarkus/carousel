@@ -47,8 +47,7 @@ float rotate_z[16];
 float initial_transform[16];
 
 enum { number_of_sides = 7 };
-enum { number_of_objects = 1 };
-struct object_data objects[1];
+struct object_data base;
 struct object_data pillars[number_of_sides];
 
 /*----------------------------------------------------------------*/
@@ -100,9 +99,7 @@ void display() {
   /* Clear window; color specified in 'initialize()' */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  for (int i = 0; i < number_of_objects; i++) {
-    display_object(&(objects[i]));
-  }
+  display_object(&base);
 
   for (int i = 0; i < number_of_sides; i++) {
     display_object(&(pillars[i]));
@@ -132,8 +129,8 @@ void on_idle() {
   // Time dependent rotation.
   set_rotation_y(-angle, rotation_matrix_anim);
 
-  multiply_matrix(rotation_matrix_anim, initial_transform, objects[0].translation_matrix);
-  multiply_matrix(translate_down, objects[0].translation_matrix, objects[0].translation_matrix);
+  multiply_matrix(rotation_matrix_anim, initial_transform, base.translation_matrix);
+  multiply_matrix(translate_down, base.translation_matrix, base.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     set_translation(0, 0, -1.3, transform_matrix);
@@ -194,15 +191,13 @@ void initialize(int window_width, int window_height) {
   multiply_matrix(rotate_x, translate_origin, initial_transform);
   multiply_matrix(rotate_z, initial_transform, initial_transform);
 
-  struct object_data object;
-  cylinder(number_of_sides, 1.5, .15, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+  cylinder(number_of_sides, 1.5, .15, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
 
   /* Setup vertex, color, and index buffer objects */
-  setup_data_buffers(&object);
-  object.vertex_shader_file = "vertexshader.vs";
-  object.fragment_shader_file = "fragmentshader.fs";
-  set_identity_matrix(object.translation_matrix);
-  objects[0] = object;
+  setup_data_buffers(&base);
+  base.vertex_shader_file = "vertexshader.vs";
+  base.fragment_shader_file = "fragmentshader.fs";
+  set_identity_matrix(base.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data pillar;
