@@ -29,6 +29,7 @@
 #include "helper.h"
 #include "create_shader_program.h"
 #include "draw.h"
+#include "cylinder.h"
 #include "polygon.h"
 #include "vertex.h"
 
@@ -194,7 +195,7 @@ void initialize(int window_width, int window_height) {
   multiply_matrix(rotate_z, initial_transform, initial_transform);
 
   struct object_data object;
-  polygon(number_of_sides, 1.5, .15, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
+  cylinder(number_of_sides, 1.5, .15, &(object.vertices), &(object.vertices_size), &(object.indices), &(object.indices_size));
 
   /* Setup vertex, color, and index buffer objects */
   setup_data_buffers(&object);
@@ -206,7 +207,7 @@ void initialize(int window_width, int window_height) {
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data pillar;
 
-    polygon(7, .1, 1.5, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size));
+    cylinder(7, .1, 1.5, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size));
 
     /* Setup vertex, color, and index buffer objects */
     setup_data_buffers(&pillar);

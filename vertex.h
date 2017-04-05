@@ -1,6 +1,8 @@
 #ifndef __H_VERTEX__
 #define __H_VERTEX__
 
+#include "opengl.h"
+
 struct position {
   GLfloat x, y, z;
 };
