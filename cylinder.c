@@ -8,7 +8,7 @@
 #include "helper.h"
 #include "vertex.h"
 
-void cylinder(int edges, double radius, double height, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
+void cylinder(int edges, double radius, double height, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size, float top_center_y_offset) {
   float step = 2.0 * M_PI / (float)edges; // circumfence divided by parts
 
   // Vertex count is number of edges + 1 (center vertex) if height is 0,
@@ -38,7 +38,7 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
 
     // Assign coordinates to the center vertex of the top polygon.
     (*vertex).position.x = 0.0;
-    (*vertex).position.y = height;
+    (*vertex).position.y = height + top_center_y_offset;
     (*vertex).position.z = 0.0;
 
     // Assign color values to the center vertex of the top polygon.

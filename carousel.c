@@ -48,11 +48,18 @@ float initial_transform[16];
 
 enum { number_of_sides = 7 };
 struct object_data base;
-struct object_data top;
+struct object_data center_pillar;
+struct object_data roof;
 struct object_data pillars[number_of_sides];
+struct object_data cubes[number_of_sides];
+
+static float up_down = 1.5;
+static float speed = 0.075;
+
 const float PILLAR_HEIGHT = 1.5;
 const float BASE_HEIGHT = .15;
-const float BASE_RADIUS = 1.5;
+const float BASE_RADIUS = 2.5;
+const float CENTER_PILLAR_RADIUS = 0.5;
 
 /*----------------------------------------------------------------*/
 
@@ -107,12 +114,13 @@ void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   display_object(&base);
+  display_object(&center_pillar);
+  display_object(&roof);
 
   for (int i = 0; i < number_of_sides; i++) {
     display_object(&(pillars[i]));
+    display_object(&(cubes[i]));
   }
-
-  display_object(&top);
 
   /* Swap between front and back buffer */
   glutSwapBuffers();
@@ -132,8 +140,17 @@ void on_idle() {
   long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
   float angle = elapsed_time * rotations_per_second * 360.0 / 1000; // deg
 
+  up_down += speed;
   // Rotate clock-wise by using negative angle.
   float rotation = -angle;
+
+  // Initialize center pillar matrix.
+  set_identity_matrix(center_pillar.translation_matrix);
+  multiply_matrix(translate_down, center_pillar.translation_matrix, center_pillar.translation_matrix);
+  multiply_matrix(initial_transform, center_pillar.translation_matrix, center_pillar.translation_matrix);
+
+  // Rotate center pillar.
+  rotate_y(rotation, center_pillar.translation_matrix);
 
   // Initialize base matrix.
   set_identity_matrix(base.translation_matrix);
@@ -144,15 +161,15 @@ void on_idle() {
   rotate_y(rotation, base.translation_matrix);
 
   // Initialize roof matrix.
-  set_identity_matrix(top.translation_matrix);
-  multiply_matrix(translate_down, top.translation_matrix, top.translation_matrix);
-  multiply_matrix(initial_transform, top.translation_matrix, top.translation_matrix);
+  set_identity_matrix(roof.translation_matrix);
+  multiply_matrix(translate_down, roof.translation_matrix, roof.translation_matrix);
+  multiply_matrix(initial_transform, roof.translation_matrix, roof.translation_matrix);
 
   // Rotate roof.
-  rotate_y(rotation, top.translation_matrix);
+  rotate_y(rotation, roof.translation_matrix);
 
   // Move roof up above the pillars.
-  translate_y(PILLAR_HEIGHT + BASE_HEIGHT, top.translation_matrix);
+  translate_y(PILLAR_HEIGHT + BASE_HEIGHT, roof.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     // Initialize pillar matrix.
@@ -173,6 +190,24 @@ void on_idle() {
     rotate_y(rotation, pillars[i].translation_matrix);
   }
 
+  for(int i=0;i<number_of_sides;i++){
+    // Initialize cube matrix.
+    set_identity_matrix(cubes[i].translation_matrix);
+    multiply_matrix(translate_down, cubes[i].translation_matrix, cubes[i].translation_matrix);
+    multiply_matrix(initial_transform, cubes[i].translation_matrix, cubes[i].translation_matrix);
+
+    // Move cube towards the edge.
+    translate_z(-(BASE_RADIUS / 7 * 6), cubes[i].translation_matrix);
+
+    // Move cube up and down.
+    translate_y((sin(up_down) / 3.2) + BASE_HEIGHT + PILLAR_HEIGHT / 4, cubes[i].translation_matrix);
+
+    // Rotate cube around the center to the corresponding edge.
+    rotate_y(360.0 / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
+
+    // Apply general rotation to cube.
+    rotate_y(rotation, cubes[i].translation_matrix);
+  }
   // Request redrawing of window content.
   glutPostRedisplay();
 }
@@ -207,7 +242,7 @@ void initialize(int window_width, int window_height) {
   set_perspective_matrix(fovy, aspect, nearPlane, farPlane, projection_matrix);
 
   /* Set viewing transform */
-  float camera_disp = -5.0;
+  float camera_disp = -6;
   set_translation(0.0, 0.0, camera_disp, view_matrix);
 
   /* Translate and rotate cube onto tip */
@@ -222,9 +257,28 @@ void initialize(int window_width, int window_height) {
   multiply_matrix(rotation_x, translate_origin, initial_transform);
   multiply_matrix(rotation_z, initial_transform, initial_transform);
 
-  cylinder(number_of_sides, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
+  float top_center_y_offset_roof = 1.0;
 
-  /* Setup vertex, color, and index buffer objects */
+  /* Setup vertex, color, and index buffer objects for ROOF*/
+  cylinder(20, BASE_RADIUS , 0.01, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size),top_center_y_offset_roof);
+  setup_data_buffers(&roof);
+  roof.vertex_shader_file = "vertexshader.vs";
+  roof.fragment_shader_file = "fragmentshader.fs";
+  setup_shader_program(&roof);
+  set_identity_matrix(roof.translation_matrix);
+
+   float top_center_y_offset_pillar = 0.0;
+  /* Setup vertex, color, and index buffer objects for CENTER PILLAR*/
+  cylinder(15, CENTER_PILLAR_RADIUS, BASE_HEIGHT + PILLAR_HEIGHT, &(center_pillar.vertices), &(center_pillar.vertices_size), &(center_pillar.indices), &(center_pillar.indices_size),top_center_y_offset_pillar);
+  setup_data_buffers(&center_pillar);
+  center_pillar.vertex_shader_file = "vertexshader.vs";
+  center_pillar.fragment_shader_file = "fragmentshader.fs";
+  setup_shader_program(&center_pillar);
+  set_identity_matrix(center_pillar.translation_matrix);
+
+  float top_center_y_offset_base = 0.0;
+   /* Setup vertex, color, and index buffer objects for BASE*/
+  cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size),top_center_y_offset_base);
   setup_data_buffers(&base);
   base.vertex_shader_file = "vertexshader.vs";
   base.fragment_shader_file = "fragmentshader.fs";
@@ -232,19 +286,27 @@ void initialize(int window_width, int window_height) {
   set_identity_matrix(base.translation_matrix);
 
 
-  cylinder(number_of_sides, BASE_RADIUS, BASE_HEIGHT, &(top.vertices), &(top.vertices_size), &(top.indices), &(top.indices_size));
-  setup_data_buffers(&top);
-  top.vertex_shader_file = "vertexshader.vs";
-  top.fragment_shader_file = "fragmentshader.fs";
-  setup_shader_program(&top);
-  set_identity_matrix(top.translation_matrix);
+  float top_center_y_offset_cubes = 0.0;
 
+  for (int i = 0; i < number_of_sides; i++) {
+    struct object_data cube;
+
+    cylinder(4, 0.3, BASE_HEIGHT*2, &(cube.vertices), &(cube.vertices_size), &(cube.indices), &(cube.indices_size),top_center_y_offset_cubes);
+    /* Setup vertex, color, and index buffer objects for cubes*/
+    setup_data_buffers(&cube);
+    cube.vertex_shader_file = "vertexshader.vs";
+    cube.fragment_shader_file = "fragmentshader.fs";
+    setup_shader_program(&cube);
+    set_identity_matrix(cube.translation_matrix);
+    cubes[i] = cube;
+  }
+
+  float top_center_y_offset_pillars = 0.0;
 
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data pillar;
 
-    cylinder(7, .1, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size));
-
+    cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size),top_center_y_offset_pillars);
     /* Setup vertex, color, and index buffer objects */
     setup_data_buffers(&pillar);
     pillar.vertex_shader_file = "vertexshader.vs";
