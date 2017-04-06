@@ -36,8 +36,8 @@
 
 /*----------------------------------------------------------------*/
 
-float projection_matrix[16]; /* Perspective projection matrix */
-float view_matrix[16]; /* Camera view matrix */
+float projection_matrix[16];
+float view_matrix[16];
 
 enum { number_of_sides = 8 };
 struct object_data base;
@@ -91,7 +91,7 @@ void setup_data_buffers(struct object_data* object) {
 *******************************************************************/
 
 void setup_shader_program(struct object_data* object) {
-  /* Put linked shader program into drawing pipeline */
+  // Put linked shader program into drawing pipeline.
   object->shader_program = create_shader_program(object->vertex_shader_file, object->fragment_shader_file);
 }
 
@@ -100,7 +100,7 @@ void display_object(struct object_data* object) {
 }
 
 void display() {
-  /* Clear window; color specified in 'initialize()' */
+  // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   display_object(&base);
@@ -112,7 +112,7 @@ void display() {
     display_object(&(cubes[i]));
   }
 
-  /* Swap between front and back buffer */
+  // Swap between front and back buffer.
   glutSwapBuffers();
 }
 
@@ -211,22 +211,20 @@ void initialize(int window_width, int window_height) {
     glClearColor(R(220), G(220), B(220), 0.0);
   }
 
-  /* Enable depth testing */
+  // Enable depth testing.
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
-  /* Initialize matrices */
+  // Initialize projection matrix.
   set_identity_matrix(projection_matrix);
-  set_identity_matrix(view_matrix);
-
-  /* Set projection transform */
   float fovy = 45.0;
   float aspect = (float)window_width / (float)window_height;
   float nearPlane = 1.0;
   float farPlane = 50.0;
   set_perspective_matrix(fovy, aspect, nearPlane, farPlane, projection_matrix);
 
-  /* Set viewing transform */
+  // Initialize view matrix.
+  set_identity_matrix(view_matrix);
   float camera_distance = -7.0;
   set_translation(0.0, -1, camera_distance, view_matrix);
 
