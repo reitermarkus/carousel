@@ -25,3 +25,6 @@ clean:
 
 run: $(PROGRAM)
 	./$(PROGRAM)
+
+test: all
+	valgrind ./$(PROGRAM) --leak-check=full -v
