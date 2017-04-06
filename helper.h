@@ -14,4 +14,6 @@
 #define G(g) ((g) / 255.0)
 #define B(b) ((b) / 255.0)
 
+#define RGB_RAND (rand() % 256)
+
 #endif // __HELPER_H__
