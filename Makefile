@@ -1,6 +1,6 @@
 PROGRAM = carousel
 
-OBJ = $(PROGRAM).o load_shader.o matrix.o cylinder.o polygon.o draw.o create_shader_program.o
+OBJ = $(PROGRAM).o load_shader.o matrix.o cylinder.o cube.o polygon.o draw.o create_shader_program.o 
 CFLAGS = -g -Wall -Wextra -std=c11
 
 LDLIBS=-lm
