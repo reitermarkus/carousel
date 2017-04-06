@@ -93,9 +93,12 @@ void setup_data_buffers(struct object_data* object) {
 *
 *******************************************************************/
 
-void display_object(struct object_data* object) {
+void setup_shader_program(struct object_data* object) {
   /* Put linked shader program into drawing pipeline */
   object->shader_program = create_shader_program(object->vertex_shader_file, object->fragment_shader_file);
+}
+
+void display_object(struct object_data* object) {
   draw(object, projection_matrix, view_matrix);
 }
 
@@ -225,6 +228,7 @@ void initialize(int window_width, int window_height) {
   setup_data_buffers(&base);
   base.vertex_shader_file = "vertexshader.vs";
   base.fragment_shader_file = "fragmentshader.fs";
+  setup_shader_program(&base);
   set_identity_matrix(base.translation_matrix);
 
 
@@ -232,6 +236,7 @@ void initialize(int window_width, int window_height) {
   setup_data_buffers(&top);
   top.vertex_shader_file = "vertexshader.vs";
   top.fragment_shader_file = "fragmentshader.fs";
+  setup_shader_program(&top);
   set_identity_matrix(top.translation_matrix);
 
 
@@ -244,6 +249,7 @@ void initialize(int window_width, int window_height) {
     setup_data_buffers(&pillar);
     pillar.vertex_shader_file = "vertexshader.vs";
     pillar.fragment_shader_file = "fragmentshader.fs";
+    setup_shader_program(&pillar);
     set_identity_matrix(pillar.translation_matrix);
     pillars[i] = pillar;
   }
