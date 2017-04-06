@@ -202,8 +202,14 @@ void on_idle() {
 *******************************************************************/
 
 void initialize(int window_width, int window_height) {
-  /* Set background (clear) color to dark blue */
-  glClearColor(R(220), G(220), B(220), 0.0);
+  // Set background color based on system time.
+  time_t current_time = time(NULL);
+  int hour = localtime(&current_time)->tm_hour;
+  if (hour >= 20 || hour <= 6) {
+    glClearColor(R(0), G(25), B(50), 0.0);
+  } else {
+    glClearColor(R(220), G(220), B(220), 0.0);
+  }
 
   /* Enable depth testing */
   glEnable(GL_DEPTH_TEST);
