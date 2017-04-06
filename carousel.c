@@ -46,7 +46,7 @@ float rotation_x[16];
 float rotation_z[16];
 float initial_transform[16];
 
-enum { number_of_sides = 7 };
+enum { number_of_sides = 8 };
 struct object_data base;
 struct object_data center_pillar;
 struct object_data roof;
@@ -190,7 +190,7 @@ void on_idle() {
     rotate_y(rotation, pillars[i].translation_matrix);
   }
 
-  for(int i=0;i<number_of_sides;i++){
+  for(int i=0; i < number_of_sides; i++){
     // Initialize cube matrix.
     set_identity_matrix(cubes[i].translation_matrix);
     multiply_matrix(translate_down, cubes[i].translation_matrix, cubes[i].translation_matrix);
@@ -200,7 +200,7 @@ void on_idle() {
     translate_z(-(BASE_RADIUS / 7 * 6), cubes[i].translation_matrix);
 
     // Move cube up and down.
-    translate_y((sin(up_down) / 3.2) + BASE_HEIGHT + PILLAR_HEIGHT / 4, cubes[i].translation_matrix);
+    translate_y((sin(up_down + i * M_PI) / 3.2) + BASE_HEIGHT + PILLAR_HEIGHT / 4, cubes[i].translation_matrix);
 
     // Rotate cube around the center to the corresponding edge.
     rotate_y(360.0 / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
