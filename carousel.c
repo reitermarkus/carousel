@@ -39,22 +39,12 @@
 float projection_matrix[16]; /* Perspective projection matrix */
 float view_matrix[16]; /* Camera view matrix */
 
-/* Transformation matrices for initial position */
-float translate_origin[16];
-float translate_down[16];
-float rotation_x[16];
-float rotation_z[16];
-float initial_transform[16];
-
 enum { number_of_sides = 8 };
 struct object_data base;
 struct object_data center_pillar;
 struct object_data roof;
 struct object_data pillars[number_of_sides];
 struct object_data cubes[number_of_sides];
-
-static float up_down = 1.5;
-static float speed = 0.075;
 
 const float PILLAR_HEIGHT = 1.5;
 const float BASE_HEIGHT = .15;
@@ -140,30 +130,23 @@ void on_idle() {
   long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
   float angle = elapsed_time * rotations_per_second * 360.0 / 1000; // deg
 
-  up_down += speed;
   // Rotate clock-wise by using negative angle.
   float rotation = -angle;
 
   // Initialize center pillar matrix.
   set_identity_matrix(center_pillar.translation_matrix);
-  multiply_matrix(translate_down, center_pillar.translation_matrix, center_pillar.translation_matrix);
-  multiply_matrix(initial_transform, center_pillar.translation_matrix, center_pillar.translation_matrix);
 
   // Rotate center pillar.
   rotate_y(rotation, center_pillar.translation_matrix);
 
   // Initialize base matrix.
   set_identity_matrix(base.translation_matrix);
-  multiply_matrix(translate_down, base.translation_matrix, base.translation_matrix);
-  multiply_matrix(initial_transform, base.translation_matrix, base.translation_matrix);
 
   // Rotate base.
   rotate_y(rotation, base.translation_matrix);
 
   // Initialize roof matrix.
   set_identity_matrix(roof.translation_matrix);
-  multiply_matrix(translate_down, roof.translation_matrix, roof.translation_matrix);
-  multiply_matrix(initial_transform, roof.translation_matrix, roof.translation_matrix);
 
   // Rotate roof.
   rotate_y(rotation, roof.translation_matrix);
@@ -174,8 +157,6 @@ void on_idle() {
   for (int i = 0; i < number_of_sides; i++) {
     // Initialize pillar matrix.
     set_identity_matrix(pillars[i].translation_matrix);
-    multiply_matrix(translate_down, pillars[i].translation_matrix, pillars[i].translation_matrix);
-    multiply_matrix(initial_transform, pillars[i].translation_matrix, pillars[i].translation_matrix);
 
     // Move pillar onto the base.
     translate_y(BASE_HEIGHT, pillars[i].translation_matrix);
@@ -193,14 +174,12 @@ void on_idle() {
   for(int i=0; i < number_of_sides; i++){
     // Initialize cube matrix.
     set_identity_matrix(cubes[i].translation_matrix);
-    multiply_matrix(translate_down, cubes[i].translation_matrix, cubes[i].translation_matrix);
-    multiply_matrix(initial_transform, cubes[i].translation_matrix, cubes[i].translation_matrix);
 
     // Move cube towards the edge.
     translate_z(-(BASE_RADIUS / 7 * 6), cubes[i].translation_matrix);
 
     // Move cube up and down.
-    translate_y((sin(up_down + i * M_PI) / 3.2) + BASE_HEIGHT + PILLAR_HEIGHT / 4, cubes[i].translation_matrix);
+    translate_y((sin(rotation / 10.0 + i * M_PI) / 3) + BASE_HEIGHT + PILLAR_HEIGHT / 4, cubes[i].translation_matrix);
 
     // Rotate cube around the center to the corresponding edge.
     rotate_y(360.0 / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
@@ -242,20 +221,8 @@ void initialize(int window_width, int window_height) {
   set_perspective_matrix(fovy, aspect, nearPlane, farPlane, projection_matrix);
 
   /* Set viewing transform */
-  float camera_disp = -6;
-  set_translation(0.0, 0.0, camera_disp, view_matrix);
-
-  /* Translate and rotate cube onto tip */
-  set_translation(0, 0, 0, translate_origin);
-  set_rotation_x(0, rotation_x);
-  set_rotation_z(0, rotation_z);
-
-  /* Translate down */
-  set_translation(0, -sqrtf(sqrtf(2.0)), 0, translate_down);
-
-  /* Initial transformation matrix */
-  multiply_matrix(rotation_x, translate_origin, initial_transform);
-  multiply_matrix(rotation_z, initial_transform, initial_transform);
+  float camera_distance = -7.0;
+  set_translation(0.0, -1, camera_distance, view_matrix);
 
   float top_center_y_offset_roof = 1.0;
 
