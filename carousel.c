@@ -37,20 +37,20 @@
 
 /*----------------------------------------------------------------*/
 
-float projection_matrix[16];
-float view_matrix[16];
+static float projection_matrix[16];
+static float view_matrix[16];
 
 enum { number_of_sides = 8 };
-struct object_data base;
-struct object_data center_pillar;
-struct object_data roof;
-struct object_data pillars[number_of_sides];
-struct object_data cubes[number_of_sides];
+static struct object_data base;
+static struct object_data center_pillar;
+static struct object_data roof;
+static struct object_data pillars[number_of_sides];
+static struct object_data cubes[number_of_sides];
 
-const float PILLAR_HEIGHT = 1.5;
-const float BASE_HEIGHT = .15;
-const float BASE_RADIUS = 2.5;
-const float CENTER_PILLAR_RADIUS = 0.5;
+static const float PILLAR_HEIGHT = 1.5;
+static const float BASE_HEIGHT = .15;
+static const float BASE_RADIUS = 2.5;
+static const float CENTER_PILLAR_RADIUS = 0.5;
 
 /*----------------------------------------------------------------*/
 
