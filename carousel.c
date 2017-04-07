@@ -180,7 +180,7 @@ void on_idle() {
     translate_z(-(BASE_RADIUS / 7 * 6), cubes[i].translation_matrix);
 
     // Move cube up and down.
-    translate_y((sin(rotation / 10.0 + i * M_PI) / 3) + BASE_HEIGHT + PILLAR_HEIGHT / 4, cubes[i].translation_matrix);
+    translate_y((sin(rotation / 10.0 + i * M_PI) / 5) + PILLAR_HEIGHT / 2.175, cubes[i].translation_matrix);
 
     // Rotate cube around the center to the corresponding edge.
     rotate_y(360.0 / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
