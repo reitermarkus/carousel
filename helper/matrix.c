@@ -19,8 +19,8 @@
 #include <string.h>
 #include <math.h>
 
-#include "helper.h"
-#include "matrix.h"
+#include "helper/macros.h"
+#include "helper/matrix.h"
 
 
 /******************************************************************

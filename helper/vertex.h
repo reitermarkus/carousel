@@ -1,7 +1,7 @@
 #ifndef __H_VERTEX__
 #define __H_VERTEX__
 
-#include "opengl.h"
+#include "helper/shared_headers.h"
 
 #define SET_VERTEX_COLOR(vertex, r_val, g_val, b_val) do { \
   (vertex).color.r = (r_val);                              \

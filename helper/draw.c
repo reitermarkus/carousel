@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "opengl.h"
-#include "vertex.h"
+#include "helper/shared_headers.h"
+#include "helper/vertex.h"
 
 static void set_shader_matrix(GLuint shader_program, const char* matrix_name, float* matrix) {
   GLint uniform_location = glGetUniformLocation(shader_program, matrix_name);

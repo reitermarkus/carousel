@@ -1,6 +1,6 @@
 /******************************************************************
 *
-* load_shader.h
+* helper/load_shader.h
 *
 * Description: Helper routine for loading shader source code.
 *

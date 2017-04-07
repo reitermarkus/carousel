@@ -1,6 +1,6 @@
 /******************************************************************
 *
-* load_shader.c
+* helper/load_shader.c
 *
 * Description: Helper routine for loading shader source code.
 *
@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "helper.h"
+#include "helper/macros.h"
 
 /*----------------------------------------------------------------*/
 

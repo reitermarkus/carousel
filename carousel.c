@@ -22,17 +22,17 @@
 #include <math.h>
 #include <time.h>
 
-#include "opengl.h"
+#include "helper/shared_headers.h"
 
 /* Local includes */
-#include "matrix.h"
-#include "helper.h"
-#include "create_shader_program.h"
-#include "draw.h"
-#include "cylinder.h"
-#include "cube.h"
-#include "polygon.h"
-#include "vertex.h"
+#include "helper/matrix.h"
+#include "helper/macros.h"
+#include "helper/create_shader_program.h"
+#include "helper/draw.h"
+#include "shape/cylinder.h"
+#include "shape/cube.h"
+#include "shape/polygon.h"
+#include "helper/vertex.h"
 
 
 /*----------------------------------------------------------------*/
@@ -225,8 +225,8 @@ void initialize() {
   /* Setup vertex, color, and index buffer objects for ROOF*/
   cylinder(20, BASE_RADIUS , 0.01, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size), ROOF_HEIGHT);
   setup_data_buffers(&roof);
-  roof.vertex_shader_file = "vertexshader.vs";
-  roof.fragment_shader_file = "fragmentshader.fs";
+  roof.vertex_shader_file = "shader/vertexshader.vs";
+  roof.fragment_shader_file = "shader/fragmentshader.fs";
   setup_shader_program(&roof);
   set_identity_matrix(roof.translation_matrix);
 
@@ -234,8 +234,8 @@ void initialize() {
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR*/
   cylinder(15, CENTER_PILLAR_RADIUS, BASE_HEIGHT + PILLAR_HEIGHT, &(center_pillar.vertices), &(center_pillar.vertices_size), &(center_pillar.indices), &(center_pillar.indices_size),top_center_y_offset_pillar);
   setup_data_buffers(&center_pillar);
-  center_pillar.vertex_shader_file = "vertexshader.vs";
-  center_pillar.fragment_shader_file = "fragmentshader.fs";
+  center_pillar.vertex_shader_file = "shader/vertexshader.vs";
+  center_pillar.fragment_shader_file = "shader/fragmentshader.fs";
   setup_shader_program(&center_pillar);
   set_identity_matrix(center_pillar.translation_matrix);
 
@@ -243,8 +243,8 @@ void initialize() {
    /* Setup vertex, color, and index buffer objects for BASE*/
   cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size),top_center_y_offset_base);
   setup_data_buffers(&base);
-  base.vertex_shader_file = "vertexshader.vs";
-  base.fragment_shader_file = "fragmentshader.fs";
+  base.vertex_shader_file = "shader/vertexshader.vs";
+  base.fragment_shader_file = "shader/fragmentshader.fs";
   setup_shader_program(&base);
   set_identity_matrix(base.translation_matrix);
 
@@ -254,8 +254,8 @@ void initialize() {
     cube(0.15, &(cube_object.vertices), &(cube_object.vertices_size), &(cube_object.indices), &(cube_object.indices_size));
     /* Setup vertex, color, and index buffer objects for cubes*/
     setup_data_buffers(&cube_object);
-    cube_object.vertex_shader_file = "vertexshader.vs";
-    cube_object.fragment_shader_file = "fragmentshader.fs";
+    cube_object.vertex_shader_file = "shader/vertexshader.vs";
+    cube_object.fragment_shader_file = "shader/fragmentshader.fs";
     setup_shader_program(&cube_object);
     set_identity_matrix(cube_object.translation_matrix);
     cubes[i] = cube_object;
@@ -269,8 +269,8 @@ void initialize() {
     cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size),top_center_y_offset_pillars);
     /* Setup vertex, color, and index buffer objects */
     setup_data_buffers(&pillar);
-    pillar.vertex_shader_file = "vertexshader.vs";
-    pillar.fragment_shader_file = "fragmentshader.fs";
+    pillar.vertex_shader_file = "shader/vertexshader.vs";
+    pillar.fragment_shader_file = "shader/fragmentshader.fs";
     setup_shader_program(&pillar);
     set_identity_matrix(pillar.translation_matrix);
     pillars[i] = pillar;

@@ -1,13 +1,13 @@
 PROGRAM = carousel
 
-OBJ = $(PROGRAM).o load_shader.o matrix.o cylinder.o cube.o polygon.o draw.o create_shader_program.o 
-CFLAGS = -g -Wall -Wextra -std=c11
+OBJ = $(PROGRAM).o helper/load_shader.o helper/matrix.o shape/cylinder.o shape/cube.o shape/polygon.o helper/draw.o helper/create_shader_program.o
+CFLAGS = -g -O2 -Wall -Wextra -std=c11 -I$(CURDIR)
 
-LDLIBS=-lm
+LDLIBS = -lm
 
-ifneq ($(OS),Windows_NT)
+ifneq ($(OS), Windows_NT)
 	UNAME_S = $(shell uname -s)
-	ifeq ($(UNAME_S),Darwin)
+	ifeq ($(UNAME_S), Darwin)
 		CFLAGS += -Wno-deprecated-declarations
 		LDLIBS += -framework GLUT -framework OpenGL
 	else
@@ -15,16 +15,21 @@ ifneq ($(OS),Windows_NT)
 	endif
 endif
 
-.PHONY: all clean run
-
 $(PROGRAM): $(OBJ)
-	 $(CC) -o $@ $^ -O2 $(CFLAGS) $(LDLIBS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
 
+.PHONY: all
+all: $(PROGRAM)
+
+.PHONY: clean
 clean:
-	rm -f *.o $(PROGRAM)
+	$(RM) $(OBJ)
+	$(RM) $(PROGRAM)
 
+.PHONY: run
 run: $(PROGRAM)
 	./$(PROGRAM)
 
+.PHONY: test
 test: $(PROGRAM)
 	valgrind ./$(PROGRAM) --leak-check=full -v

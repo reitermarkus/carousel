@@ -4,9 +4,9 @@
 #include <math.h>
 #include <time.h>
 
-#include "opengl.h"
-#include "helper.h"
-#include "vertex.h"
+#include "helper/shared_headers.h"
+#include "helper/macros.h"
+#include "helper/vertex.h"
 
 void cylinder(int edges, double radius, double height, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size, float top_center_y_offset) {
   float step = 2.0 * M_PI / (float)edges; // circumfence divided by parts

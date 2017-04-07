@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "opengl.h"
-#include "helper.h"
+#include "helper/shared_headers.h"
+#include "helper/macros.h"
 #include "load_shader.h"
 
 /******************************************************************

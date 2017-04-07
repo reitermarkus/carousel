@@ -4,9 +4,9 @@
 #include <math.h>
 #include <time.h>
 
-#include "opengl.h"
-#include "helper.h"
-#include "vertex.h"
+#include "helper/shared_headers.h"
+#include "helper/macros.h"
+#include "helper/vertex.h"
 
 void cube(double h, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
 
