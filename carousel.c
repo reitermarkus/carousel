@@ -30,6 +30,7 @@
 #include "create_shader_program.h"
 #include "draw.h"
 #include "cylinder.h"
+#include "cube.h"
 #include "polygon.h"
 #include "vertex.h"
 
@@ -248,20 +249,17 @@ void initialize() {
   setup_shader_program(&base);
   set_identity_matrix(base.translation_matrix);
 
-
-  float top_center_y_offset_cubes = 0.0;
-
   for (int i = 0; i < number_of_sides; i++) {
-    struct object_data cube;
+    struct object_data cube_object;
 
-    cylinder(4, 0.3, BASE_HEIGHT*2, &(cube.vertices), &(cube.vertices_size), &(cube.indices), &(cube.indices_size),top_center_y_offset_cubes);
+    cube(0.15, &(cube_object.vertices), &(cube_object.vertices_size), &(cube_object.indices), &(cube_object.indices_size));
     /* Setup vertex, color, and index buffer objects for cubes*/
-    setup_data_buffers(&cube);
-    cube.vertex_shader_file = "vertexshader.vs";
-    cube.fragment_shader_file = "fragmentshader.fs";
-    setup_shader_program(&cube);
-    set_identity_matrix(cube.translation_matrix);
-    cubes[i] = cube;
+    setup_data_buffers(&cube_object);
+    cube_object.vertex_shader_file = "vertexshader.vs";
+    cube_object.fragment_shader_file = "fragmentshader.fs";
+    setup_shader_program(&cube_object);
+    set_identity_matrix(cube_object.translation_matrix);
+    cubes[i] = cube_object;
   }
 
   float top_center_y_offset_pillars = 0.0;
