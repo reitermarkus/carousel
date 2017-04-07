@@ -291,6 +291,32 @@ void resize_window(int width, int height) {
   matrix_perspective(fovy, aspect, near_plane, far_plane, projection_matrix);
 }
 
+
+
+void keyboard_event(unsigned char key, int x, int y) {
+  printf("Key '%c' pressed.\n", key);
+}
+
+
+void mouse_event(int button, int state, int x, int y) {
+  if(state == GLUT_DOWN) {
+    switch(button) {
+      case GLUT_LEFT_BUTTON:
+        printf("Left mouse button pressed.\n");
+        break;
+
+      case GLUT_MIDDLE_BUTTON:
+        printf("Middle mouse button pressed.\n");
+        break;
+
+      case GLUT_RIGHT_BUTTON:
+        printf("Right mouse button pressed.\n");
+        break;
+    }
+  }
+}
+
+
 /******************************************************************
 *
 * main
@@ -341,6 +367,9 @@ int main(int argc, char** argv) {
   glutIdleFunc(on_idle);
   glutReshapeFunc(resize_window);
   glutDisplayFunc(display);
+
+  glutKeyboardFunc(keyboard_event);
+  glutMouseFunc(mouse_event);
 
   // Enter GLUT event processing loop.
   glutMainLoop();
