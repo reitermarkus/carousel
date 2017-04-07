@@ -50,6 +50,7 @@ static struct object_data cubes[number_of_sides];
 static const float PILLAR_HEIGHT = 1.5;
 static const float BASE_HEIGHT = .15;
 static const float BASE_RADIUS = 2.5;
+static const float ROOF_HEIGHT = 1.0;
 static const float CENTER_PILLAR_RADIUS = 0.5;
 
 /*----------------------------------------------------------------*/
@@ -221,10 +222,8 @@ void initialize() {
   float camera_distance = -7.0;
   set_translation(0.0, -1, camera_distance, view_matrix);
 
-  float top_center_y_offset_roof = 1.0;
-
   /* Setup vertex, color, and index buffer objects for ROOF*/
-  cylinder(20, BASE_RADIUS , 0.01, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size),top_center_y_offset_roof);
+  cylinder(20, BASE_RADIUS , 0.01, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size), ROOF_HEIGHT);
   setup_data_buffers(&roof);
   roof.vertex_shader_file = "vertexshader.vs";
   roof.fragment_shader_file = "fragmentshader.fs";
