@@ -201,7 +201,7 @@ void on_idle() {
 *
 *******************************************************************/
 
-void initialize(int window_width, int window_height) {
+void initialize() {
   // Set background color based on system time.
   time_t current_time = time(NULL);
   int hour = localtime(&current_time)->tm_hour;
@@ -214,14 +214,6 @@ void initialize(int window_width, int window_height) {
   // Enable depth testing.
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
-
-  // Initialize projection matrix.
-  set_identity_matrix(projection_matrix);
-  float fovy = 45.0;
-  float aspect = (float)window_width / (float)window_height;
-  float nearPlane = 1.0;
-  float farPlane = 50.0;
-  set_perspective_matrix(fovy, aspect, nearPlane, farPlane, projection_matrix);
 
   // Initialize view matrix.
   set_identity_matrix(view_matrix);
@@ -289,6 +281,18 @@ void initialize(int window_width, int window_height) {
 }
 
 
+void resize_window(int width, int height) {
+  // Initialize projection matrix.
+  glViewport(0, 0, width, height);
+
+  set_identity_matrix(projection_matrix);
+  float fovy = 45.0;
+  float aspect = (float)width / (float)height;
+  float nearPlane = 1.0;
+  float farPlane = 50.0;
+  set_perspective_matrix(fovy, aspect, nearPlane, farPlane, projection_matrix);
+}
+
 /******************************************************************
 *
 * main
@@ -332,13 +336,15 @@ int main(int argc, char** argv) {
   }
   #endif
 
-  /* Setup scene and rendering parameters */
-  initialize(window_width, window_height);
+  // Setup scene and rendering parameters.
+  initialize();
 
-  /* Specify callback functions;enter GLUT event processing loop,
-   * handing control over to GLUT */
+  // Specify GLUT callback functions.
   glutIdleFunc(on_idle);
+  glutReshapeFunc(resize_window);
   glutDisplayFunc(display);
+
+  // Enter GLUT event processing loop.
   glutMainLoop();
 
   return EXIT_SUCCESS;
