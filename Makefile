@@ -1,6 +1,6 @@
 PROGRAM = carousel
 
-OBJ = $(PROGRAM).o helper/load_shader.o helper/matrix.o shape/cylinder.o shape/cube.o shape/polygon.o helper/draw.o helper/create_shader_program.o
+OBJ = $(PROGRAM).o helper/load_file.o helper/matrix.o shape/cylinder.o shape/cube.o shape/polygon.o helper/draw.o helper/create_shader_program.o
 CFLAGS = -g -O2 -Wall -Wextra -std=c11 -I$(CURDIR)
 
 LDLIBS = -lm

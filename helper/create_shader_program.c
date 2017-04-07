@@ -3,7 +3,7 @@
 
 #include "helper/shared_headers.h"
 #include "helper/macros.h"
-#include "load_shader.h"
+#include "load_file.h"
 
 /******************************************************************
 *
@@ -63,8 +63,8 @@ GLuint create_shader_program(const char* vertexshader, const char* fragmentshade
   }
 
   /* Load shader code from file */
-  const char* vertex_shader_string = load_shader(vertexshader);
-  const char* fragment_shader_string = load_shader(fragmentshader);
+  const char* vertex_shader_string = load_file(vertexshader);
+  const char* fragment_shader_string = load_file(fragmentshader);
 
   /* Separately add vertex and fragment shader to program */
   add_shader(shader_program, vertex_shader_string, GL_VERTEX_SHADER);
