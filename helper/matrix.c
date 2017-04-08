@@ -5,7 +5,7 @@
 
 #include "matrix.h"
 
-void print_matrix(float* matrix) {
+void matrix_print(float* matrix) {
   printf("┌──────────┬──────────┬──────────┬──────────┐\n");
 
   for (int i = 0; i < 16; i += 4) {
@@ -19,7 +19,7 @@ void print_matrix(float* matrix) {
   printf("└──────────┴──────────┴──────────┴──────────┘\n");
 }
 
-void set_identity_matrix(float* matrix) {
+void matrix_identity(float* matrix) {
   float identity[16] = {
     1.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0,
@@ -30,7 +30,7 @@ void set_identity_matrix(float* matrix) {
   memcpy(matrix, identity, 16 * sizeof(float));
 }
 
-void set_rotation_x(float angle, float* matrix) {
+void matrix_rotation_x(float angle, float* matrix) {
   float temp[16] = {
     1.0,        0.0,         0.0, 0.0,
     0.0, cos(angle), -sin(angle), 0.0,
@@ -41,13 +41,13 @@ void set_rotation_x(float angle, float* matrix) {
   memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void rotate_x(float angle, float* matrix) {
+void matrix_rotate_x(float angle, float* matrix) {
   float rotation[16];
-  set_rotation_x(angle, rotation);
-  multiply_matrix(rotation, matrix, matrix);
+  matrix_rotation_x(angle, rotation);
+  matrix_multiply(rotation, matrix, matrix);
 }
 
-void set_rotation_y(float angle, float* matrix) {
+void matrix_rotation_y(float angle, float* matrix) {
   float temp[16] = {
      cos(angle), 0.0, sin(angle), 0.0,
             0.0, 1.0,        0.0, 0.0,
@@ -58,13 +58,13 @@ void set_rotation_y(float angle, float* matrix) {
   memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void rotate_y(float angle, float* matrix) {
+void matrix_rotate_y(float angle, float* matrix) {
   float rotation[16];
-  set_rotation_y(angle, rotation);
-  multiply_matrix(rotation, matrix, matrix);
+  matrix_rotation_y(angle, rotation);
+  matrix_multiply(rotation, matrix, matrix);
 }
 
-void set_rotation_z(float angle, float* matrix) {
+void matrix_rotation_z(float angle, float* matrix) {
   float temp[16] = {
     cos(angle), -sin(angle), 0.0, 0.0,
     sin(angle),  cos(angle), 0.0, 0.0,
@@ -75,13 +75,13 @@ void set_rotation_z(float angle, float* matrix) {
   memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void rotate_z(float angle, float* matrix) {
+void matrix_rotate_z(float angle, float* matrix) {
   float rotation[16];
-  set_rotation_z(angle, rotation);
-  multiply_matrix(rotation, matrix, matrix);
+  matrix_rotation_z(angle, rotation);
+  matrix_multiply(rotation, matrix, matrix);
 }
 
-void set_translation(float x, float y, float z, float* matrix) {
+void matrix_translation(float x, float y, float z, float* matrix) {
   float temp[16] = {
     1.0, 0.0, 0.0,   x,
     0.0, 1.0, 0.0,   y,
@@ -92,25 +92,25 @@ void set_translation(float x, float y, float z, float* matrix) {
   memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void translate_x(float x, float* matrix) {
+void matrix_translate_x(float x, float* matrix) {
   float temp[16];
-  set_translation(x, 0, 0, temp);
-  multiply_matrix(temp, matrix, matrix);
+  matrix_translation(x, 0, 0, temp);
+  matrix_multiply(temp, matrix, matrix);
 }
 
-void translate_y(float y, float* matrix) {
+void matrix_translate_y(float y, float* matrix) {
   float temp[16];
-  set_translation(0, y, 0, temp);
-  multiply_matrix(temp, matrix, matrix);
+  matrix_translation(0, y, 0, temp);
+  matrix_multiply(temp, matrix, matrix);
 }
 
-void translate_z(float z, float* matrix) {
+void matrix_translate_z(float z, float* matrix) {
   float temp[16];
-  set_translation(0, 0, z, temp);
-  multiply_matrix(temp, matrix, matrix);
+  matrix_translation(0, 0, z, temp);
+  matrix_multiply(temp, matrix, matrix);
 }
 
-void multiply_matrix(float* m1, float* m2, float* matrix) {
+void matrix_multiply(float* m1, float* m2, float* matrix) {
   float temp[16];
 
   for (int i = 0; i < 16; i++) {
@@ -140,10 +140,10 @@ void multiply_matrix(float* m1, float* m2, float* matrix) {
   memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void set_perspective_matrix(float fov, float aspect, float nearPlane, float farPlane, float* matrix) {
+void matrix_perspective(float fov, float aspect, float near_plane, float far_plane, float* matrix) {
   float f = 1.0 / tan(fov / 2.0);
-  float c1 = -(farPlane + nearPlane) / (farPlane - nearPlane);
-  float c2 = -(2.0 * farPlane * nearPlane) / (farPlane - nearPlane);
+  float c1 = -(far_plane + near_plane) / (far_plane - near_plane);
+  float c2 = -(2.0 * far_plane * near_plane) / (far_plane - near_plane);
 
   float temp[16] = {
     f/aspect, 0.0,  0.0, 0.0,

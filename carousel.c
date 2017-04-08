@@ -136,59 +136,59 @@ void on_idle() {
   float rotation = -angle;
 
   // Initialize center pillar matrix.
-  set_identity_matrix(center_pillar.translation_matrix);
+  matrix_identity(center_pillar.translation_matrix);
 
   // Rotate center pillar.
-  rotate_y(rotation, center_pillar.translation_matrix);
+  matrix_rotate_y(rotation, center_pillar.translation_matrix);
 
   // Initialize base matrix.
-  set_identity_matrix(base.translation_matrix);
+  matrix_identity(base.translation_matrix);
 
   // Rotate base.
-  rotate_y(rotation, base.translation_matrix);
+  matrix_rotate_y(rotation, base.translation_matrix);
 
   // Initialize roof matrix.
-  set_identity_matrix(roof.translation_matrix);
+  matrix_identity(roof.translation_matrix);
 
   // Rotate roof.
-  rotate_y(rotation, roof.translation_matrix);
+  matrix_rotate_y(rotation, roof.translation_matrix);
 
   // Move roof up above the pillars.
-  translate_y(PILLAR_HEIGHT + BASE_HEIGHT, roof.translation_matrix);
+  matrix_translate_y(PILLAR_HEIGHT + BASE_HEIGHT, roof.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     // Initialize pillar matrix.
-    set_identity_matrix(pillars[i].translation_matrix);
+    matrix_identity(pillars[i].translation_matrix);
 
     // Move pillar onto the base.
-    translate_y(BASE_HEIGHT, pillars[i].translation_matrix);
+    matrix_translate_y(BASE_HEIGHT, pillars[i].translation_matrix);
 
     // Move pillar towards the edge.
-    translate_z(-(BASE_RADIUS / 7 * 6), pillars[i].translation_matrix);
+    matrix_translate_z(-(BASE_RADIUS / 7 * 6), pillars[i].translation_matrix);
 
     // Rotate pillar around the center to the corresponding edge.
-    rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, pillars[i].translation_matrix);
+    matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, pillars[i].translation_matrix);
 
     // Apply general rotation to pillar.
-    rotate_y(rotation, pillars[i].translation_matrix);
+    matrix_rotate_y(rotation, pillars[i].translation_matrix);
   }
 
   for(int i=0; i < number_of_sides; i++){
     // Initialize cube matrix.
-    set_identity_matrix(cubes[i].translation_matrix);
+    matrix_identity(cubes[i].translation_matrix);
 
     // Move cube towards the edge.
-    translate_z(-(BASE_RADIUS / 7 * 6), cubes[i].translation_matrix);
+    matrix_translate_z(-(BASE_RADIUS / 7 * 6), cubes[i].translation_matrix);
 
     // Move cube up and down.
     float up_down_speed = M_PI;
-    translate_y((sin(rotation * up_down_speed + i * M_PI) / 5) + PILLAR_HEIGHT / 2.175, cubes[i].translation_matrix);
+    matrix_translate_y((sin(rotation * up_down_speed + i * M_PI) / 5) + PILLAR_HEIGHT / 2.175, cubes[i].translation_matrix);
 
     // Rotate cube around the center to the corresponding edge.
-    rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
+    matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
 
     // Apply general rotation to cube.
-    rotate_y(rotation, cubes[i].translation_matrix);
+    matrix_rotate_y(rotation, cubes[i].translation_matrix);
   }
   // Request redrawing of window content.
   glutPostRedisplay();
@@ -219,9 +219,9 @@ void initialize() {
   glDepthFunc(GL_LESS);
 
   // Initialize view matrix.
-  set_identity_matrix(view_matrix);
+  matrix_identity(view_matrix);
   float camera_distance = -7.0;
-  set_translation(0.0, -1, camera_distance, view_matrix);
+  matrix_translation(0.0, -1, camera_distance, view_matrix);
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
   cylinder(20, BASE_RADIUS , 0.01, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size), ROOF_HEIGHT);
@@ -229,7 +229,7 @@ void initialize() {
   roof.vertex_shader_file = "shader/vertexshader.vs";
   roof.fragment_shader_file = "shader/fragmentshader.fs";
   setup_shader_program(&roof);
-  set_identity_matrix(roof.translation_matrix);
+  matrix_identity(roof.translation_matrix);
 
    float top_center_y_offset_pillar = 0.0;
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR*/
@@ -238,7 +238,7 @@ void initialize() {
   center_pillar.vertex_shader_file = "shader/vertexshader.vs";
   center_pillar.fragment_shader_file = "shader/fragmentshader.fs";
   setup_shader_program(&center_pillar);
-  set_identity_matrix(center_pillar.translation_matrix);
+  matrix_identity(center_pillar.translation_matrix);
 
   float top_center_y_offset_base = 0.0;
    /* Setup vertex, color, and index buffer objects for BASE*/
@@ -247,7 +247,7 @@ void initialize() {
   base.vertex_shader_file = "shader/vertexshader.vs";
   base.fragment_shader_file = "shader/fragmentshader.fs";
   setup_shader_program(&base);
-  set_identity_matrix(base.translation_matrix);
+  matrix_identity(base.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data cube_object;
@@ -258,7 +258,7 @@ void initialize() {
     cube_object.vertex_shader_file = "shader/vertexshader.vs";
     cube_object.fragment_shader_file = "shader/fragmentshader.fs";
     setup_shader_program(&cube_object);
-    set_identity_matrix(cube_object.translation_matrix);
+    matrix_identity(cube_object.translation_matrix);
     cubes[i] = cube_object;
   }
 
@@ -273,7 +273,7 @@ void initialize() {
     pillar.vertex_shader_file = "shader/vertexshader.vs";
     pillar.fragment_shader_file = "shader/fragmentshader.fs";
     setup_shader_program(&pillar);
-    set_identity_matrix(pillar.translation_matrix);
+    matrix_identity(pillar.translation_matrix);
     pillars[i] = pillar;
   }
 }
@@ -283,12 +283,12 @@ void resize_window(int width, int height) {
   // Initialize projection matrix.
   glViewport(0, 0, width, height);
 
-  set_identity_matrix(projection_matrix);
+  matrix_identity(projection_matrix);
   float fovy = deg_to_rad(45);
   float aspect = (float)width / (float)height;
-  float nearPlane = 1.0;
-  float farPlane = 50.0;
-  set_perspective_matrix(fovy, aspect, nearPlane, farPlane, projection_matrix);
+  float near_plane = 1.0;
+  float far_plane = 50.0;
+  matrix_perspective(fovy, aspect, near_plane, far_plane, projection_matrix);
 }
 
 /******************************************************************
