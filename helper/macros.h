@@ -1,5 +1,5 @@
-#ifndef __HELPER_H__
-#define __HELPER_H__
+#ifndef __MACROS_H__
+#define __MACROS_H__
 
 #ifndef M_PI
 #define M_PI (3.14159265358979323846264338327950288)
@@ -14,4 +14,4 @@
 
 #define RGB_RAND (rand() % 256)
 
-#endif // __HELPER_H__
+#endif // __MACROS_H__

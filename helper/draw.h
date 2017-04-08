@@ -5,4 +5,4 @@
 
 void draw(struct object_data* object, float* projection_matrix, float* view_matrix);
 
-#endif
+#endif // __DRAW_H__

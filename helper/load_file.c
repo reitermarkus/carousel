@@ -3,7 +3,7 @@
 
 #include "load_file.h"
 
-const char* load_file(const char* file_path) {
+char* load_file(const char* file_path) {
   FILE* fp;
   #ifdef WIN32
   fopen_s(&fp, file_path, "rb");
@@ -32,5 +32,5 @@ const char* load_file(const char* file_path) {
 
   source[length] = '\0';
 
-  return (const char*)(source);
+  return source;
 }

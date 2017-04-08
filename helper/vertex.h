@@ -53,4 +53,4 @@ struct object_data {
   float translation_matrix[16];
 };
 
-#endif
+#endif // __VERTEX_H__
