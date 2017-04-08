@@ -47,7 +47,7 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
 
     // Assign coordinates to the nth vertex of the base polygon.
     SET_VERTEX_POSITION(*vertex, cosf(angle) * radius, 0, sinf(angle) * radius);
-    printf("Angle: %8.2f, Position: (%8.2f, %8.2f, %8.2f)\n", rad_to_deg(angle), (*vertex).position.x, (*vertex).position.y, (*vertex).position.z);
+    // printf("Angle: %8.2f, Position: (%8.2f, %8.2f, %8.2f)\n", rad_to_deg(angle), (*vertex).position.x, (*vertex).position.y, (*vertex).position.z);
 
     // Assign color values to the nth vertex of the base polygon.
     SET_VERTEX_COLOR(*vertex, R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
@@ -71,7 +71,7 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
     (*indices)[j + 0] = 0;
     (*indices)[j + 1] = curr_i_base;
     (*indices)[j + 2] = next_i_base;
-    printf("Connecting %i (origin base) with %i and %i.\n", 0, curr_i_base, next_i_base);
+    // printf("Connecting %i (origin base) with %i and %i.\n", 0, curr_i_base, next_i_base);
 
     unless (height == 0) {
       int k = (i + edges) * 3;
@@ -83,19 +83,19 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
       (*indices)[k + 0] = 0 + edges + 1;
       (*indices)[k + 1] = curr_i_top;
       (*indices)[k + 2] = next_i_top;
-      printf("Connecting %i (origin top) with %i and %i.\n", 0, curr_i_top, next_i_top);
+      // printf("Connecting %i (origin top) with %i and %i.\n", 0, curr_i_top, next_i_top);
 
       // Connect the first triangle of the side panel.
       (*indices)[k * 2 + 0] = curr_i_base;
       (*indices)[k * 2 + 1] = next_i_base;
       (*indices)[k * 2 + 2] = curr_i_top;
-      printf("Connecting %i and %i and %i.\n", curr_i_base, next_i_base, curr_i_top);
+      // printf("Connecting %i and %i and %i.\n", curr_i_base, next_i_base, curr_i_top);
 
       // Connect the second triangle of the side panel.
       (*indices)[k * 2 + 3] = curr_i_top;
       (*indices)[k * 2 + 4] = next_i_top;
       (*indices)[k * 2 + 5] = next_i_base;
-      printf("Connecting %i and %i and %i.\n", curr_i_top, next_i_top, next_i_base);
+      // printf("Connecting %i and %i and %i.\n", curr_i_top, next_i_top, next_i_base);
     }
 
     angle += step;
