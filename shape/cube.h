@@ -1,5 +1,5 @@
-#ifndef __H_CUBE__
-#define __H_CUBE__
+#ifndef __CUBE_H__
+#define __CUBE_H__
 
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"

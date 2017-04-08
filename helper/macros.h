@@ -5,8 +5,6 @@
 #define M_PI (3.14159265358979323846264338327950288)
 #endif
 
-#define unless(...) if (!(__VA_ARGS__))
-
 #define deg_to_rad(degrees) (degrees * M_PI / 180.0)
 #define rad_to_deg(radians) (radians * 180.0 / M_PI)
 

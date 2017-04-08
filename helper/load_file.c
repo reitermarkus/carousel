@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "load_file.h"
+
 const char* load_file(const char* file_path) {
   FILE* fp;
   #ifdef WIN32

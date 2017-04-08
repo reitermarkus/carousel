@@ -1,15 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <time.h>
 
-#include "helper/shared_headers.h"
+#include "cube.h"
+
 #include "helper/macros.h"
-#include "helper/vertex.h"
 
 void cube(double h, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
-
   *vertices_size = 8 * sizeof(struct vertex);
   *vertices = malloc(*vertices_size);
 
@@ -80,5 +76,4 @@ void cube(double h, struct vertex** vertices, long* vertices_size, GLushort** in
   (*indices)[33] = 6;
   (*indices)[34] = 7;
   (*indices)[35] = 3;
-
 }

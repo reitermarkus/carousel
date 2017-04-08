@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
-#include <time.h>
 
-#include "helper/shared_headers.h"
+#include "cylinder.h"
+
 #include "helper/macros.h"
-#include "helper/vertex.h"
 
 void cylinder(int edges, double radius, double height, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size, float top_center_y_offset) {
   float step = 2.0 * M_PI / (float)edges; // circumfence divided by parts
@@ -29,7 +27,7 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
   // Assign color values to the center vertex of the base polygon.
   SET_VERTEX_COLOR(*vertex, R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
 
-  unless (height == 0) {
+  if (height > 0) {
     vertex = (struct vertex*)(*vertices + (edges + 1));
 
     // Assign coordinates to the center vertex of the top polygon.
@@ -52,7 +50,7 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
     // Assign color values to the nth vertex of the base polygon.
     SET_VERTEX_COLOR(*vertex, R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
 
-    unless (height == 0) {
+    if (height > 0) {
       vertex = (struct vertex*)(*vertices + i + 1 + (edges + 1));
 
       // Assign coordinates to the nth vertex of the top polygon.
@@ -73,7 +71,7 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
     (*indices)[j + 2] = next_i_base;
     // printf("Connecting %i (origin base) with %i and %i.\n", 0, curr_i_base, next_i_base);
 
-    unless (height == 0) {
+    if (height > 0) {
       int k = (i + edges) * 3;
       int curr_i_top = curr_i_base + edges + 1;
       int next_i_top = next_i_base + edges + 1;

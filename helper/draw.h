@@ -1,5 +1,5 @@
-#ifndef __H_DRAW__
-#define __H_DRAW__
+#ifndef __DRAW_H__
+#define __DRAW_H__
 
 #include "helper/vertex.h"
 

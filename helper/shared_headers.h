@@ -1,5 +1,5 @@
-#ifndef __H_SHARED_HEADERS__
-#define __H_SHARED_HEADERS__
+#ifndef __SHARED_HEADERS_H__
+#define __SHARED_HEADERS_H__
 
 #if __APPLE__
   #include <TargetConditionals.h>

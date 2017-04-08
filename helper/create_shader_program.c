@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "helper/shared_headers.h"
-#include "helper/macros.h"
-#include "load_file.h"
+#include "create_shader_program.h"
+
+#include "helper/load_file.h"
 
 /******************************************************************
 *
@@ -32,7 +32,7 @@ void add_shader(GLuint shader_program, const char* shader_code, GLenum shader_ty
   glCompileShader(shader_obj);
   glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &status);
 
-  unless (status == GL_TRUE) {
+  if (status != GL_TRUE) {
     glGetShaderInfoLog(shader_obj, 1024, NULL, info_log);
     fprintf(stderr, "Error compiling shader type %d: '%s'\n", shader_type, info_log);
     exit(EXIT_FAILURE);
@@ -89,7 +89,7 @@ GLuint create_shader_program(const char* vertexshader, const char* fragmentshade
   glValidateProgram(shader_program);
   glGetProgramiv(shader_program, GL_VALIDATE_STATUS, &success);
 
-  unless (success) {
+  if (success == 0) {
     glGetProgramInfoLog(shader_program, sizeof(error_log), NULL, error_log);
     fprintf(stderr, "Invalid shader program: '%s'\n", error_log);
     exit(EXIT_FAILURE);

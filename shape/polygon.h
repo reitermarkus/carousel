@@ -1,5 +1,5 @@
-#ifndef __H_POLYGON__
-#define __H_POLYGON__
+#ifndef __POLYGON_H__
+#define __POLYGON_H__
 
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"

@@ -1,5 +1,5 @@
-#ifndef __H_VERTEX__
-#define __H_VERTEX__
+#ifndef __VERTEX_H__
+#define __VERTEX_H__
 
 #include "helper/shared_headers.h"
 

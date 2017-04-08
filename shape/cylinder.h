@@ -1,5 +1,5 @@
-#ifndef __H_CYLINDER__
-#define __H_CYLINDER__
+#ifndef __CYLINDER_H__
+#define __CYLINDER_H__
 
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"
