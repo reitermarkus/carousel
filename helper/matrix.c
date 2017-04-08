@@ -1,19 +1,3 @@
-/******************************************************************
-*
-* matrix.c
-*
-* Description: Helper routine for matrix computations.
-*
-*
-* Computer Graphics Proseminar SS 2017
-*
-* Interactive Graphics and Simulation Group
-* Institute of Computer Science
-* University of Innsbruck
-*
-*******************************************************************/
-
-/* Standard includes */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,13 +5,6 @@
 
 #include "helper/macros.h"
 #include "helper/matrix.h"
-
-
-/******************************************************************
-*
-* print_matrix
-*
-*******************************************************************/
 
 void print_matrix(float* matrix) {
   printf("┌──────────┬──────────┬──────────┬──────────┐\n");
@@ -43,13 +20,6 @@ void print_matrix(float* matrix) {
   printf("└──────────┴──────────┴──────────┴──────────┘\n");
 }
 
-
-/******************************************************************
-*
-* set_identity_matrix
-*
-*******************************************************************/
-
 void set_identity_matrix(float* result) {
   float identity[16] = {
     1.0, 0.0, 0.0, 0.0,
@@ -60,13 +30,6 @@ void set_identity_matrix(float* result) {
 
   memcpy(result, identity, 16 * sizeof(float));
 }
-
-
-/******************************************************************
-*
-* set_rotation_x
-*
-*******************************************************************/
 
 void set_rotation_x(float anglex, float* result) {
   anglex = deg_to_rad(anglex);
@@ -81,25 +44,11 @@ void set_rotation_x(float anglex, float* result) {
   memcpy(result, temp, 16 * sizeof(float));
 }
 
-
-/******************************************************************
-*
-* rotate_y
-*
-*******************************************************************/
-
 void rotate_x(float anglex, float* matrix) {
   float rotation[16];
   set_rotation_x(anglex, rotation);
   multiply_matrix(rotation, matrix, matrix);
 }
-
-
-/******************************************************************
-*
-* set_rotation_y
-*
-*******************************************************************/
 
 void set_rotation_y(float angley, float* result) {
   angley = deg_to_rad(angley);
@@ -114,25 +63,11 @@ void set_rotation_y(float angley, float* result) {
   memcpy(result, temp, 16 * sizeof(float));
 }
 
-
-/******************************************************************
-*
-* rotate_y
-*
-*******************************************************************/
-
 void rotate_y(float angley, float* matrix) {
   float rotation[16];
   set_rotation_y(angley, rotation);
   multiply_matrix(rotation, matrix, matrix);
 }
-
-
-/******************************************************************
-*
-* set_rotation_z
-*
-*******************************************************************/
 
 void set_rotation_z(float anglez, float* result) {
   anglez = deg_to_rad(anglez);
@@ -147,25 +82,11 @@ void set_rotation_z(float anglez, float* result) {
   memcpy(result, temp, 16 * sizeof(float));
 }
 
-
-/******************************************************************
-*
-* rotate_z
-*
-*******************************************************************/
-
 void rotate_z(float anglez, float* matrix) {
   float rotation[16];
   set_rotation_z(anglez, rotation);
   multiply_matrix(rotation, matrix, matrix);
 }
-
-
-/******************************************************************
-*
-* set_translation
-*
-*******************************************************************/
 
 void set_translation(float x, float y, float z, float* result) {
   float temp[16] = {
@@ -178,25 +99,11 @@ void set_translation(float x, float y, float z, float* result) {
   memcpy(result, temp, 16 * sizeof(float));
 }
 
-
-/******************************************************************
-*
-* translate_x
-*
-*******************************************************************/
-
 void translate_x(float x, float* matrix) {
   float temp[16];
   set_translation(x, 0, 0, temp);
   multiply_matrix(temp, matrix, matrix);
 }
-
-
-/******************************************************************
-*
-* translate_y
-*
-*******************************************************************/
 
 void translate_y(float y, float* matrix) {
   float temp[16];
@@ -204,25 +111,11 @@ void translate_y(float y, float* matrix) {
   multiply_matrix(temp, matrix, matrix);
 }
 
-
-/******************************************************************
-*
-* translate_z
-*
-*******************************************************************/
-
 void translate_z(float z, float* matrix) {
   float temp[16];
   set_translation(0, 0, z, temp);
   multiply_matrix(temp, matrix, matrix);
 }
-
-
-/******************************************************************
-*
-* multiply_matrix
-*
-*******************************************************************/
 
 void multiply_matrix(float* m1, float* m2, float* result) {
   float temp[16];
@@ -253,13 +146,6 @@ void multiply_matrix(float* m1, float* m2, float* result) {
 
   memcpy(result, temp, 16 * sizeof(float));
 }
-
-
-/******************************************************************
-*
-* set_perspective_matrix
-*
-*******************************************************************/
 
 void set_perspective_matrix(float fov, float aspect, float nearPlane, float farPlane, float* result) {
   float f = 1.0 / tan(fov * M_PI / 360.0);
