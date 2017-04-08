@@ -130,7 +130,7 @@ void display() {
 void on_idle() {
   float rotations_per_second = 1.0f / 8;
   long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
-  float angle = elapsed_time * rotations_per_second * 360.0 / 1000; // deg
+  float angle = elapsed_time * rotations_per_second * deg_to_rad(360) / 1000; // rad
 
   // Rotate clock-wise by using negative angle.
   float rotation = -angle;
@@ -167,7 +167,7 @@ void on_idle() {
     translate_z(-(BASE_RADIUS / 7 * 6), pillars[i].translation_matrix);
 
     // Rotate pillar around the center to the corresponding edge.
-    rotate_y(360.0 / (float)number_of_sides * (float)i, pillars[i].translation_matrix);
+    rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, pillars[i].translation_matrix);
 
     // Apply general rotation to pillar.
     rotate_y(rotation, pillars[i].translation_matrix);
@@ -181,10 +181,11 @@ void on_idle() {
     translate_z(-(BASE_RADIUS / 7 * 6), cubes[i].translation_matrix);
 
     // Move cube up and down.
-    translate_y((sin(rotation / 10.0 + i * M_PI) / 5) + PILLAR_HEIGHT / 2.175, cubes[i].translation_matrix);
+    float up_down_speed = M_PI;
+    translate_y((sin(rotation * up_down_speed + i * M_PI) / 5) + PILLAR_HEIGHT / 2.175, cubes[i].translation_matrix);
 
     // Rotate cube around the center to the corresponding edge.
-    rotate_y(360.0 / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
+    rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
 
     // Apply general rotation to cube.
     rotate_y(rotation, cubes[i].translation_matrix);
@@ -283,7 +284,7 @@ void resize_window(int width, int height) {
   glViewport(0, 0, width, height);
 
   set_identity_matrix(projection_matrix);
-  float fovy = 45.0;
+  float fovy = deg_to_rad(45);
   float aspect = (float)width / (float)height;
   float nearPlane = 1.0;
   float farPlane = 50.0;

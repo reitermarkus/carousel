@@ -3,8 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "helper/macros.h"
-#include "helper/matrix.h"
+#include "matrix.h"
 
 void print_matrix(float* matrix) {
   printf("┌──────────┬──────────┬──────────┬──────────┐\n");
@@ -20,7 +19,7 @@ void print_matrix(float* matrix) {
   printf("└──────────┴──────────┴──────────┴──────────┘\n");
 }
 
-void set_identity_matrix(float* result) {
+void set_identity_matrix(float* matrix) {
   float identity[16] = {
     1.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0,
@@ -28,75 +27,69 @@ void set_identity_matrix(float* result) {
     0.0, 0.0, 0.0, 1.0,
   };
 
-  memcpy(result, identity, 16 * sizeof(float));
+  memcpy(matrix, identity, 16 * sizeof(float));
 }
 
-void set_rotation_x(float anglex, float* result) {
-  anglex = deg_to_rad(anglex);
-
+void set_rotation_x(float angle, float* matrix) {
   float temp[16] = {
-    1.0,          0.0,           0.0, 0.0,
-    0.0, cosf(anglex), -sinf(anglex), 0.0,
-    0.0, sinf(anglex),  cosf(anglex), 0.0,
-    0.0,          0.0,           0.0, 1.0
+    1.0,        0.0,         0.0, 0.0,
+    0.0, cos(angle), -sin(angle), 0.0,
+    0.0, sin(angle),  cos(angle), 0.0,
+    0.0,        0.0,         0.0, 1.0,
   };
 
-  memcpy(result, temp, 16 * sizeof(float));
+  memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void rotate_x(float anglex, float* matrix) {
+void rotate_x(float angle, float* matrix) {
   float rotation[16];
-  set_rotation_x(anglex, rotation);
+  set_rotation_x(angle, rotation);
   multiply_matrix(rotation, matrix, matrix);
 }
 
-void set_rotation_y(float angley, float* result) {
-  angley = deg_to_rad(angley);
-
+void set_rotation_y(float angle, float* matrix) {
   float temp[16] = {
-     cosf(angley), 0.0, sinf(angley), 0.0,
-              0.0, 1.0,          0.0, 0.0,
-    -sinf(angley), 0.0, cosf(angley), 0.0,
-              0.0, 0.0,          0.0, 1.0
+     cos(angle), 0.0, sin(angle), 0.0,
+            0.0, 1.0,        0.0, 0.0,
+    -sin(angle), 0.0, cos(angle), 0.0,
+            0.0, 0.0,        0.0, 1.0,
   };
 
-  memcpy(result, temp, 16 * sizeof(float));
+  memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void rotate_y(float angley, float* matrix) {
+void rotate_y(float angle, float* matrix) {
   float rotation[16];
-  set_rotation_y(angley, rotation);
+  set_rotation_y(angle, rotation);
   multiply_matrix(rotation, matrix, matrix);
 }
 
-void set_rotation_z(float anglez, float* result) {
-  anglez = deg_to_rad(anglez);
-
+void set_rotation_z(float angle, float* matrix) {
   float temp[16] = {
-    cosf(anglez), -sinf(anglez), 0.0, 0.0,
-    sinf(anglez),  cosf(anglez), 0.0, 0.0,
-             0.0,           0.0, 1.0, 0.0,
-             0.0,           0.0, 0.0, 1.0
+    cos(angle), -sin(angle), 0.0, 0.0,
+    sin(angle),  cos(angle), 0.0, 0.0,
+           0.0,         0.0, 1.0, 0.0,
+           0.0,         0.0, 0.0, 1.0,
   };
 
-  memcpy(result, temp, 16 * sizeof(float));
+  memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void rotate_z(float anglez, float* matrix) {
+void rotate_z(float angle, float* matrix) {
   float rotation[16];
-  set_rotation_z(anglez, rotation);
+  set_rotation_z(angle, rotation);
   multiply_matrix(rotation, matrix, matrix);
 }
 
-void set_translation(float x, float y, float z, float* result) {
+void set_translation(float x, float y, float z, float* matrix) {
   float temp[16] = {
     1.0, 0.0, 0.0,   x,
     0.0, 1.0, 0.0,   y,
     0.0, 0.0, 1.0,   z,
-    0.0, 0.0, 0.0, 1.0
+    0.0, 0.0, 0.0, 1.0,
   };
 
-  memcpy(result, temp, 16 * sizeof(float));
+  memcpy(matrix, temp, 16 * sizeof(float));
 }
 
 void translate_x(float x, float* matrix) {
@@ -117,38 +110,38 @@ void translate_z(float z, float* matrix) {
   multiply_matrix(temp, matrix, matrix);
 }
 
-void multiply_matrix(float* m1, float* m2, float* result) {
+void multiply_matrix(float* m1, float* m2, float* matrix) {
   float temp[16];
 
   for (int i = 0; i < 16; i++) {
     temp[i] = 0.0;
   }
 
-  temp[0] = m1[0] * m2[0] + m1[1] * m2[4] + m1[2] * m2[8] + m1[3] * m2[12];
-  temp[1] = m1[0] * m2[1] + m1[1] * m2[5] + m1[2] * m2[9] + m1[3] * m2[13];
-  temp[2] = m1[0] * m2[2] + m1[1] * m2[6] + m1[2] * m2[10] + m1[3] * m2[14];
-  temp[3] = m1[0] * m2[3] + m1[1] * m2[7] + m1[2] * m2[11] + m1[3] * m2[15];
+  temp[0]  =  m1[0] * m2[0] +  m1[1] * m2[4] +  m1[2] *  m2[8] +  m1[3] * m2[12];
+  temp[1]  =  m1[0] * m2[1] +  m1[1] * m2[5] +  m1[2] *  m2[9] +  m1[3] * m2[13];
+  temp[2]  =  m1[0] * m2[2] +  m1[1] * m2[6] +  m1[2] * m2[10] +  m1[3] * m2[14];
+  temp[3]  =  m1[0] * m2[3] +  m1[1] * m2[7] +  m1[2] * m2[11] +  m1[3] * m2[15];
 
-  temp[4] = m1[4] * m2[0] + m1[5] * m2[4] + m1[6] * m2[8] + m1[7] * m2[12];
-  temp[5] = m1[4] * m2[1] + m1[5] * m2[5] + m1[6] * m2[9] + m1[7] * m2[13];
-  temp[6] = m1[4] * m2[2] + m1[5] * m2[6] + m1[6] * m2[10] + m1[7] * m2[14];
-  temp[7] = m1[4] * m2[3] + m1[5] * m2[7] + m1[6] * m2[11] + m1[7] * m2[15];
+  temp[4]  =  m1[4] * m2[0] +  m1[5] * m2[4] +  m1[6] *  m2[8] +  m1[7] * m2[12];
+  temp[5]  =  m1[4] * m2[1] +  m1[5] * m2[5] +  m1[6] *  m2[9] +  m1[7] * m2[13];
+  temp[6]  =  m1[4] * m2[2] +  m1[5] * m2[6] +  m1[6] * m2[10] +  m1[7] * m2[14];
+  temp[7]  =  m1[4] * m2[3] +  m1[5] * m2[7] +  m1[6] * m2[11] +  m1[7] * m2[15];
 
-  temp[8] = m1[8] * m2[0] + m1[9] * m2[4] + m1[10] * m2[8] + m1[11] * m2[12];
-  temp[9] = m1[8] * m2[1] + m1[9] * m2[5] + m1[10] * m2[9] + m1[11] * m2[13];
-  temp[10] = m1[8] * m2[2] + m1[9] * m2[6] + m1[10] * m2[10] + m1[11] * m2[14];
-  temp[11] = m1[8] * m2[3] + m1[9] * m2[7] + m1[10] * m2[11] + m1[11] * m2[15];
+  temp[8]  =  m1[8] * m2[0] +  m1[9] * m2[4] + m1[10] *  m2[8] + m1[11] * m2[12];
+  temp[9]  =  m1[8] * m2[1] +  m1[9] * m2[5] + m1[10] *  m2[9] + m1[11] * m2[13];
+  temp[10] =  m1[8] * m2[2] +  m1[9] * m2[6] + m1[10] * m2[10] + m1[11] * m2[14];
+  temp[11] =  m1[8] * m2[3] +  m1[9] * m2[7] + m1[10] * m2[11] + m1[11] * m2[15];
 
-  temp[12] = m1[12] * m2[0] + m1[13] * m2[4] + m1[14] * m2[8] + m1[15] * m2[12];
-  temp[13] = m1[12] * m2[1] + m1[13] * m2[5] + m1[14] * m2[9] + m1[15] * m2[13];
+  temp[12] = m1[12] * m2[0] + m1[13] * m2[4] + m1[14] *  m2[8] + m1[15] * m2[12];
+  temp[13] = m1[12] * m2[1] + m1[13] * m2[5] + m1[14] *  m2[9] + m1[15] * m2[13];
   temp[14] = m1[12] * m2[2] + m1[13] * m2[6] + m1[14] * m2[10] + m1[15] * m2[14];
   temp[15] = m1[12] * m2[3] + m1[13] * m2[7] + m1[14] * m2[11] + m1[15] * m2[15];
 
-  memcpy(result, temp, 16 * sizeof(float));
+  memcpy(matrix, temp, 16 * sizeof(float));
 }
 
-void set_perspective_matrix(float fov, float aspect, float nearPlane, float farPlane, float* result) {
-  float f = 1.0 / tan(fov * M_PI / 360.0);
+void set_perspective_matrix(float fov, float aspect, float nearPlane, float farPlane, float* matrix) {
+  float f = 1.0 / tan(fov / 2.0);
   float c1 = -(farPlane + nearPlane) / (farPlane - nearPlane);
   float c2 = -(2.0 * farPlane * nearPlane) / (farPlane - nearPlane);
 
@@ -156,8 +149,8 @@ void set_perspective_matrix(float fov, float aspect, float nearPlane, float farP
     f/aspect, 0.0,  0.0, 0.0,
          0.0,   f,  0.0, 0.0,
          0.0, 0.0,   c1,  c2,
-         0.0, 0.0, -1.0, 0.0
+         0.0, 0.0, -1.0, 0.0,
   };
 
-  memcpy(result, temp, 16 * sizeof(float));
+  memcpy(matrix, temp, 16 * sizeof(float));
 }
