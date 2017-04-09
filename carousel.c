@@ -34,7 +34,7 @@
 #include "shape/cylinder.h"
 #include "shape/polygon.h"
 #include "helper/vertex.h"
-#include "parser/OBJParser.h"
+#include "parser/obj_parser.h"
 
 
 /*----------------------------------------------------------------*/
@@ -76,6 +76,7 @@ static const float CENTER_PILLAR_RADIUS = 0.5;
 *******************************************************************/
 
 void setup_data_buffers(struct object_data* object) {
+  // for MAC
   GLuint vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -100,6 +101,10 @@ void setup_data_buffers(struct object_data* object) {
 *******************************************************************/
 
 void setup_data_buffer_ext_obj(obj_scene_data* obj){
+  // for MAC
+  GLuint vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
 
 	glGenBuffers(1, &(obj->obj_data.vbo));
 	glBindBuffer(GL_ARRAY_BUFFER, obj->obj_data.vbo);
@@ -132,16 +137,14 @@ void init_ext_obj(obj_scene_data* obj, char* filename){
 	obj->index_buffer_data = (GLushort*) calloc (indx*3, sizeof(GLushort));
 
 	/* Vertices */
-	for(i=0; i<vert; i++)
-	{
+	for(i=0; i<vert; i++){
 		obj->vertex_buffer_data[i*3] = (GLfloat)((obj->vertex_list[i])->e[0]);
 		obj->vertex_buffer_data[i*3+1] = (GLfloat)((obj->vertex_list[i])->e[1]);
 		obj->vertex_buffer_data[i*3+2] = (GLfloat)((obj->vertex_list[i])->e[2]);
 	}
 
 	/* Indices */
-	for(i=0; i<indx; i++)
-	{
+	for(i=0; i<indx; i++)	{
 		obj->index_buffer_data[i*3] = (GLushort)(obj->face_list[i])->vertex_index[0];
 		obj->index_buffer_data[i*3+1] = (GLushort)(obj->face_list[i])->vertex_index[1];
 		obj->index_buffer_data[i*3+2] = (GLushort)(obj->face_list[i])->vertex_index[2];

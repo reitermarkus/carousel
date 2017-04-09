@@ -16,8 +16,8 @@
 #ifndef OBJ_PARSER_H
 #define OBJ_PARSER_H
 
-#include "List.h"
-#include "StringExtra.h"
+#include "list.h"
+#include "string_extra.h"
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"
 
