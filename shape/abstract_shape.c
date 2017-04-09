@@ -6,7 +6,7 @@
 
 #include "helper/macros.h"
 
-void abstract_shape(int edges, double radius, double height, double bottom_center_y_offset, double top_center_y_offset, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
+void abstract_shape(int edges, float radius, float height, float bottom_center_y_offset, float top_center_y_offset, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
   float step = 2.0 * M_PI / (float)edges; // circumfence divided by parts
 
   // Vertex count is number of edges + 1 (center vertex) if height is 0,

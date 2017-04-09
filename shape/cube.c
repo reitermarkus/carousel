@@ -1,11 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "cube.h"
 
 #include "helper/macros.h"
 
-void cube(double h, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
+void cube(float h, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
   *vertices_size = 8 * sizeof(struct vertex);
   *vertices = malloc(*vertices_size);
 
