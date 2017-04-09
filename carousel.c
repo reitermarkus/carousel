@@ -239,7 +239,7 @@ void initialize() {
   initialize_view_matrix();
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
-  cylinder(20, BASE_RADIUS , 0.01, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size), ROOF_HEIGHT);
+  cylinder(20, BASE_RADIUS , 0, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size), ROOF_HEIGHT);
   setup_data_buffers(&roof);
   roof.vertex_shader_file = "shader/vertex_shader.vs";
   roof.fragment_shader_file = "shader/fragment_shader.fs";
