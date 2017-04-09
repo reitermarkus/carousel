@@ -149,6 +149,9 @@ void on_idle() {
   // Initialize center pillar matrix.
   matrix_identity(center_pillar.translation_matrix);
 
+  // Move center pillar onto the base.
+  matrix_translate_y(BASE_HEIGHT, center_pillar.translation_matrix);
+
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar.translation_matrix);
 
@@ -248,7 +251,7 @@ void initialize() {
 
    float top_center_y_offset_pillar = 0.0;
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR*/
-  cylinder(15, CENTER_PILLAR_RADIUS, BASE_HEIGHT + PILLAR_HEIGHT, &(center_pillar.vertices), &(center_pillar.vertices_size), &(center_pillar.indices), &(center_pillar.indices_size),top_center_y_offset_pillar);
+  cylinder(15, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT, &(center_pillar.vertices), &(center_pillar.vertices_size), &(center_pillar.indices), &(center_pillar.indices_size),top_center_y_offset_pillar);
   setup_data_buffers(&center_pillar);
   center_pillar.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar.fragment_shader_file = "shader/fragment_shader.fs";
