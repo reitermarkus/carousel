@@ -40,6 +40,12 @@
 static matrix projection_matrix;
 static matrix view_matrix;
 
+static float camera_translation_x = 0.0;
+static float camera_translation_y = 0.0;
+static float camera_rotation_y = 0.0;
+static float camera_translation_z = 0.0;
+static const float camera_speed = 0.1;
+
 enum { number_of_sides = 8 };
 static struct object_data base;
 static struct object_data center_pillar;
@@ -104,6 +110,11 @@ void display_object(struct object_data* object) {
 void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  matrix_translate_x(camera_speed * camera_translation_x, view_matrix);
+  matrix_translate_y(camera_speed * camera_translation_y, view_matrix);
+  matrix_rotate_y(camera_speed / M_PI * camera_rotation_y, view_matrix);
+  matrix_translate_z(camera_speed * camera_translation_z, view_matrix);
 
   display_object(&base);
   display_object(&center_pillar);
@@ -204,6 +215,12 @@ void on_idle() {
 *
 *******************************************************************/
 
+void initialize_view_matrix() {
+  matrix_identity(view_matrix);
+  float camera_distance = -7.0;
+  matrix_translation(0.0, -1, camera_distance, view_matrix);
+}
+
 void initialize() {
   // Set background color based on system time.
   time_t current_time = time(NULL);
@@ -219,9 +236,7 @@ void initialize() {
   glDepthFunc(GL_LESS);
 
   // Initialize view matrix.
-  matrix_identity(view_matrix);
-  float camera_distance = -7.0;
-  matrix_translation(0.0, -1, camera_distance, view_matrix);
+  initialize_view_matrix();
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
   cylinder(20, BASE_RADIUS , 0.01, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size), ROOF_HEIGHT);
@@ -294,11 +309,73 @@ void resize_window(int width, int height) {
 
 
 void keyboard_event(unsigned char key, int x, int y) {
-  printf("Key '%c' pressed.\n", key);
+  (void)x;
+  (void)y;
+
+  switch(key) {
+    case 'a': // left
+      camera_translation_x = 1;
+      break;
+    case 'd': // right
+      camera_translation_x = -1;
+      break;
+    case 'r': // up
+      camera_translation_y = -1;
+      break;
+    case 'f': // down
+      camera_translation_y = 1;
+      break;
+    case 'w': // forward
+      camera_translation_z = 1;
+      break;
+    case 's': // backward
+      camera_translation_z = -1;
+      break;
+    case 'q': // rotate left
+      camera_rotation_y = 1;
+      break;
+    case 'e': // rotate right
+      camera_rotation_y = -1;
+      break;
+  }
+
+  glutPostRedisplay();
+}
+
+void keyboard_event_up(unsigned char key, int x, int y) {
+  (void)x;
+  (void)y;
+
+  switch(key) {
+    case 'a': // left
+    case 'd': // right
+      camera_translation_x = 0.0;
+      break;
+    case 'r': // up
+    case 'f': // down
+      camera_translation_y = 0.0;
+      break;
+    case 'w': // forward
+    case 's': // backward
+      camera_translation_z = 0.0;
+      break;
+    case 'q': // rotate left
+    case 'e': // rotate right
+      camera_rotation_y = 0.0;
+      break;
+    case 0x7f: // delete key
+      initialize_view_matrix();
+      break;
+  }
+
+  glutPostRedisplay();
 }
 
 
 void mouse_event(int button, int state, int x, int y) {
+  (void)x;
+  (void)y;
+
   if(state == GLUT_DOWN) {
     switch(button) {
       case GLUT_LEFT_BUTTON:
@@ -369,6 +446,7 @@ int main(int argc, char** argv) {
   glutDisplayFunc(display);
 
   glutKeyboardFunc(keyboard_event);
+  glutKeyboardUpFunc(keyboard_event_up);
   glutMouseFunc(mouse_event);
 
   // Enter GLUT event processing loop.
