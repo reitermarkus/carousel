@@ -31,6 +31,7 @@
 #include "helper/draw.h"
 #include "shape/cylinder.h"
 #include "shape/cube.h"
+#include "shape/cone.h"
 #include "shape/polygon.h"
 #include "helper/vertex.h"
 
@@ -242,7 +243,7 @@ void initialize() {
   initialize_view_matrix();
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
-  cylinder(20, BASE_RADIUS , 0, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size), ROOF_HEIGHT);
+  cone(20, BASE_RADIUS , ROOF_HEIGHT, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size));
   setup_data_buffers(&roof);
   roof.vertex_shader_file = "shader/vertex_shader.vs";
   roof.fragment_shader_file = "shader/fragment_shader.fs";
