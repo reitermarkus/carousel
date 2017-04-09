@@ -1,26 +1,7 @@
-/******************************************************************
-*
-* List.c
-*
-* Description: Code providing handling of lists.
-* Courtesy of http://www.kixor.net
-*
-* Computer Graphics Proseminar SS 2017
-*
-* Interactive Graphics and Simulation Group
-* Institute of Computer Science
-* University of Innsbruck
-*
-*******************************************************************/
-
-/* Standard includes */
+#include "list.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-#include "list.h"
-
-
 
 // internal helper functions
 char list_is_full(list *listo)

@@ -1,20 +1,5 @@
-/******************************************************************
-*
-* StringExtra.c
-*
-* Description: Helper functions for string handling. 
-* Courtesy of http://www.kixor.net
-*
-* Computer Graphics Proseminar SS 2017
-* 
-* Interactive Graphics and Simulation Group
-* Institute of Computer Science
-* University of Innsbruck
-*
-*******************************************************************/
-
 #include "string_extra.h"
-
+#include <string.h>
 
 char strequal(const char *s1, const char *s2)
 {

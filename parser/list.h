@@ -1,18 +1,3 @@
-/******************************************************************
-*
-* List.h
-*
-* Description: Code providing handling of lists.  
-* Courtesy of http://www.kixor.net
-*
-* Computer Graphics Proseminar SS 2015
-* 
-* Interactive Graphics and Simulation Group
-* Institute of Computer Science
-* University of Innsbruck
-*
-*******************************************************************/
-
 #ifndef __LIST_H
 #define __LIST_H
 
@@ -23,7 +8,7 @@ typedef struct
 	char growable;
 
 	void **items;
-	char **names;	
+	char **names;
 } list;
 
 void list_make(list *listo, int size, char growable);
