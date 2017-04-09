@@ -2,6 +2,7 @@
 #define __VERTEX_H__
 
 #include "helper/shared_headers.h"
+#include "helper/matrix.h"
 
 #define SET_VERTEX_COLOR(vertex, r_val, g_val, b_val) do { \
   (vertex).color.r = (r_val);                              \
@@ -50,7 +51,7 @@ struct object_data {
   const char* vertex_shader_file;
   const char* fragment_shader_file;
 
-  float translation_matrix[16];
+  matrix translation_matrix;
 };
 
 #endif // __VERTEX_H__

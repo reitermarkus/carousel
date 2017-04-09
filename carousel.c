@@ -37,8 +37,8 @@
 
 /*----------------------------------------------------------------*/
 
-static float projection_matrix[16];
-static float view_matrix[16];
+static matrix projection_matrix;
+static matrix view_matrix;
 
 enum { number_of_sides = 8 };
 static struct object_data base;

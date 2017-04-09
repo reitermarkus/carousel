@@ -1,11 +1,11 @@
+#include "draw.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "draw.h"
-
 #include "helper/shared_headers.h"
 
-static void set_shader_matrix(GLuint shader_program, const char* matrix_name, float* matrix) {
+static void set_shader_matrix(GLuint shader_program, const char* matrix_name, const matrix matrix) {
   GLint uniform_location = glGetUniformLocation(shader_program, matrix_name);
 
   if (uniform_location == -1) {
@@ -13,10 +13,10 @@ static void set_shader_matrix(GLuint shader_program, const char* matrix_name, fl
     exit(EXIT_FAILURE);
   }
 
-  glUniformMatrix4fv(uniform_location, 1, GL_TRUE, matrix);
+  glUniformMatrix4fv(uniform_location, 1, GL_TRUE, (float*)matrix);
 }
 
-void draw(struct object_data* object, float* projection_matrix, float* view_matrix) {
+void draw(struct object_data* object, const matrix projection_matrix, const matrix view_matrix) {
   // Bind vertex array.
   glEnableVertexAttribArray(v_position);
   glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);

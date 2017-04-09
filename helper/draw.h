@@ -3,6 +3,6 @@
 
 #include "helper/vertex.h"
 
-void draw(struct object_data* object, float* projection_matrix, float* view_matrix);
+void draw(struct object_data* object, const matrix projection_matrix, const matrix view_matrix);
 
 #endif // __DRAW_H__
