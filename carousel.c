@@ -34,6 +34,7 @@
 #include "shape/cylinder.h"
 #include "shape/polygon.h"
 #include "helper/vertex.h"
+#include "parser/OBJParser.h"
 
 
 /*----------------------------------------------------------------*/
@@ -53,6 +54,10 @@ static struct object_data center_pillar;
 static struct object_data roof;
 static struct object_data pillars[number_of_sides];
 static struct object_data cubes[number_of_sides];
+
+
+/* Structures for loading of OBJ data */
+obj_scene_data wolf;
 
 static const float PILLAR_HEIGHT = 1.5;
 static const float BASE_HEIGHT = .15;
@@ -90,6 +95,69 @@ void setup_data_buffers(struct object_data* object) {
 
 /******************************************************************
 *
+* Setup and Initialization for external ".obj" files
+*
+*******************************************************************/
+
+void setup_data_buffer_ext_obj(obj_scene_data* obj){
+
+	glGenBuffers(1, &(obj->obj_data.vbo));
+	glBindBuffer(GL_ARRAY_BUFFER, obj->obj_data.vbo);
+	glBufferData(GL_ARRAY_BUFFER, obj->vertex_count*3*sizeof(GLfloat), obj->vertex_buffer_data, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &(obj->obj_data.ibo));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->obj_data.ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj->face_count*3*sizeof(GLushort), obj->index_buffer_data, GL_STATIC_DRAW);
+}
+
+void setup_shader_program_ext_obj(obj_scene_data* obj) {
+	// Put linked shader program into drawing pipeline.
+	obj->obj_data.shader_program = create_shader_program(obj->obj_data.vertex_shader_file,obj->obj_data.fragment_shader_file);
+}
+
+void init_ext_obj(obj_scene_data* obj, char* filename){
+	int i;
+	int success;
+
+	success = parse_obj_scene(obj, filename);
+
+	if(!success)
+		printf("Could not load file. Exiting.\n");
+
+	/*  Copy mesh data from structs into appropriate arrays */
+	int vert = obj->vertex_count;
+	int indx = obj->face_count;
+
+	obj->vertex_buffer_data = (GLfloat*) calloc (vert*3, sizeof(GLfloat));
+	obj->index_buffer_data = (GLushort*) calloc (indx*3, sizeof(GLushort));
+
+	/* Vertices */
+	for(i=0; i<vert; i++)
+	{
+		obj->vertex_buffer_data[i*3] = (GLfloat)((obj->vertex_list[i])->e[0]);
+		obj->vertex_buffer_data[i*3+1] = (GLfloat)((obj->vertex_list[i])->e[1]);
+		obj->vertex_buffer_data[i*3+2] = (GLfloat)((obj->vertex_list[i])->e[2]);
+	}
+
+	/* Indices */
+	for(i=0; i<indx; i++)
+	{
+		obj->index_buffer_data[i*3] = (GLushort)(obj->face_list[i])->vertex_index[0];
+		obj->index_buffer_data[i*3+1] = (GLushort)(obj->face_list[i])->vertex_index[1];
+		obj->index_buffer_data[i*3+2] = (GLushort)(obj->face_list[i])->vertex_index[2];
+	}
+
+	/* Enable depth testing */
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
+	setup_data_buffer_ext_obj(obj);
+	setup_shader_program_ext_obj(obj);
+
+}
+
+/******************************************************************
+*
 * display
 *
 * This function is called when the content of the window needs to be
@@ -108,6 +176,27 @@ void display_object(struct object_data* object) {
   draw(object, projection_matrix, view_matrix);
 }
 
+// Displays an external ".obj" object
+void display_ext_object(obj_scene_data* obj){
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, obj->obj_data.vbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->obj_data.ibo);
+
+	GLint size;
+	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+
+	/* Issue draw command, using indexed triangle list */
+	glDrawElements(GL_TRIANGLES, size/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+
+	/* Set state to only draw wireframe (no lighting used, yet) */
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	/* Disable attributes */
+	glDisableVertexAttribArray(0);
+}
+
 void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -117,6 +206,7 @@ void display() {
   matrix_rotate_y(camera_speed / M_PI * camera_rotation_y, view_matrix);
   matrix_translate_z(camera_speed * camera_translation_z, view_matrix);
 
+	display_ext_object(&wolf);
   display_object(&base);
   display_object(&center_pillar);
   display_object(&roof);
@@ -241,6 +331,14 @@ void initialize() {
 
   // Initialize view matrix.
   initialize_view_matrix();
+
+
+	// Setup external object
+	wolf.obj_data.vertex_shader_file = "shader/vertex_shader.vs";
+	wolf.obj_data.fragment_shader_file = "shader/fragment_shader.fs";
+	init_ext_obj(&wolf, "models/wolf.obj");
+	matrix_identity(wolf.obj_data.translation_matrix);
+
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
   cone(20, BASE_RADIUS , ROOF_HEIGHT, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size));
