@@ -5,7 +5,7 @@
 
 #include "helper/shared_headers.h"
 
-static void set_shader_matrix(GLuint shader_program, const char* matrix_name, const matrix matrix) {
+static void set_shader_matrix(GLuint shader_program, const char* matrix_name, matrix matrix) {
   GLint uniform_location = glGetUniformLocation(shader_program, matrix_name);
 
   if (uniform_location == -1) {
@@ -16,7 +16,7 @@ static void set_shader_matrix(GLuint shader_program, const char* matrix_name, co
   glUniformMatrix4fv(uniform_location, 1, GL_TRUE, (float*)matrix);
 }
 
-void draw(struct object_data* object, const matrix projection_matrix, const matrix view_matrix) {
+void draw(struct object_data* object, matrix projection_matrix, matrix view_matrix) {
   // Bind vertex array.
   glEnableVertexAttribArray(v_position);
   glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);

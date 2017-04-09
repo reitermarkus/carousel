@@ -3,9 +3,9 @@
 
 typedef float matrix[4][4];
 
-void matrix_print(const matrix m);
+void matrix_print(matrix m);
 void matrix_identity(matrix result_matrix);
-void matrix_multiply(const matrix m1, const matrix m2, matrix result_matrix);
+void matrix_multiply(matrix m1, matrix m2, matrix result_matrix);
 
 void matrix_rotation_x(float angle, matrix result_matrix);
 void matrix_rotation_y(float angle, matrix result_matrix);

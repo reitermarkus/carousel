@@ -5,7 +5,7 @@ SHAPES = $(addprefix shape/, abstract_shape.o cylinder.o cube.o cone.o polygon.o
 
 OBJ = $(PROGRAM).o $(HELPERS) $(SHAPES)
 
-CFLAGS = -g -O2 -Wall -Wextra -std=c11 -I$(CURDIR)
+CFLAGS = -g -O2 -Wall -Werror -Wextra -std=c11 -I$(CURDIR)
 
 LDLIBS = -lm
 

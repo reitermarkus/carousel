@@ -5,7 +5,7 @@
 
 #include "matrix.h"
 
-void matrix_print(const matrix m) {
+void matrix_print(matrix m) {
   printf("┌──────────┬──────────┬──────────┬──────────┐\n");
 
   for (int i = 0; i < 4; i++) {
@@ -110,7 +110,7 @@ void matrix_translate_z(float z, matrix result_matrix) {
   matrix_multiply(temp, result_matrix, result_matrix);
 }
 
-void matrix_multiply(const matrix m1, const matrix m2, matrix result_matrix) {
+void matrix_multiply(matrix m1, matrix m2, matrix result_matrix) {
   matrix temp = {
     {
       m1[0][0] * m2[0][0] + m1[0][1] * m2[1][0] + m1[0][2] * m2[2][0] + m1[0][3] * m2[3][0],
