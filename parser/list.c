@@ -2,11 +2,11 @@
 *
 * List.c
 *
-* Description: Code providing handling of lists.  
+* Description: Code providing handling of lists.
 * Courtesy of http://www.kixor.net
 *
 * Computer Graphics Proseminar SS 2017
-* 
+*
 * Interactive Graphics and Simulation Group
 * Institute of Computer Science
 * University of Innsbruck
@@ -32,14 +32,14 @@ void list_grow(list *old_listo)
 {
 	int i;
 	list new_listo;
-	
+
 	list_make(&new_listo, old_listo->current_max_size*2, old_listo->growable++);
-	
+
 	for(i=0; i<old_listo->current_max_size; i++)
 		list_add_item(&new_listo, old_listo->items[i] , old_listo->names[i]);
-	
+
 	list_free(old_listo);
-	
+
 	//copy new structure to old list
 	old_listo->names = new_listo.names;
 	old_listo->items = new_listo.items;
@@ -62,7 +62,7 @@ int list_add_item(list *listo, void *item, char *name)
 {
 	int name_length;
 	char *new_name;
-	
+
 	if( list_is_full(listo) )
 	{
 		if( listo->growable )
@@ -70,7 +70,7 @@ int list_add_item(list *listo, void *item, char *name)
 		else
 			return -1;
 	}
-	
+
 	listo->names[listo->item_count] = NULL;
 	if(name != NULL)
 	{
@@ -82,7 +82,7 @@ int list_add_item(list *listo, void *item, char *name)
 
 	listo->items[listo->item_count] = item;
 	listo->item_count++;
-	
+
 	return listo->item_count-1;
 }
 
@@ -94,7 +94,7 @@ char* list_print_items(list *listo)
 	{
 		printf("%s\n", listo->names[i]);
 	}
-	
+
 	return NULL;
 }
 
@@ -108,13 +108,13 @@ void* list_get_index(list *listo, int indx)
 void* list_get_item(list *listo, void *item_to_find)
 {
 	int i = 0;
-	
+
 	for(i=0; i < listo->item_count; i++)
 	{
 		if(listo->items[i] == item_to_find)
 			return listo->items[i];
 	}
-	
+
 	return NULL;
 }
 
@@ -127,7 +127,7 @@ void* list_get_name(list *listo, char *name_to_find)
 		if(strncmp(listo->names[i], name_to_find, strlen(name_to_find)) == 0)
 			return listo->items[i];
 	}
-	
+
 	return NULL;
 }
 
@@ -140,16 +140,16 @@ int list_find(list *listo, char *name_to_find)
 		if(strncmp(listo->names[i], name_to_find, strlen(name_to_find)) == 0)
 			return i;
 	}
-	
+
 	return -1;
 }
 
 void list_delete_item(list *listo, void *item)
 {
 	int i;
-	
+
 	for(i=0; i < listo->item_count; i++)
-	{		
+	{
 		if( listo->items[i] == item )
 			list_delete_index(listo, i);
 	}
@@ -160,19 +160,17 @@ void list_delete_name(list *listo, char *name)
 	int i;
 	//int j;
 	//char remove = 0;
-	
+
 	//	int length_name = strlen(name);
 	int item_name;
-	
-    if(item_name){}
 
 	if(name == NULL)
 		return;
-	
+
 	for(i=0; i < listo->item_count; i++)
 	{
 		item_name = strlen(name);
-				
+
 		if( name != NULL && (strncmp(listo->names[i], name, strlen(name)) == 0) )
 			list_delete_index(listo, i);
 	}
@@ -181,27 +179,27 @@ void list_delete_name(list *listo, char *name)
 void list_delete_index(list *listo, int indx)
 {
 	int j;
-	
+
 	//remove item
 	if(listo->names[indx] != NULL)
 		free(listo->names[indx]);
-			
+
 	//restructure
 	for(j=indx; j < listo->item_count-1; j++)
 	{
 		listo->names[j] = listo->names[j+1];
 		listo->items[j] = listo->items[j+1];
 	}
-	
+
 	listo->item_count--;
-	
+
 	return;
 }
 
 void list_delete_all(list *listo)
 {
 	int i;
-	
+
 	for(i=listo->item_count-1; i>=0; i--)
 		list_delete_index(listo, i);
 }
@@ -216,9 +214,9 @@ void list_free(list *listo)
 void list_print_list(list *listo)
 {
 	int i;
-	
+
 	printf("count: %i/%i\n", listo->item_count, listo->current_max_size);
-	
+
 	for(i=0; i < listo->item_count; i++)
 	{
 		printf("list[%i]: %s\n", i, listo->names[i]);
