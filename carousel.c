@@ -29,9 +29,9 @@
 #include "helper/macros.h"
 #include "helper/create_shader_program.h"
 #include "helper/draw.h"
-#include "shape/cylinder.h"
-#include "shape/cube.h"
 #include "shape/cone.h"
+#include "shape/cube.h"
+#include "shape/cylinder.h"
 #include "shape/polygon.h"
 #include "helper/vertex.h"
 
@@ -250,18 +250,16 @@ void initialize() {
   setup_shader_program(&roof);
   matrix_identity(roof.translation_matrix);
 
-   float top_center_y_offset_pillar = 0.0;
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR*/
-  cylinder(15, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT, &(center_pillar.vertices), &(center_pillar.vertices_size), &(center_pillar.indices), &(center_pillar.indices_size),top_center_y_offset_pillar);
+  cylinder(15, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT, &(center_pillar.vertices), &(center_pillar.vertices_size), &(center_pillar.indices), &(center_pillar.indices_size));
   setup_data_buffers(&center_pillar);
   center_pillar.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar.fragment_shader_file = "shader/fragment_shader.fs";
   setup_shader_program(&center_pillar);
   matrix_identity(center_pillar.translation_matrix);
 
-  float top_center_y_offset_base = 0.0;
    /* Setup vertex, color, and index buffer objects for BASE*/
-  cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size),top_center_y_offset_base);
+  cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
   setup_data_buffers(&base);
   base.vertex_shader_file = "shader/vertex_shader.vs";
   base.fragment_shader_file = "shader/fragment_shader.fs";
@@ -281,12 +279,10 @@ void initialize() {
     cubes[i] = cube_object;
   }
 
-  float top_center_y_offset_pillars = 0.0;
-
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data pillar;
 
-    cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size),top_center_y_offset_pillars);
+    cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size));
     /* Setup vertex, color, and index buffer objects */
     setup_data_buffers(&pillar);
     pillar.vertex_shader_file = "shader/vertex_shader.vs";
