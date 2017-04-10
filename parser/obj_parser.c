@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <libgen.h>
 
 #include "list.h"
 
@@ -180,10 +181,9 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
   char current_line[OBJ_LINE_SIZE];
   char material_open = 0;
   obj_material *current_mtl = NULL;
-  FILE *mtl_file_stream;
 
   // open scene
-  mtl_file_stream = fopen(filename, "r");
+  FILE *mtl_file_stream = fopen(filename, "r");
   if (mtl_file_stream == 0) {
     fprintf(stderr, "Error reading file: %s\n", filename);
     return -1;
@@ -207,34 +207,36 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
       strncpy(current_mtl->name, strtok(NULL, " \t"), MATERIAL_NAME_SIZE);
       list_add_item(material_list, current_mtl, current_mtl->name);
     } else if (strcmp(current_token, "Ka") == 0 && material_open) {
-      //ambient
+      // ambient
       current_mtl->amb[0] = atof(strtok(NULL, " \t"));
       current_mtl->amb[1] = atof(strtok(NULL, " \t"));
       current_mtl->amb[2] = atof(strtok(NULL, " \t"));
+    } else if (strcmp(current_token, "Ke") == 0 && material_open) {
+      // emissive coeficient
     } else if (strcmp(current_token, "Kd") == 0 && material_open) {
-      //diff
+      // diffuse
       current_mtl->diff[0] = atof(strtok(NULL, " \t"));
       current_mtl->diff[1] = atof(strtok(NULL, " \t"));
       current_mtl->diff[2] = atof(strtok(NULL, " \t"));
     } else if (strcmp(current_token, "Ks") == 0 && material_open) {
-      //specular
+      // specular
       current_mtl->spec[0] = atof(strtok(NULL, " \t"));
       current_mtl->spec[1] = atof(strtok(NULL, " \t"));
       current_mtl->spec[2] = atof(strtok(NULL, " \t"));
     } else if (strcmp(current_token, "Ns") == 0 && material_open) {
-      //shiny
+      // shiny
       current_mtl->shiny = atof(strtok(NULL, " \t"));
     } else if (strcmp(current_token, "d") == 0 && material_open) {
-      //transparent
+      // transparent
       current_mtl->trans = atof(strtok(NULL, " \t"));
     } else if (strcmp(current_token, "r") == 0 && material_open) {
-      //reflection
+      // reflection
       current_mtl->reflect = atof(strtok(NULL, " \t"));
     } else if (strcmp(current_token, "sharpness") == 0 && material_open) {
-      //glossy
+      // glossy
       current_mtl->glossy = atof(strtok(NULL, " \t"));
     } else if (strcmp(current_token, "Ni") == 0 && material_open) {
-      //refract index
+      // refract index
       current_mtl->refract_index = atof(strtok(NULL, " \t"));
     } else if (strcmp(current_token, "illum") == 0 && material_open) {
       // illumination type
@@ -252,16 +254,19 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
   return line_number;
 }
 
-int obj_parse_obj_file(obj_growable_scene_data *growable_data, char *filename) {
+int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filename) {
   FILE* obj_file_stream;
   int current_material = -1;
   char *current_token = NULL;
   char current_line[OBJ_LINE_SIZE];
   int line_number = 0;
   // open scene
-  obj_file_stream = fopen(filename, "r");
+
+  char *resolved_filename = realpath(filename, NULL);
+
+  obj_file_stream = fopen(resolved_filename, "r");
   if (obj_file_stream == 0) {
-    fprintf(stderr, "Error reading file: %s\n", filename);
+    fprintf(stderr, "Error reading file: %s\n", resolved_filename);
     return -1;
   }
 
@@ -337,7 +342,21 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, char *filename) {
     } else if (strcmp(current_token, "mtllib") == 0) {
       //  mtllib
       strncpy(growable_data->material_filename, strtok(NULL, WHITESPACE), OBJ_FILENAME_LENGTH);
-      obj_parse_mtl_file(growable_data->material_filename, &growable_data->material_list);
+
+      char* mtl_file_path = NULL;
+      if (growable_data->material_filename[0] == '/') {
+        // absolute path
+        strcpy(mtl_file_path, growable_data->material_filename);
+      } else {
+        // relative path
+        char* mtl_file_dirname = dirname((char *)filename);
+        mtl_file_path = malloc((strlen(mtl_file_dirname) + strlen(growable_data->material_filename) + 1) * sizeof(char));
+        sprintf(mtl_file_path, "%s/%s", mtl_file_dirname, growable_data->material_filename);
+        free(mtl_file_dirname);
+      }
+
+      obj_parse_mtl_file(mtl_file_path, &growable_data->material_list);
+      free(mtl_file_path);
       continue;
     } else if (strcmp(current_token, "o") == 0) {
       // object name
@@ -475,7 +494,7 @@ void obj_copy_to_out_storage(obj_scene_data *data_out, obj_growable_scene_data *
   data_out->camera = growable_data->camera;
 }
 
-int parse_obj_scene(obj_scene_data *data_out, char *filename) {
+int parse_obj_scene(obj_scene_data *data_out, const char *filename) {
   obj_growable_scene_data growable_data;
 
   obj_init_temp_storage(&growable_data);
