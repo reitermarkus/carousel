@@ -7,7 +7,8 @@
 
 #include "list.h"
 
-static const char* WHITESPACE = " \t\n\r";
+static const char* OBJ_WHITESPACE = " \t\n\r";
+static const char* MTL_WHITESPACE = " \t";
 
 void obj_free_half_list(list *listo) {
   list_delete_all(listo);
@@ -59,11 +60,14 @@ int obj_parse_vertex_index(int *vertex_index, int *texture_index, int *normal_in
   char *token;
   int vertex_count = 0;
 
-  while ((token = strtok(NULL, WHITESPACE)) != NULL) {
-    if (texture_index != NULL)
+  while ((token = strtok(NULL, OBJ_WHITESPACE)) != NULL) {
+    if (texture_index != NULL) {
       texture_index[vertex_count] = 0;
-    if (normal_index != NULL)
-    normal_index[vertex_count] = 0;
+    }
+
+    if (normal_index != NULL) {
+      normal_index[vertex_count] = 0;
+    }
 
     vertex_index[vertex_count] = atoi(token);
 
@@ -129,7 +133,7 @@ obj_plane* obj_parse_plane(obj_growable_scene_data *scene) {
 
 obj_light_point* obj_parse_light_point(obj_growable_scene_data *scene) {
   obj_light_point *o= (obj_light_point*)malloc(sizeof(obj_light_point));
-  o->pos_index = obj_convert_to_list_index(scene->vertex_list.item_count, atoi(strtok(NULL, WHITESPACE)));
+  o->pos_index = obj_convert_to_list_index(scene->vertex_list.item_count, atoi(strtok(NULL, OBJ_WHITESPACE)));
   return o;
 }
 
@@ -154,17 +158,17 @@ obj_light_disc* obj_parse_light_disc(obj_growable_scene_data *scene) {
 
 obj_vector* obj_parse_vector() {
   obj_vector *v = (obj_vector*)malloc(sizeof(obj_vector));
-  v->e[0] = atof(strtok(NULL, WHITESPACE));
-  v->e[1] = atof(strtok(NULL, WHITESPACE));
-  v->e[2] = atof(strtok(NULL, WHITESPACE));
+  v->e[0] = atof(strtok(NULL, OBJ_WHITESPACE));
+  v->e[1] = atof(strtok(NULL, OBJ_WHITESPACE));
+  v->e[2] = atof(strtok(NULL, OBJ_WHITESPACE));
   return v;
 }
 
 
 obj_vector2* obj_parse_vector2() {
   obj_vector2 *v = (obj_vector2*)malloc(sizeof(obj_vector2));
-  v->e[0] = atof(strtok(NULL, WHITESPACE));
-  v->e[1] = atof(strtok(NULL, WHITESPACE));
+  v->e[0] = atof(strtok(NULL, OBJ_WHITESPACE));
+  v->e[1] = atof(strtok(NULL, OBJ_WHITESPACE));
   return v;
 }
 
@@ -193,7 +197,7 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
   list_make(material_list, 10, 1);
 
   while (fgets(current_line, OBJ_LINE_MAX, mtl_file_stream)) {
-    current_token = strtok(current_line, WHITESPACE);
+    current_token = strtok(current_line, OBJ_WHITESPACE);
     line_number++;
 
     if (current_token == NULL || strcmp(current_token, "//") == 0 || strcmp(current_token, "#") == 0) {
@@ -205,48 +209,48 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
       obj_set_material_defaults(current_mtl);
 
       // get the name
-      strncpy(current_mtl->name, strtok(NULL, " \t"), NAME_MAX);
+      strncpy(current_mtl->name, strtok(NULL, MTL_WHITESPACE), NAME_MAX);
       list_add_item(material_list, current_mtl, current_mtl->name);
     } else if (strcmp(current_token, "Ka") == 0 && material_open) {
       // ambient
-      current_mtl->amb[0] = atof(strtok(NULL, " \t"));
-      current_mtl->amb[1] = atof(strtok(NULL, " \t"));
-      current_mtl->amb[2] = atof(strtok(NULL, " \t"));
+      current_mtl->amb[0] = atof(strtok(NULL, MTL_WHITESPACE));
+      current_mtl->amb[1] = atof(strtok(NULL, MTL_WHITESPACE));
+      current_mtl->amb[2] = atof(strtok(NULL, MTL_WHITESPACE));
     } else if (strcmp(current_token, "Ke") == 0 && material_open) {
       // emissive coeficient
     } else if (strcmp(current_token, "Kd") == 0 && material_open) {
       // diffuse
-      current_mtl->diff[0] = atof(strtok(NULL, " \t"));
-      current_mtl->diff[1] = atof(strtok(NULL, " \t"));
-      current_mtl->diff[2] = atof(strtok(NULL, " \t"));
+      current_mtl->diff[0] = atof(strtok(NULL, MTL_WHITESPACE));
+      current_mtl->diff[1] = atof(strtok(NULL, MTL_WHITESPACE));
+      current_mtl->diff[2] = atof(strtok(NULL, MTL_WHITESPACE));
     } else if (strcmp(current_token, "Ks") == 0 && material_open) {
       // specular
-      current_mtl->spec[0] = atof(strtok(NULL, " \t"));
-      current_mtl->spec[1] = atof(strtok(NULL, " \t"));
-      current_mtl->spec[2] = atof(strtok(NULL, " \t"));
+      current_mtl->spec[0] = atof(strtok(NULL, MTL_WHITESPACE));
+      current_mtl->spec[1] = atof(strtok(NULL, MTL_WHITESPACE));
+      current_mtl->spec[2] = atof(strtok(NULL, MTL_WHITESPACE));
     } else if (strcmp(current_token, "Ns") == 0 && material_open) {
       // shiny
-      current_mtl->shiny = atof(strtok(NULL, " \t"));
+      current_mtl->shiny = atof(strtok(NULL, MTL_WHITESPACE));
     } else if (strcmp(current_token, "d") == 0 && material_open) {
       // transparent
-      current_mtl->trans = atof(strtok(NULL, " \t"));
+      current_mtl->trans = atof(strtok(NULL, MTL_WHITESPACE));
     } else if (strcmp(current_token, "r") == 0 && material_open) {
       // reflection
-      current_mtl->reflect = atof(strtok(NULL, " \t"));
+      current_mtl->reflect = atof(strtok(NULL, MTL_WHITESPACE));
     } else if (strcmp(current_token, "sharpness") == 0 && material_open) {
       // glossy
-      current_mtl->glossy = atof(strtok(NULL, " \t"));
+      current_mtl->glossy = atof(strtok(NULL, MTL_WHITESPACE));
     } else if (strcmp(current_token, "Ni") == 0 && material_open) {
       // refract index
-      current_mtl->refract_index = atof(strtok(NULL, " \t"));
+      current_mtl->refract_index = atof(strtok(NULL, MTL_WHITESPACE));
     } else if (strcmp(current_token, "illum") == 0 && material_open) {
       // illumination type
     } else if (strcmp(current_token, "map_Ka") == 0 && material_open) {
       // ambient texture map
-      strncpy(current_mtl->amb_texture_filename, strtok(NULL, " \t"), PATH_MAX);
+      strncpy(current_mtl->amb_texture_filename, strtok(NULL, MTL_WHITESPACE), PATH_MAX);
     } else if(strcmp(current_token, "map_Kd") == 0 && material_open) {
       // diffuse texture map
-      strncpy(current_mtl->diff_texture_filename, strtok(NULL, " \t"), PATH_MAX);
+      strncpy(current_mtl->diff_texture_filename, strtok(NULL, MTL_WHITESPACE), PATH_MAX);
     } else if(strcmp(current_token, "map_Ke") == 0 && material_open) {
       // map emissive coefficient
     } else if(strcmp(current_token, "map_d") == 0 && material_open) {
@@ -346,10 +350,10 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
       obj_parse_camera(growable_data, growable_data->camera);
     } else if (strcmp(current_token, "usemtl") == 0) {
       //  usemtl
-      current_material = list_find(&growable_data->material_list, strtok(NULL, WHITESPACE));
+      current_material = list_find(&growable_data->material_list, strtok(NULL, OBJ_WHITESPACE));
     } else if (strcmp(current_token, "mtllib") == 0) {
       //  mtllib
-      strncpy(growable_data->material_filename, strtok(NULL, WHITESPACE), PATH_MAX);
+      strncpy(growable_data->material_filename, strtok(NULL, OBJ_WHITESPACE), PATH_MAX);
 
       char mtl_file_path[PATH_MAX];
       if (growable_data->material_filename[0] == '/') {
