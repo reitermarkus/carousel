@@ -178,7 +178,7 @@ void obj_parse_camera(obj_growable_scene_data *scene, obj_camera *camera) {
 int obj_parse_mtl_file(char *filename, list *material_list) {
   int line_number = 0;
   char *current_token;
-  char current_line[OBJ_LINE_SIZE];
+  char current_line[OBJ_LINE_MAX];
   char material_open = 0;
   obj_material *current_mtl = NULL;
 
@@ -191,7 +191,7 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
 
   list_make(material_list, 10, 1);
 
-  while (fgets(current_line, OBJ_LINE_SIZE, mtl_file_stream)) {
+  while (fgets(current_line, OBJ_LINE_MAX, mtl_file_stream)) {
     current_token = strtok(current_line, WHITESPACE);
     line_number++;
 
@@ -204,7 +204,7 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
       obj_set_material_defaults(current_mtl);
 
       // get the name
-      strncpy(current_mtl->name, strtok(NULL, " \t"), MATERIAL_NAME_SIZE);
+      strncpy(current_mtl->name, strtok(NULL, " \t"), NAME_MAX);
       list_add_item(material_list, current_mtl, current_mtl->name);
     } else if (strcmp(current_token, "Ka") == 0 && material_open) {
       // ambient
@@ -242,7 +242,7 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
       // illumination type
     } else if (strcmp(current_token, "map_Ka") == 0 && material_open) {
       // texture map
-      strncpy(current_mtl->texture_filename, strtok(NULL, " \t"), OBJ_FILENAME_LENGTH);
+      strncpy(current_mtl->texture_filename, strtok(NULL, " \t"), PATH_MAX);
     } else {
       fprintf(stderr, "Unknown command '%s' in material file %s at line %i:\n\t%s\n", current_token, filename, line_number, current_line);
       fclose(mtl_file_stream);
@@ -258,7 +258,7 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
   FILE* obj_file_stream;
   int current_material = -1;
   char *current_token = NULL;
-  char current_line[OBJ_LINE_SIZE];
+  char current_line[OBJ_LINE_MAX];
   int line_number = 0;
   // open scene
 
@@ -283,7 +283,7 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
 
 
   //parser loop
-  while (fgets(current_line, OBJ_LINE_SIZE, obj_file_stream)) {
+  while (fgets(current_line, OBJ_LINE_MAX, obj_file_stream)) {
     current_token = strtok(current_line, " \t\n\r");
     line_number++;
 
@@ -341,22 +341,20 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
       current_material = list_find(&growable_data->material_list, strtok(NULL, WHITESPACE));
     } else if (strcmp(current_token, "mtllib") == 0) {
       //  mtllib
-      strncpy(growable_data->material_filename, strtok(NULL, WHITESPACE), OBJ_FILENAME_LENGTH);
+      strncpy(growable_data->material_filename, strtok(NULL, WHITESPACE), PATH_MAX);
 
-      char* mtl_file_path = NULL;
+      char mtl_file_path[PATH_MAX];
       if (growable_data->material_filename[0] == '/') {
         // absolute path
         strcpy(mtl_file_path, growable_data->material_filename);
       } else {
         // relative path
         char* mtl_file_dirname = dirname((char *)filename);
-        mtl_file_path = malloc((strlen(mtl_file_dirname) + strlen(growable_data->material_filename) + 1) * sizeof(char));
         sprintf(mtl_file_path, "%s/%s", mtl_file_dirname, growable_data->material_filename);
         free(mtl_file_dirname);
       }
 
       obj_parse_mtl_file(mtl_file_path, &growable_data->material_list);
-      free(mtl_file_path);
       continue;
     } else if (strcmp(current_token, "o") == 0) {
       // object name

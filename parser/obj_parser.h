@@ -1,15 +1,17 @@
-#ifndef OBJ_PARSER_H
-#define OBJ_PARSER_H
+#ifndef __OBJ_PARSER_H__
+#define __OBJ_PARSER_H__
 
-#include <stdbool.h>
+#if __linux
+#include <linux/limits.h>
+#else
+#include <limits.h>
+#endif
 
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"
 #include "list.h"
 
-#define OBJ_FILENAME_LENGTH 500
-#define MATERIAL_NAME_SIZE 255
-#define OBJ_LINE_SIZE 500
+#define OBJ_LINE_MAX 1024
 #define MAX_VERTEX_COUNT 4 //can only handle quads or triangles
 
 typedef struct {
@@ -45,8 +47,8 @@ typedef struct {
 } obj_vector2;
 
 typedef struct {
-  char name[MATERIAL_NAME_SIZE];
-  char texture_filename[OBJ_FILENAME_LENGTH];
+  char name[NAME_MAX];
+  char texture_filename[PATH_MAX];
   double amb[3];
   double diff[3];
   double spec[3];
@@ -82,8 +84,8 @@ typedef struct {
 
 typedef struct {
   //  vector extreme_dimensions[2];
-  char scene_filename[OBJ_FILENAME_LENGTH];
-  char material_filename[OBJ_FILENAME_LENGTH];
+  char scene_filename[PATH_MAX];
+  char material_filename[PATH_MAX];
 
   list vertex_list;
   list vertex_normal_list;
@@ -147,4 +149,4 @@ typedef struct {
 int parse_obj_scene(obj_scene_data *data_out, const char *filename);
 void delete_obj_data(obj_scene_data *data_out);
 
-#endif
+#endif // __OBJ_PARSER_H__
