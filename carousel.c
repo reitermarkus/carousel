@@ -44,6 +44,8 @@
 
 static matrix projection_matrix;
 static matrix view_matrix;
+static matrix camera_matrix;
+static matrix mouse_matrix;
 
 static float camera_translation_x = 0.0;
 static float camera_translation_y = 0.0;
@@ -70,6 +72,31 @@ static const float BASE_HEIGHT = .15;
 static const float BASE_RADIUS = 2.5;
 static const float ROOF_HEIGHT = 1.0;
 static const float CENTER_PILLAR_RADIUS = 0.5;
+
+
+float rotate_x = 0;
+float rotate_y = 0;
+
+int mouse_x;
+int mouse_y;
+
+
+void mouse_passive(int x, int y){
+  mouse_x = x;
+  mouse_y = y;
+}
+
+void mouse_motion(int x, int y){
+  static const float SPEED = 0.1 / (2 * M_PI);
+
+  rotate_x += (mouse_y - y) * SPEED; // rotate around x axis when mouse moves up/down
+  rotate_y += (mouse_x - x) * SPEED; // rotate around y axis when mouse moves left/right
+
+  mouse_passive(x, y);
+  glutPostRedisplay();
+}
+
+
 
 /*----------------------------------------------------------------*/
 
@@ -114,11 +141,11 @@ void setup_data_buffer_ext_obj(obj_scene_data* obj){
 
   glGenBuffers(1, &(obj->obj_data.vbo));
   glBindBuffer(GL_ARRAY_BUFFER, obj->obj_data.vbo);
-  glBufferData(GL_ARRAY_BUFFER, obj->vertex_count*3*sizeof(GLfloat), obj->vertex_buffer_data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, obj->vertex_count * 3 * sizeof(GLfloat), obj->vertex_buffer_data, GL_STATIC_DRAW);
 
   glGenBuffers(1, &(obj->obj_data.ibo));
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->obj_data.ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj->face_count*3*sizeof(GLushort), obj->index_buffer_data, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj->face_count * 3 * sizeof(GLushort), obj->index_buffer_data, GL_STATIC_DRAW);
 }
 
 void setup_shader_program_ext_obj(obj_scene_data* obj) {
@@ -191,21 +218,28 @@ void display_ext_object(obj_scene_data* obj){
   /* Issue draw command, using indexed triangle list */
   glDrawElements(GL_TRIANGLES, size/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 
-  /* Set state to only draw wireframe (no lighting used, yet) */
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
   /* Disable attributes */
   glDisableVertexAttribArray(0);
 }
+
+void initialize_view_matrix();
 
 void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  matrix_translate_x(camera_speed * camera_translation_x, view_matrix);
-  matrix_translate_y(camera_speed * camera_translation_y, view_matrix);
-  matrix_rotate_y(camera_speed / M_PI * camera_rotation_y, view_matrix);
-  matrix_translate_z(camera_speed * camera_translation_z, view_matrix);
+  matrix_translate_x(camera_speed * camera_translation_x, camera_matrix);
+  matrix_translate_y(camera_speed * camera_translation_y, camera_matrix);
+  matrix_rotate_y(camera_speed / M_PI * camera_rotation_y, camera_matrix);
+  matrix_translate_z(camera_speed * camera_translation_z, camera_matrix);
+
+  initialize_view_matrix();
+
+  matrix_multiply(camera_matrix, view_matrix, view_matrix);
+
+  matrix_identity(mouse_matrix);
+  matrix_rotate_y(-rotate_y, mouse_matrix);
+  matrix_rotate_x(-rotate_x, mouse_matrix);
 
   display_ext_object(&wolf);
   display_object(&base);
@@ -282,6 +316,7 @@ void on_idle() {
 
   // Rotate base.
   matrix_rotate_y(rotation, base.translation_matrix);
+  matrix_multiply(mouse_matrix, base.translation_matrix, base.translation_matrix);
 
   // Initialize roof matrix.
   matrix_identity(roof.translation_matrix);
@@ -291,6 +326,7 @@ void on_idle() {
 
   // Move roof up above the pillars.
   matrix_translate_y(PILLAR_HEIGHT + BASE_HEIGHT, roof.translation_matrix);
+  matrix_multiply(mouse_matrix, roof.translation_matrix, roof.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     // Initialize pillar matrix.
@@ -307,6 +343,7 @@ void on_idle() {
 
     // Apply general rotation to pillar.
     matrix_rotate_y(rotation, pillars[i].translation_matrix);
+    matrix_multiply(mouse_matrix, pillars[i].translation_matrix, pillars[i].translation_matrix);
   }
 
   for (int i=0; i < number_of_sides; i++){
@@ -325,6 +362,7 @@ void on_idle() {
 
     // Apply general rotation to cube.
     matrix_rotate_y(rotation, cubes[i].translation_matrix);
+    matrix_multiply(mouse_matrix, cubes[i].translation_matrix, cubes[i].translation_matrix);
   }
   // Request redrawing of window content.
   glutPostRedisplay();
@@ -363,6 +401,8 @@ void initialize() {
   // Initialize view matrix.
   initialize_view_matrix();
 
+  matrix_identity(camera_matrix);
+  matrix_identity(mouse_matrix);
 
   // Setup external object
   wolf.obj_data.vertex_shader_file = "shader/vertex_shader.vs";
@@ -490,6 +530,9 @@ void keyboard_event(unsigned char key, int x, int y) {
     case 'e': // rotate right
       camera_rotation_y = -1;
       break;
+    case ' ':
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      break;
   }
 
   glutPostRedisplay();
@@ -517,33 +560,16 @@ void keyboard_event_up(unsigned char key, int x, int y) {
       camera_rotation_y = 0.0;
       break;
     case 0x7f: // delete key
-      initialize_view_matrix();
+      matrix_identity(camera_matrix);
+      rotate_x = 0;
+      rotate_y = 0;
+      break;
+    case ' ':
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       break;
   }
 
   glutPostRedisplay();
-}
-
-
-void mouse_event(int button, int state, int x, int y) {
-  (void)x;
-  (void)y;
-
-  if (state == GLUT_DOWN) {
-    switch(button) {
-      case GLUT_LEFT_BUTTON:
-        printf("Left mouse button pressed.\n");
-        break;
-
-      case GLUT_MIDDLE_BUTTON:
-        printf("Middle mouse button pressed.\n");
-        break;
-
-      case GLUT_RIGHT_BUTTON:
-        printf("Right mouse button pressed.\n");
-        break;
-    }
-  }
 }
 
 
@@ -600,10 +626,13 @@ int main(int argc, char** argv) {
 
   glutKeyboardFunc(keyboard_event);
   glutKeyboardUpFunc(keyboard_event_up);
-  glutMouseFunc(mouse_event);
+
+  glutMotionFunc(mouse_motion);
+  glutPassiveMotionFunc(mouse_passive);
 
   // Enter GLUT event processing loop.
   glutMainLoop();
 
   return EXIT_SUCCESS;
 }
+
