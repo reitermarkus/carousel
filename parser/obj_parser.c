@@ -50,7 +50,8 @@ void obj_set_material_defaults(obj_material *mtl) {
   mtl->glossy = 98;
   mtl->shiny = 0;
   mtl->refract_index = 1;
-  mtl->texture_filename[0] = '\0';
+  mtl->amb_texture_filename[0] = '\0';
+  mtl->diff_texture_filename[0] = '\0';
 }
 
 int obj_parse_vertex_index(int *vertex_index, int *texture_index, int *normal_index) {
@@ -241,8 +242,11 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
     } else if (strcmp(current_token, "illum") == 0 && material_open) {
       // illumination type
     } else if (strcmp(current_token, "map_Ka") == 0 && material_open) {
-      // texture map
-      strncpy(current_mtl->texture_filename, strtok(NULL, " \t"), PATH_MAX);
+      // ambient texture map
+      strncpy(current_mtl->amb_texture_filename, strtok(NULL, " \t"), PATH_MAX);
+    } else if(strcmp(current_token, "map_Kd") == 0 && material_open) {
+      // diffuse texture map
+      strncpy(current_mtl->diff_texture_filename, strtok(NULL, " \t"), PATH_MAX);
     } else {
       fprintf(stderr, "Unknown command '%s' in material file %s at line %i:\n\t%s\n", current_token, filename, line_number, current_line);
       fclose(mtl_file_stream);

@@ -48,7 +48,8 @@ typedef struct {
 
 typedef struct {
   char name[NAME_MAX];
-  char texture_filename[PATH_MAX];
+  char amb_texture_filename[PATH_MAX];
+  char diff_texture_filename[PATH_MAX];
   double amb[3];
   double diff[3];
   double spec[3];
