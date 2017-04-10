@@ -247,6 +247,10 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
     } else if(strcmp(current_token, "map_Kd") == 0 && material_open) {
       // diffuse texture map
       strncpy(current_mtl->diff_texture_filename, strtok(NULL, " \t"), PATH_MAX);
+    } else if(strcmp(current_token, "map_Ke") == 0 && material_open) {
+      // map emissive coefficient
+    } else if(strcmp(current_token, "map_d") == 0 && material_open) {
+      // alpha texture map
     } else {
       fprintf(stderr, "Unknown command '%s' in material file %s at line %i:\n\t%s\n", current_token, filename, line_number, current_line);
       fclose(mtl_file_stream);
