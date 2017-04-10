@@ -2,7 +2,7 @@ PROGRAM = carousel
 
 HELPERS = $(addprefix helper/, load_file.o matrix.o draw.o create_shader_program.o)
 SHAPES = $(addprefix shape/, abstract_shape.o cylinder.o cube.o cone.o polygon.o)
-OBJ_PARSER = $(addprefix parser/, obj_parser.o list.o string_extra.o)
+OBJ_PARSER = $(addprefix parser/, obj_parser.o list.o)
 
 OBJ = $(PROGRAM).o $(HELPERS) $(SHAPES) $(OBJ_PARSER)
 

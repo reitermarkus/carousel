@@ -8,13 +8,13 @@
   (vertex).color.r = (r_val);                              \
   (vertex).color.g = (g_val);                              \
   (vertex).color.b = (b_val);                              \
-} while(0)
+} while (0)
 
 #define SET_VERTEX_POSITION(vertex, x_val, y_val, z_val) do { \
   (vertex).position.x = (x_val);                              \
   (vertex).position.y = (y_val);                              \
   (vertex).position.z = (z_val);                              \
-} while(0)
+} while (0)
 
 struct position {
   GLfloat x, y, z;
