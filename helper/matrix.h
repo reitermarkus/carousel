@@ -3,6 +3,8 @@
 
 typedef float matrix[4][4];
 
+#define C_FLOAT(value) static_cast<float>(value)
+
 void matrix_print(const matrix m);
 void matrix_identity(matrix result_matrix);
 void matrix_multiply(const matrix m1, const matrix m2, matrix result_matrix);

@@ -1,16 +1,24 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <cstdlib>
 
 #include "cube.h"
 
 #include "helper/macros.h"
 
-void cube(double h, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
+Cube::Cube(double h, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
+  this->h = h;
+  this->vertices = vertices;
+  this->vertices_size = vertices_size;
+  this->indices = indices;
+  this->indices_size = indices_size;
+}
+
+void Cube::create() {
   *vertices_size = 8 * sizeof(struct vertex);
-  *vertices = malloc(*vertices_size);
+  *vertices = new struct vertex[8];
 
   *indices_size = 12 * 3 * sizeof(GLushort);
-  *indices = malloc(*indices_size);
+  *indices = new GLushort[36];
 
   SET_VERTEX_POSITION((*vertices)[0], -h, -h, h);
   SET_VERTEX_COLOR((*vertices)[0], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));

@@ -20,7 +20,7 @@ char* load_file(const char* file_path) {
   size_t length = ftell(fp);
   fseek(fp, 0, SEEK_SET);
 
-  char* source = malloc((length + 1) * sizeof(char));
+  char* source = (char *)malloc((length + 1) * sizeof(char));
 
   if (fread(source, 1, length, fp) != length) {
     fprintf(stderr, "Could not read file '%s'.\n", file_path);

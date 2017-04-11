@@ -32,10 +32,10 @@ void matrix_identity(matrix result_matrix) {
 
 void matrix_rotation_x(float angle, matrix result_matrix) {
   matrix temp = {
-    {1.0, 0.0,        0.0,         0.0},
-    {0.0, cos(angle), -sin(angle), 0.0},
-    {0.0, sin(angle), cos(angle),  0.0},
-    {0.0, 0.0,        0.0,         1.0},
+    {1.0,             0.0,           0.0,            0.0},
+    {0.0, C_FLOAT(cos(angle)), C_FLOAT(-sin(angle)), 0.0},
+    {0.0, C_FLOAT(sin(angle)), C_FLOAT(cos(angle)),  0.0},
+    {0.0,             0.0,           0.0,            1.0},
   };
 
   memcpy(result_matrix, temp, sizeof(matrix));
@@ -49,10 +49,10 @@ void matrix_rotate_x(float angle, matrix result_matrix) {
 
 void matrix_rotation_y(float angle, matrix result_matrix) {
   matrix temp = {
-    {cos(angle),  0.0, sin(angle), 0.0},
-    {0.0,         1.0, 0.0,        0.0},
-    {-sin(angle), 0.0, cos(angle), 0.0},
-    {0.0,         0.0, 0.0,        1.0},
+    {C_FLOAT(cos(angle)),  0.0, C_FLOAT(sin(angle)), 0.0},
+    {0.0,            1.0,            0.0,            0.0},
+    {C_FLOAT(-sin(angle)), 0.0, C_FLOAT(cos(angle)), 0.0},
+    {0.0,            0.0,            0.0,            1.0},
   };
 
   memcpy(result_matrix, temp, sizeof(matrix));
@@ -66,10 +66,10 @@ void matrix_rotate_y(float angle, matrix result_matrix) {
 
 void matrix_rotation_z(float angle, matrix result_matrix) {
   matrix temp = {
-    {cos(angle), -sin(angle), 0.0, 0.0},
-    {sin(angle), cos(angle),  0.0, 0.0},
-    {0.0,        0.0,         1.0, 0.0},
-    {0.0,        0.0,         0.0, 1.0},
+    {C_FLOAT(cos(angle)), C_FLOAT(-sin(angle)), 0.0, 0.0},
+    {C_FLOAT(sin(angle)), C_FLOAT(cos(angle)),  0.0, 0.0},
+    {0.0,            0.0,            1.0,            0.0},
+    {0.0,            0.0,            0.0,            1.0},
   };
 
   memcpy(result_matrix, temp, sizeof(matrix));

@@ -1,12 +1,23 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <cstdlib>
 #include <math.h>
 
 #include "cylinder.h"
 
 #include "helper/macros.h"
 
-void cylinder(int edges, double radius, double height, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size, float top_center_y_offset) {
+Cylinder::Cylinder(int edges, double radius, double height, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size, float top_center_y_offset) {
+  this->edges = edges;
+  this->radius = radius;
+  this->height = height;
+  this->vertices = vertices;
+  this->vertices_size = vertices_size;
+  this->indices = indices;
+  this->indices_size = indices_size;
+  this->top_center_y_offset = top_center_y_offset;
+}
+
+void Cylinder::create() {
   float step = 2.0 * M_PI / (float)edges; // circumfence divided by parts
 
   // Vertex count is number of edges + 1 (center vertex) if height is 0,
@@ -19,7 +30,7 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
   }
 
   *vertices_size = vertex_count * sizeof(struct vertex);
-  *vertices = malloc(*vertices_size);
+  *vertices = new struct vertex[vertex_count];
 
   // Index count is number of edges if height is 0,
   // otherwise (number of edges) * 4, to account for the side panels.
@@ -31,7 +42,7 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
   }
 
   *indices_size = index_count * 3 * sizeof(GLushort);
-  *indices = malloc(*indices_size);
+  *indices = new GLushort[index_count * 3];
 
   struct vertex* vertex = (struct vertex*)(*vertices);
 
@@ -120,5 +131,4 @@ void cylinder(int edges, double radius, double height, struct vertex** vertices,
 
     angle += step;
   }
-
 }
