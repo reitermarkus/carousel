@@ -30,6 +30,7 @@
 #include "helper/create_shader_program.h"
 #include "helper/draw.h"
 #include "shape/cone.h"
+#include "shape/flattened_cone.h"
 #include "shape/cube.h"
 #include "shape/cylinder.h"
 #include "shape/polygon.h"
@@ -50,7 +51,8 @@ static const float camera_speed = 0.1;
 
 enum { number_of_sides = 8 };
 static struct object_data base;
-static struct object_data center_pillar;
+static struct object_data center_pillar_bottom;
+static struct object_data center_pillar_top;
 static struct object_data roof;
 static struct object_data pillars[number_of_sides];
 static struct object_data cubes[number_of_sides];
@@ -203,7 +205,8 @@ void display() {
 
   display_ext_object(&wolf);
   display_object(&base);
-  display_object(&center_pillar);
+  display_object(&center_pillar_bottom);
+  display_object(&center_pillar_top);
   display_object(&roof);
 
   for (int i = 0; i < number_of_sides; i++) {
@@ -233,13 +236,22 @@ void on_idle() {
   float rotation = -angle;
 
   // Initialize center pillar matrix.
-  matrix_identity(center_pillar.translation_matrix);
+  matrix_identity(center_pillar_bottom.translation_matrix);
 
   // Move center pillar onto the base.
-  matrix_translate_y(BASE_HEIGHT, center_pillar.translation_matrix);
+  matrix_translate_y(BASE_HEIGHT, center_pillar_bottom.translation_matrix);
 
   // Rotate center pillar.
-  matrix_rotate_y(rotation, center_pillar.translation_matrix);
+  matrix_rotate_y(rotation, center_pillar_bottom.translation_matrix);
+
+  // Initialize center pillar matrix.
+  matrix_identity(center_pillar_top.translation_matrix);
+
+  // Move center pillar onto the base.
+  matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) / 2, center_pillar_top.translation_matrix);
+
+  // Rotate center pillar.
+  matrix_rotate_y(rotation, center_pillar_top.translation_matrix);
 
   // Initialize base matrix.
   matrix_identity(base.translation_matrix);
@@ -343,13 +355,21 @@ void initialize() {
   setup_shader_program(&roof);
   matrix_identity(roof.translation_matrix);
 
-  /* Setup vertex, color, and index buffer objects for CENTER PILLAR*/
-  cylinder(15, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT, &(center_pillar.vertices), &(center_pillar.vertices_size), &(center_pillar.indices), &(center_pillar.indices_size));
-  setup_data_buffers(&center_pillar);
-  center_pillar.vertex_shader_file = "shader/vertex_shader.vs";
-  center_pillar.fragment_shader_file = "shader/fragment_shader.fs";
-  setup_shader_program(&center_pillar);
-  matrix_identity(center_pillar.translation_matrix);
+  /* Setup vertex, color, and index buffer objects for CENTER PILLAR BOTTOM*/
+  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.75, PILLAR_HEIGHT / 2, &(center_pillar_bottom.vertices), &(center_pillar_bottom.vertices_size), &(center_pillar_bottom.indices), &(center_pillar_bottom.indices_size));
+  setup_data_buffers(&center_pillar_bottom);
+  center_pillar_bottom.vertex_shader_file = "shader/vertex_shader.vs";
+  center_pillar_bottom.fragment_shader_file = "shader/fragment_shader.fs";
+  setup_shader_program(&center_pillar_bottom);
+  matrix_identity(center_pillar_bottom.translation_matrix);
+
+    /* Setup vertex, color, and index buffer objects for CENTER PILLAR TOP*/
+  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.75, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT / 2, &(center_pillar_top.vertices), &(center_pillar_top.vertices_size), &(center_pillar_top.indices), &(center_pillar_top.indices_size));
+  setup_data_buffers(&center_pillar_top);
+  center_pillar_top.vertex_shader_file = "shader/vertex_shader.vs";
+  center_pillar_top.fragment_shader_file = "shader/fragment_shader.fs";
+  setup_shader_program(&center_pillar_top);
+  matrix_identity(center_pillar_top.translation_matrix);
 
    /* Setup vertex, color, and index buffer objects for BASE*/
   cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
