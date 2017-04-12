@@ -53,6 +53,8 @@ enum { number_of_sides = 8 };
 static struct object_data base;
 static struct object_data center_pillar_bottom;
 static struct object_data center_pillar_top;
+static struct object_data center_pillar_mid_bottom;
+static struct object_data center_pillar_mid_top;
 static struct object_data roof;
 static struct object_data pillars[number_of_sides];
 static struct object_data cubes[number_of_sides];
@@ -207,6 +209,8 @@ void display() {
   display_object(&base);
   display_object(&center_pillar_bottom);
   display_object(&center_pillar_top);
+  display_object(&center_pillar_mid_bottom);
+  display_object(&center_pillar_mid_top);
   display_object(&roof);
 
   for (int i = 0; i < number_of_sides; i++) {
@@ -247,11 +251,29 @@ void on_idle() {
   // Initialize center pillar matrix.
   matrix_identity(center_pillar_top.translation_matrix);
 
-  // Move center pillar onto the base.
-  matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) / 2, center_pillar_top.translation_matrix);
+  // Move center pillar onto the top.
+  matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) * 0.63, center_pillar_top.translation_matrix);
 
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar_top.translation_matrix);
+
+  // Initialize center pillar mid matrix.
+  matrix_identity(center_pillar_mid_bottom.translation_matrix);
+
+  // Move center pillar onto the top.
+  matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) * 0.54, center_pillar_mid_bottom.translation_matrix);
+
+  // Rotate center pillar.
+  matrix_rotate_y(rotation, center_pillar_mid_bottom.translation_matrix);
+
+  // Initialize center pillar mid matrix.
+  matrix_identity(center_pillar_mid_top.translation_matrix);
+
+  // Move center pillar onto the top.
+  matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) * 0.45, center_pillar_mid_top.translation_matrix);
+
+  // Rotate center pillar.
+  matrix_rotate_y(rotation, center_pillar_mid_top.translation_matrix);
 
   // Initialize base matrix.
   matrix_identity(base.translation_matrix);
@@ -356,7 +378,7 @@ void initialize() {
   matrix_identity(roof.translation_matrix);
 
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR BOTTOM*/
-  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.75, PILLAR_HEIGHT / 2, &(center_pillar_bottom.vertices), &(center_pillar_bottom.vertices_size), &(center_pillar_bottom.indices), &(center_pillar_bottom.indices_size));
+  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &(center_pillar_bottom.vertices), &(center_pillar_bottom.vertices_size), &(center_pillar_bottom.indices), &(center_pillar_bottom.indices_size));
   setup_data_buffers(&center_pillar_bottom);
   center_pillar_bottom.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_bottom.fragment_shader_file = "shader/fragment_shader.fs";
@@ -364,12 +386,28 @@ void initialize() {
   matrix_identity(center_pillar_bottom.translation_matrix);
 
     /* Setup vertex, color, and index buffer objects for CENTER PILLAR TOP*/
-  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.75, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT / 2, &(center_pillar_top.vertices), &(center_pillar_top.vertices_size), &(center_pillar_top.indices), &(center_pillar_top.indices_size));
+  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &(center_pillar_top.vertices), &(center_pillar_top.vertices_size), &(center_pillar_top.indices), &(center_pillar_top.indices_size));
   setup_data_buffers(&center_pillar_top);
   center_pillar_top.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_top.fragment_shader_file = "shader/fragment_shader.fs";
   setup_shader_program(&center_pillar_top);
   matrix_identity(center_pillar_top.translation_matrix);
+
+    /* Setup vertex, color, and index buffer objects for CENTER PILLAR MID BOTTOM*/
+  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_bottom.vertices), &(center_pillar_mid_bottom.vertices_size), &(center_pillar_mid_bottom.indices), &(center_pillar_mid_bottom.indices_size));
+  setup_data_buffers(&center_pillar_mid_bottom);
+  center_pillar_mid_bottom.vertex_shader_file = "shader/vertex_shader.vs";
+  center_pillar_mid_bottom.fragment_shader_file = "shader/fragment_shader.fs";
+  setup_shader_program(&center_pillar_mid_bottom);
+  matrix_identity(center_pillar_mid_bottom.translation_matrix);
+
+  /* Setup vertex, color, and index buffer objects for CENTER PILLAR MID TOP*/
+  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_top.vertices), &(center_pillar_mid_top.vertices_size), &(center_pillar_mid_top.indices), &(center_pillar_mid_top.indices_size));
+  setup_data_buffers(&center_pillar_mid_top);
+  center_pillar_mid_top.vertex_shader_file = "shader/vertex_shader.vs";
+  center_pillar_mid_top.fragment_shader_file = "shader/fragment_shader.fs";
+  setup_shader_program(&center_pillar_mid_top);
+  matrix_identity(center_pillar_mid_top.translation_matrix);
 
    /* Setup vertex, color, and index buffer objects for BASE*/
   cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
