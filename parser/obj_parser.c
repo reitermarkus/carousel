@@ -1,6 +1,7 @@
 #include "obj_parser.h"
 
 #include <stdio.h>
+
 #include <string.h>
 #include <stdlib.h>
 #include <libgen.h>
@@ -361,9 +362,11 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
         strcpy(mtl_file_path, growable_data->material_filename);
       } else {
         // relative path
-        char* mtl_file_dirname = dirname((char *)filename);
+        char* filename_dup = malloc(strlen(filename) + 1);
+        strcpy(filename_dup, filename);
+        char* mtl_file_dirname = dirname(filename_dup);
         sprintf(mtl_file_path, "%s/%s", mtl_file_dirname, growable_data->material_filename);
-        free(mtl_file_dirname);
+        free(filename_dup);
       }
 
       obj_parse_mtl_file(mtl_file_path, &growable_data->material_list);
