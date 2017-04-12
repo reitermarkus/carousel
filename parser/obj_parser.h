@@ -14,6 +14,12 @@
 #define OBJ_LINE_MAX 1024
 #define MAX_VERTEX_COUNT 4 //can only handle quads or triangles
 
+#define FREE_ELEMENT(element, count)  \
+  for (int i = 0; i < count; i++) {   \
+     free(element[i]);                \
+   }                                  \
+  free(element);
+
 typedef struct {
   int vertex_index[MAX_VERTEX_COUNT];
   int normal_index[MAX_VERTEX_COUNT];

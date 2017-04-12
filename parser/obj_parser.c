@@ -1,7 +1,6 @@
 #include "obj_parser.h"
 
 #include <stdio.h>
-
 #include <string.h>
 #include <stdlib.h>
 #include <libgen.h>
@@ -283,18 +282,6 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
     return -1;
   }
 
-/*
-  extreme_dimensions[0].x = INFINITY; extreme_dimensions[0].y = INFINITY; extreme_dimensions[0].z = INFINITY;
-  extreme_dimensions[1].x = -INFINITY; extreme_dimensions[1].y = -INFINITY; extreme_dimensions[1].z = -INFINITY;
-
-      if (v->x < extreme_dimensions[0].x) extreme_dimensions[0].x = v->x;
-      if (v->x > extreme_dimensions[1].x) extreme_dimensions[1].x = v->x;
-      if (v->y < extreme_dimensions[0].y) extreme_dimensions[0].y = v->y;
-      if (v->y > extreme_dimensions[1].y) extreme_dimensions[1].y = v->y;
-      if (v->z < extreme_dimensions[0].z) extreme_dimensions[0].z = v->z;
-      if (v->z > extreme_dimensions[1].z) extreme_dimensions[1].z = v->z;*/
-
-
   //parser loop
   while (fgets(current_line, OBJ_LINE_MAX, obj_file_stream)) {
     current_token = strtok(current_line, " \t\n\r");
@@ -422,55 +409,16 @@ void obj_free_temp_storage(obj_growable_scene_data *growable_data) {
 }
 
 void delete_obj_data(obj_scene_data *data_out) {
-  for (int i = 0; i < data_out->vertex_count; i++) {
-    free(data_out->vertex_list[i]);
-  }
-  free(data_out->vertex_list);
-
-  for (int i = 0; i < data_out->vertex_normal_count; i++) {
-    free(data_out->vertex_normal_list[i]);
-  }
-  free(data_out->vertex_normal_list);
-
-  for (int i = 0; i < data_out->vertex_texture_count; i++) {
-    free(data_out->vertex_texture_list[i]);
-  }
-  free(data_out->vertex_texture_list);
-
-  for (int i = 0; i < data_out->face_count; i++) {
-    free(data_out->face_list[i]);
-  }
-  free(data_out->face_list);
-
-  for (int i = 0; i < data_out->sphere_count; i++) {
-    free(data_out->sphere_list[i]);
-  }
-  free(data_out->sphere_list);
-
-  for (int i = 0; i < data_out->plane_count; i++) {
-    free(data_out->plane_list[i]);
-  }
-  free(data_out->plane_list);
-
-  for (int i = 0; i < data_out->light_point_count; i++) {
-    free(data_out->light_point_list[i]);
-  }
-  free(data_out->light_point_list);
-
-  for (int i = 0; i < data_out->light_disc_count; i++) {
-    free(data_out->light_disc_list[i]);
-  }
-  free(data_out->light_disc_list);
-
-  for (int i = 0; i < data_out->light_quad_count; i++) {
-    free(data_out->light_quad_list[i]);
-  }
-  free(data_out->light_quad_list);
-
-  for (int i = 0; i < data_out->material_count; i++) {
-    free(data_out->material_list[i]);
-  }
-  free(data_out->material_list);
+  FREE_ELEMENT(data_out->vertex_list, data_out->vertex_count);
+  FREE_ELEMENT(data_out->vertex_normal_list, data_out->vertex_normal_count);
+  FREE_ELEMENT(data_out->vertex_texture_list, data_out->vertex_texture_count);
+  FREE_ELEMENT(data_out->face_list, data_out->face_count);
+  FREE_ELEMENT(data_out->sphere_list, data_out->sphere_count);
+  FREE_ELEMENT(data_out->plane_list, data_out->plane_count);
+  FREE_ELEMENT(data_out->light_point_list, data_out->light_point_count);
+  FREE_ELEMENT(data_out->light_disc_list, data_out->light_disc_count);
+  FREE_ELEMENT(data_out->light_quad_list, data_out->light_quad_count);
+  FREE_ELEMENT(data_out->material_list, data_out->material_count);
 
   free(data_out->camera);
 }
@@ -515,9 +463,6 @@ int parse_obj_scene(obj_scene_data *data_out, const char *filename) {
   if (parsed_lines == -1) {
     return -1;
   }
-
-  //print_vector(NORMAL, "Max bounds are: ", &growable_data->extreme_dimensions[1]);
-  //print_vector(NORMAL, "Min bounds are: ", &growable_data->extreme_dimensions[0]);
 
   obj_copy_to_out_storage(data_out, &growable_data);
   obj_free_temp_storage(&growable_data);
