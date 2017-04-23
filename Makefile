@@ -1,10 +1,7 @@
 PROGRAM = carousel
 
 HELPERS = $(addprefix helper/, load_file.o matrix.o draw.o create_shader_program.o)
-<<<<<<< 5bbe6a90f5498f4759b8b6ad7a52b86a5536bbdc
-=======
-SHAPES = $(addprefix shape/, abstract_shape.o cylinder.o cube.o cuboid.o cone.o hyper_rectangle.o polygon.o)
->>>>>>> Add hyperrectangle shape.
+SHAPES = $(addprefix shape/, abstract_shape.o cylinder.o cube.o cuboid.o cone.o flattened_cone.o hyper_rectangle.o polygon.o)
 OBJ_PARSER = $(addprefix parser/, obj_parser.o list.o)
 
 OBJ = $(PROGRAM).o $(HELPERS) $(SHAPES) $(OBJ_PARSER)
