@@ -10,14 +10,16 @@ CFLAGS = -g -O2 -Wall -Werror -Wextra -std=c11 -I$(CURDIR)
 
 LDLIBS = -lm
 
-ifneq ($(OS), Windows_NT)
-	UNAME_S = $(shell uname -s)
-	ifeq ($(UNAME_S), Darwin)
-		CFLAGS += -Wno-deprecated-declarations
-		LDLIBS += -framework GLUT -framework OpenGL
-	else
-		LDLIBS += -lglut -lGLEW -lGL
-	endif
+ifneq ($(OS),Windows_NT)
+  UNAME_S = $(shell uname -s)
+  ifeq ($(UNAME_S),Darwin)
+    CFLAGS += -Wno-deprecated-declarations
+    LDLIBS += -framework GLUT -framework OpenGL
+  else
+    LDLIBS += -lglut -lGLEW -lGL
+  endif
+else
+  LDLIBS += -lglut -lGLEW -IGL -lopengl32
 endif
 
 $(PROGRAM): $(OBJ)
