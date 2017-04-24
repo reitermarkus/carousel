@@ -63,7 +63,7 @@ static struct object_data center_pillar_mid_top;
 static struct object_data roof;
 static struct object_data pillars[number_of_sides];
 static struct object_data cubes[number_of_sides];
-
+static struct object_data scene_floor;
 
 /* Structures for loading of OBJ data */
 obj_scene_data wolf;
@@ -294,6 +294,7 @@ void display() {
   display_object(&center_pillar_mid_bottom);
   display_object(&center_pillar_mid_top);
   display_object(&roof);
+  display_object(&scene_floor);
 
   for (int i = 0; i < number_of_sides; i++) {
     display_object(&(pillars[i]));
@@ -377,6 +378,12 @@ void on_idle() {
   // Move roof up above the pillars.
   matrix_translate_y(PILLAR_HEIGHT + BASE_HEIGHT, roof.translation_matrix);
   matrix_multiply(mouse_matrix, roof.translation_matrix, roof.translation_matrix);
+
+  // Initialize floor matrix.
+  matrix_identity(scene_floor.translation_matrix);
+
+  // Move floor under base.
+  matrix_translate_y(-BASE_HEIGHT + 0.07, scene_floor.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     // Initialize pillar matrix.
@@ -508,6 +515,14 @@ void initialize() {
   base.fragment_shader_file = "shader/fragment_shader.fs";
   setup_shader_program(&base);
   matrix_identity(base.translation_matrix);
+
+  /* Setup vertex, color, and index buffer objects for FLOOR*/
+  hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &(scene_floor.vertices), &(scene_floor.vertices_size), &(scene_floor.indices), &(scene_floor.indices_size));
+  setup_data_buffers(&scene_floor);
+  scene_floor.vertex_shader_file = "shader/vertex_shader.vs";
+  scene_floor.fragment_shader_file = "shader/fragment_shader.fs";
+  setup_shader_program(&scene_floor);
+  matrix_identity(scene_floor.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data cube_object;
@@ -641,4 +656,3 @@ int main(int argc, char** argv) {
 
   return EXIT_SUCCESS;
 }
-
