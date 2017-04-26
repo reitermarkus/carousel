@@ -283,15 +283,17 @@ void on_idle() {
 
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar_bottom.translation_matrix);
+  matrix_multiply(mouse_matrix, center_pillar_bottom.translation_matrix, center_pillar_bottom.translation_matrix);
 
   // Initialize center pillar matrix.
   matrix_identity(center_pillar_top.translation_matrix);
 
   // Move center pillar onto the top.
   matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) * 0.63, center_pillar_top.translation_matrix);
-
+ 
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar_top.translation_matrix);
+  matrix_multiply(mouse_matrix, center_pillar_top.translation_matrix, center_pillar_top.translation_matrix);
 
   // Initialize center pillar mid matrix.
   matrix_identity(center_pillar_mid_bottom.translation_matrix);
@@ -301,6 +303,7 @@ void on_idle() {
 
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar_mid_bottom.translation_matrix);
+  matrix_multiply(mouse_matrix, center_pillar_mid_bottom.translation_matrix, center_pillar_mid_bottom.translation_matrix);
 
   // Initialize center pillar mid matrix.
   matrix_identity(center_pillar_mid_top.translation_matrix);
@@ -310,6 +313,7 @@ void on_idle() {
 
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar_mid_top.translation_matrix);
+  matrix_multiply(mouse_matrix, center_pillar_mid_top.translation_matrix, center_pillar_mid_top.translation_matrix);
 
   // Initialize base matrix.
   matrix_identity(base.translation_matrix);
