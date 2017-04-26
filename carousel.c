@@ -25,6 +25,7 @@
 #include "helper/shared_headers.h"
 
 /* Local includes */
+#include "helper/keymap.h"
 #include "helper/matrix.h"
 #include "helper/macros.h"
 #include "helper/create_shader_program.h"
@@ -73,6 +74,7 @@ static const float BASE_RADIUS = 2.5;
 static const float ROOF_HEIGHT = 1.0;
 static const float CENTER_PILLAR_RADIUS = 0.5;
 
+struct keymap keymap;
 
 float rotate_x = 0;
 float rotate_y = 0;
@@ -228,6 +230,50 @@ void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  if (keymap.space) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  } else {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  }
+
+  if (keymap.a && !keymap.d) {
+    // left
+    camera_translation_x = 1;
+  } else if (!keymap.a && keymap.d) {
+    // right
+    camera_translation_x = -1;
+  } else {
+    camera_translation_x = 0;
+  }
+
+  if (keymap.w && !keymap.s) {
+    camera_translation_z = 1;
+  } else if (!keymap.w && keymap.s) {
+    camera_translation_z = -1;
+  } else {
+    camera_translation_z = 0;
+  }
+
+  if (keymap.q && !keymap.e) {
+    // rotate left
+    camera_rotation_y = 1;
+  } else if (!keymap.q && keymap.e) {
+    // rotate right
+    camera_rotation_y = -1;
+  } else {
+    camera_rotation_y = 0;
+  }
+
+  if (keymap.r && !keymap.f) {
+    // up
+    camera_translation_y = -1;
+  } else if (!keymap.r && keymap.f) {
+    // down
+    camera_translation_y = 1;
+  } else {
+    camera_translation_y = 0;
+  }
+
   matrix_translate_x(camera_speed * camera_translation_x, camera_matrix);
   matrix_translate_y(camera_speed * camera_translation_y, camera_matrix);
   matrix_rotate_y(camera_speed / M_PI * camera_rotation_y, camera_matrix);
@@ -290,7 +336,7 @@ void on_idle() {
 
   // Move center pillar onto the top.
   matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) * 0.63, center_pillar_top.translation_matrix);
- 
+
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar_top.translation_matrix);
   matrix_multiply(mouse_matrix, center_pillar_top.translation_matrix, center_pillar_top.translation_matrix);
@@ -509,35 +555,7 @@ void keyboard_event(unsigned char key, int x, int y) {
   (void)x;
   (void)y;
 
-  switch(key) {
-    case 'a': // left
-      camera_translation_x = 1;
-      break;
-    case 'd': // right
-      camera_translation_x = -1;
-      break;
-    case 'r': // up
-      camera_translation_y = -1;
-      break;
-    case 'f': // down
-      camera_translation_y = 1;
-      break;
-    case 'w': // forward
-      camera_translation_z = 1;
-      break;
-    case 's': // backward
-      camera_translation_z = -1;
-      break;
-    case 'q': // rotate left
-      camera_rotation_y = 1;
-      break;
-    case 'e': // rotate right
-      camera_rotation_y = -1;
-      break;
-    case ' ':
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      break;
-  }
+  keymap_set_key(&keymap, key, true);
 
   glutPostRedisplay();
 }
@@ -546,30 +564,13 @@ void keyboard_event_up(unsigned char key, int x, int y) {
   (void)x;
   (void)y;
 
+  keymap_set_key(&keymap, key, false);
+
   switch(key) {
-    case 'a': // left
-    case 'd': // right
-      camera_translation_x = 0.0;
-      break;
-    case 'r': // up
-    case 'f': // down
-      camera_translation_y = 0.0;
-      break;
-    case 'w': // forward
-    case 's': // backward
-      camera_translation_z = 0.0;
-      break;
-    case 'q': // rotate left
-    case 'e': // rotate right
-      camera_rotation_y = 0.0;
-      break;
     case 0x7f: // delete key
       matrix_identity(camera_matrix);
       rotate_x = 0;
       rotate_y = 0;
-      break;
-    case ' ':
-      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       break;
   }
 
@@ -628,6 +629,7 @@ int main(int argc, char** argv) {
   glutReshapeFunc(resize_window);
   glutDisplayFunc(display);
 
+  keymap_init(&keymap);
   glutKeyboardFunc(keyboard_event);
   glutKeyboardUpFunc(keyboard_event_up);
 

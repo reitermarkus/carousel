@@ -1,6 +1,6 @@
 PROGRAM = carousel
 
-HELPERS = $(addprefix helper/, load_file.o matrix.o draw.o create_shader_program.o)
+HELPERS = $(addprefix helper/, load_file.o matrix.o draw.o create_shader_program.o keymap.o)
 SHAPES = $(addprefix shape/, abstract_shape.o cylinder.o cube.o cuboid.o cone.o flattened_cone.o hyper_rectangle.o polygon.o)
 OBJ_PARSER = $(addprefix parser/, obj_parser.o list.o)
 
