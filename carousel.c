@@ -384,6 +384,7 @@ void on_idle() {
 
   // Move floor under base.
   matrix_translate_y(-BASE_HEIGHT + 0.07, scene_floor.translation_matrix);
+  matrix_multiply(mouse_matrix, scene_floor.translation_matrix, scene_floor.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     // Initialize pillar matrix.
