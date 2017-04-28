@@ -19,6 +19,7 @@
 /* Standard includes */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 #include <time.h>
 
@@ -75,6 +76,8 @@ static const float ROOF_HEIGHT = 1.0;
 static const float CENTER_PILLAR_RADIUS = 0.5;
 
 struct keymap keymap;
+
+bool automatic_camera = true;
 
 float rotate_x = 0;
 float rotate_y = 0;
@@ -236,42 +239,50 @@ void display() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   }
 
-  if (keymap.a && !keymap.d) {
-    // left
-    camera_translation_x = 1;
-  } else if (!keymap.a && keymap.d) {
-    // right
-    camera_translation_x = -1;
-  } else {
-    camera_translation_x = 0;
-  }
+  if (!automatic_camera) {
+    if (keymap.a && !keymap.d) {
+      // left
+      camera_translation_x = 1;
+    } else if (!keymap.a && keymap.d) {
+      // right
+      camera_translation_x = -1;
+    } else {
+      camera_translation_x = 0;
+    }
 
-  if (keymap.w && !keymap.s) {
-    camera_translation_z = 1;
-  } else if (!keymap.w && keymap.s) {
-    camera_translation_z = -1;
-  } else {
-    camera_translation_z = 0;
-  }
+    if (keymap.w && !keymap.s) {
+      camera_translation_z = 1;
+    } else if (!keymap.w && keymap.s) {
+      camera_translation_z = -1;
+    } else {
+      camera_translation_z = 0;
+    }
 
-  if (keymap.q && !keymap.e) {
-    // rotate left
-    camera_rotation_y = 1;
-  } else if (!keymap.q && keymap.e) {
-    // rotate right
-    camera_rotation_y = -1;
-  } else {
-    camera_rotation_y = 0;
-  }
+    if (keymap.q && !keymap.e) {
+      // rotate left
+      camera_rotation_y = 1;
+    } else if (!keymap.q && keymap.e) {
+      // rotate right
+      camera_rotation_y = -1;
+    } else {
+      camera_rotation_y = 0;
+    }
 
-  if (keymap.r && !keymap.f) {
-    // up
-    camera_translation_y = -1;
-  } else if (!keymap.r && keymap.f) {
-    // down
-    camera_translation_y = 1;
+    if (keymap.r && !keymap.f) {
+      // up
+      camera_translation_y = -1;
+    } else if (!keymap.r && keymap.f) {
+      // down
+      camera_translation_y = 1;
+    } else {
+      camera_translation_y = 0;
+    }
+
   } else {
+    camera_translation_x = -0.75;
     camera_translation_y = 0;
+    camera_rotation_y = -0.25;
+    camera_translation_z = 0;
   }
 
   matrix_translate_x(camera_speed * camera_translation_x, camera_matrix);
@@ -280,7 +291,6 @@ void display() {
   matrix_translate_z(camera_speed * camera_translation_z, camera_matrix);
 
   initialize_view_matrix();
-
   matrix_multiply(camera_matrix, view_matrix, view_matrix);
 
   matrix_identity(mouse_matrix);
@@ -573,6 +583,10 @@ void keyboard_event(unsigned char key, int x, int y) {
 
   keymap_set_key(&keymap, key, true);
 
+  if (keymap.a || keymap.w || keymap.s || keymap.d || keymap.q || keymap.e || keymap.r || keymap.f) {
+    automatic_camera = false;
+  }
+
   glutPostRedisplay();
 }
 
@@ -584,7 +598,10 @@ void keyboard_event_up(unsigned char key, int x, int y) {
 
   switch(key) {
     case 0x7f: // delete key
-      matrix_identity(camera_matrix);
+      if (!automatic_camera) {
+        automatic_camera = true;
+        matrix_identity(camera_matrix);
+      }
       rotate_x = 0;
       rotate_y = 0;
       break;
