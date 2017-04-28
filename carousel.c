@@ -475,7 +475,7 @@ void initialize() {
   // Setup external object
   extern_object.obj_data.vertex_shader_file = "shader/vertex_shader.vs";
   extern_object.obj_data.fragment_shader_file = "shader/fragment_shader.fs";
-  init_ext_obj(&extern_object, "models/tiger.obj");
+  init_ext_obj(&extern_object, "models/tigercub.obj");
   matrix_identity(extern_object.obj_data.translation_matrix);
 
 

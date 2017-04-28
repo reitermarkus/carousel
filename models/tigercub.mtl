@@ -7,14 +7,14 @@ newmtl tgrc_body
   Kd 0 0 0
   Ks 0 0 0
   illum 2
-  map_Kd images\tigercub.tif
+  map_Kd tigercub\tigercub.tif
 
 newmtl tgrc_rIris
   Ka 0 0 0
   Kd 0 0 0
   Ks 0 0 0
   illum 2
-  map_Kd images\eye_a5.tif
+  map_Kd tigercub\eye_a5.tif
 
 newmtl tgrc_eye
   Ka 0 0 0
@@ -33,4 +33,4 @@ newmtl tgrc_lIris
   Kd 0 0 0
   Ks 0 0 0
   illum 2
-  map_Kd images\eye_a5.tif
+  map_Kd tigercub\eye_a5.tif
