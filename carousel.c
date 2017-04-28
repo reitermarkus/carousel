@@ -66,7 +66,7 @@ static struct object_data cubes[number_of_sides];
 static struct object_data scene_floor;
 
 /* Structures for loading of OBJ data */
-obj_scene_data wolf;
+obj_scene_data extern_object;
 
 static const float PILLAR_HEIGHT = 1.5;
 static const float BASE_HEIGHT = .15;
@@ -287,7 +287,7 @@ void display() {
   matrix_rotate_y(-rotate_y, mouse_matrix);
   matrix_rotate_x(-rotate_x, mouse_matrix);
 
-  display_ext_object(&wolf);
+  display_ext_object(&extern_object);
   display_object(&base);
   display_object(&center_pillar_bottom);
   display_object(&center_pillar_top);
@@ -463,10 +463,10 @@ void initialize() {
   matrix_identity(mouse_matrix);
 
   // Setup external object
-  wolf.obj_data.vertex_shader_file = "shader/vertex_shader.vs";
-  wolf.obj_data.fragment_shader_file = "shader/fragment_shader.fs";
-  init_ext_obj(&wolf, "models/wolf.obj");
-  matrix_identity(wolf.obj_data.translation_matrix);
+  extern_object.obj_data.vertex_shader_file = "shader/vertex_shader.vs";
+  extern_object.obj_data.fragment_shader_file = "shader/fragment_shader.fs";
+  init_ext_obj(&extern_object, "models/tiger.obj");
+  matrix_identity(extern_object.obj_data.translation_matrix);
 
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
