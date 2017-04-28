@@ -49,10 +49,8 @@ static matrix view_matrix;
 static matrix camera_matrix;
 static matrix mouse_matrix;
 
-static float camera_translation_x = 0.0;
-static float camera_translation_y = 0.0;
-static float camera_rotation_y = 0.0;
-static float camera_translation_z = 0.0;
+static const float camera_height = -2;
+static const float camera_distance = -15.0;
 static const float camera_speed = 0.1;
 
 enum { number_of_sides = 8 };
@@ -227,8 +225,6 @@ void display_ext_object(obj_scene_data* obj){
   glDisableVertexAttribArray(0);
 }
 
-void initialize_view_matrix();
-
 void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -239,58 +235,29 @@ void display() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   }
 
+  matrix_identity(view_matrix);
+
   if (!automatic_camera) {
-    if (keymap.a && !keymap.d) {
-      // left
-      camera_translation_x = 1;
-    } else if (!keymap.a && keymap.d) {
-      // right
-      camera_translation_x = -1;
-    } else {
-      camera_translation_x = 0;
-    }
-
-    if (keymap.w && !keymap.s) {
-      camera_translation_z = 1;
-    } else if (!keymap.w && keymap.s) {
-      camera_translation_z = -1;
-    } else {
-      camera_translation_z = 0;
-    }
-
-    if (keymap.q && !keymap.e) {
-      // rotate left
-      camera_rotation_y = 1;
-    } else if (!keymap.q && keymap.e) {
-      // rotate right
-      camera_rotation_y = -1;
-    } else {
-      camera_rotation_y = 0;
-    }
-
-    if (keymap.r && !keymap.f) {
-      // up
-      camera_translation_y = -1;
-    } else if (!keymap.r && keymap.f) {
-      // down
-      camera_translation_y = 1;
-    } else {
-      camera_translation_y = 0;
-    }
-
+    if (keymap.a && !keymap.d) { matrix_translate_x(+camera_speed, camera_matrix);         } // left
+    if (!keymap.a && keymap.d) { matrix_translate_x(-camera_speed, camera_matrix);         } // right
+    if (keymap.w && !keymap.s) { matrix_translate_z(+camera_speed, camera_matrix);         } // forward
+    if (!keymap.w && keymap.s) { matrix_translate_z(-camera_speed, camera_matrix);         } // backward
+    if (keymap.q && !keymap.e) { matrix_rotate_y(+camera_speed / 2 / M_PI, camera_matrix); } // rotate left
+    if (!keymap.q && keymap.e) { matrix_rotate_y(-camera_speed / 2 / M_PI, camera_matrix); } // rotate right
+    if (keymap.r && !keymap.f) { matrix_translate_y(-camera_speed, camera_matrix);         } // up
+    if (!keymap.r && keymap.f) { matrix_translate_y(+camera_speed, camera_matrix);         } // down
   } else {
-    camera_translation_x = -0.75;
-    camera_translation_y = 0;
-    camera_rotation_y = -0.25;
-    camera_translation_z = 0;
+    long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
+    float rotation = (elapsed_time / 500.0) * camera_speed;
+
+    matrix_identity(camera_matrix);
+
+    matrix_translate_x(camera_distance * sinf(rotation), camera_matrix);
+    matrix_translate_y(camera_height, camera_matrix);
+    matrix_translate_z(camera_distance * cosf(rotation), camera_matrix);
+    matrix_rotate_y(-rotation, camera_matrix);
   }
 
-  matrix_translate_x(camera_speed * camera_translation_x, camera_matrix);
-  matrix_translate_y(camera_speed * camera_translation_y, camera_matrix);
-  matrix_rotate_y(camera_speed / M_PI * camera_rotation_y, camera_matrix);
-  matrix_translate_z(camera_speed * camera_translation_z, camera_matrix);
-
-  initialize_view_matrix();
   matrix_multiply(camera_matrix, view_matrix, view_matrix);
 
   matrix_identity(mouse_matrix);
@@ -446,12 +413,6 @@ void on_idle() {
 *
 *******************************************************************/
 
-void initialize_view_matrix() {
-  matrix_identity(view_matrix);
-  float camera_distance = -7.0;
-  matrix_translation(0.0, -1, camera_distance, view_matrix);
-}
-
 void initialize() {
   // Set background color based on system time.
   time_t current_time = time(NULL);
@@ -466,9 +427,8 @@ void initialize() {
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
-  // Initialize view matrix.
-  initialize_view_matrix();
-
+  // Initialize matrices.
+  matrix_identity(view_matrix);
   matrix_identity(camera_matrix);
   matrix_identity(mouse_matrix);
 
@@ -600,7 +560,6 @@ void keyboard_event_up(unsigned char key, int x, int y) {
     case 0x7f: // delete key
       if (!automatic_camera) {
         automatic_camera = true;
-        matrix_identity(camera_matrix);
       }
       rotate_x = 0;
       rotate_y = 0;
