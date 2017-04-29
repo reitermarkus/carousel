@@ -4,6 +4,6 @@
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"
 
-void cone(int edges, float radius, float height, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size);
+void cone(int edges, float radius, float height, struct vertex** vertices, long* vertices_size, struct index** indices, long* indices_size);
 
 #endif // __CONE_H__

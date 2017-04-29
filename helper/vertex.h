@@ -25,7 +25,7 @@ struct color {
 };
 
 struct index {
-  GLuint a, b, c;
+  GLushort a, b, c;
 };
 
 struct vertex {
@@ -44,7 +44,7 @@ struct object_data {
   long vertices_size;
 
   GLuint ibo;
-  GLushort* indices;
+  struct index* indices;
   long indices_size;
 
   GLuint shader_program;
