@@ -6,7 +6,7 @@
 
 #include "helper/macros.h"
 
-void abstract_shape(int edges, float bottom_radius, float top_radius, float height, float bottom_center_y_offset, float top_center_y_offset, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
+void abstract_shape(int edges, float bottom_radius, float top_radius, float height, float bottom_center_y_offset, float top_center_y_offset, struct vertex** vertices, long* vertices_size, struct index** indices, long* indices_size) {
   float step = 2.0 * M_PI / (float)edges; // circumfence divided by parts
 
   // Vertex count is number of edges + 1 (center vertex) if height is 0,
@@ -17,7 +17,7 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
   } else if (top_center_y_offset != 0) {
     vertex_count += 1;
   }
-  *vertices_size = vertex_count * sizeof(struct vertex);
+  *vertices_size = vertex_count * sizeof(**vertices);
   *vertices = malloc(*vertices_size);
 
   // Index count is number of edges if height is 0,
@@ -28,7 +28,7 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
   } else if (height != 0) {
     index_count *= 4;
   }
-  *indices_size = index_count * 3 * sizeof(GLushort);
+  *indices_size = index_count * sizeof(**indices);
   *indices = malloc(*indices_size);
 
   struct vertex* vertex = (struct vertex*)(*vertices);
@@ -72,46 +72,45 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
       SET_VERTEX_COLOR(*vertex, R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
     }
 
-    int j = i * 3;
     int curr_i_base = i + 1;
     int next_i_base = (curr_i_base % edges) + 1;
 
     // Connect the triangle between the center vertex,
     // the current and next vertex of the base polygon.
-    (*indices)[j + 0] = 0;
-    (*indices)[j + 1] = curr_i_base;
-    (*indices)[j + 2] = next_i_base;
+    (*indices)[i].a = 0;
+    (*indices)[i].b = curr_i_base;
+    (*indices)[i].c = next_i_base;
     // printf("Connecting %i (origin base) with %i and %i.\n", 0, curr_i_base, next_i_base);
 
     if (height != 0 || top_center_y_offset != 0) {
-      int k = (i + edges) * 3;
+      int k = i + edges;
       int curr_i_top = curr_i_base + edges + 1;
       int next_i_top = next_i_base + edges + 1;
 
       if (height == 0) {
         // Connect the triangle between the top center vertex
         // with the current and next vertex of the base polygon.
-        (*indices)[k + 0] = 0 + edges + 1;
-        (*indices)[k + 1] = curr_i_base;
-        (*indices)[k + 2] = next_i_base;
+        (*indices)[k].a = 0 + edges + 1;
+        (*indices)[k].b = curr_i_base;
+        (*indices)[k].c = next_i_base;
       } else if (height != 0) {
         // Connect the triangle between the top center vertex
         // with the current and next vertex of the top polygon.
-        (*indices)[k + 0] = 0 + edges + 1;
-        (*indices)[k + 1] = curr_i_top;
-        (*indices)[k + 2] = next_i_top;
+        (*indices)[k].a = 0 + edges + 1;
+        (*indices)[k].b = curr_i_top;
+        (*indices)[k].c = next_i_top;
         // printf("Connecting %i (origin top) with %i and %i.\n", 0, curr_i_top, next_i_top);
 
         // Connect the first triangle of the side panel.
-        (*indices)[k * 2 + 0] = curr_i_base;
-        (*indices)[k * 2 + 1] = next_i_base;
-        (*indices)[k * 2 + 2] = curr_i_top;
+        (*indices)[k * 2 + 0].a = curr_i_base;
+        (*indices)[k * 2 + 0].b = next_i_base;
+        (*indices)[k * 2 + 0].c = curr_i_top;
         // printf("Connecting %i and %i and %i.\n", curr_i_base, next_i_base, curr_i_top);
 
         // Connect the second triangle of the side panel.
-        (*indices)[k * 2 + 3] = curr_i_top;
-        (*indices)[k * 2 + 4] = next_i_top;
-        (*indices)[k * 2 + 5] = next_i_base;
+        (*indices)[k * 2 + 1].a = curr_i_top;
+        (*indices)[k * 2 + 1].b = next_i_top;
+        (*indices)[k * 2 + 1].c = next_i_base;
         // printf("Connecting %i and %i and %i.\n", curr_i_top, next_i_top, next_i_base);
       }
     }

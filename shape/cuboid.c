@@ -1,12 +1,12 @@
 #include "cuboid.h"
-	
+
 #include "helper/macros.h"
 
-void cuboid(float w, float h, float d, struct vertex** vertices, long* vertices_size, GLushort** indices, long* indices_size) {
-  *vertices_size = 8 * sizeof(struct vertex);
+void cuboid(float w, float h, float d, struct vertex** vertices, long* vertices_size, struct index** indices, long* indices_size) {
+  *vertices_size = 8 * sizeof(**vertices);
   *vertices = malloc(*vertices_size);
 
-  *indices_size = 12 * 3 * sizeof(GLushort);
+  *indices_size = 12 * sizeof(**indices);
   *indices = malloc(*indices_size);
 
   SET_VERTEX_POSITION((*vertices)[0], -w, -h, d);
@@ -27,50 +27,50 @@ void cuboid(float w, float h, float d, struct vertex** vertices, long* vertices_
   SET_VERTEX_COLOR((*vertices)[7], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
 
   // Front side.
-  (*indices)[0] = 0;
-  (*indices)[1] = 1;
-  (*indices)[2] = 2;
-  (*indices)[3] = 2;
-  (*indices)[4] = 3;
-  (*indices)[5] = 0;
+  (*indices)[0].a = 0;
+  (*indices)[0].b = 1;
+  (*indices)[0].c = 2;
+  (*indices)[1].a = 2;
+  (*indices)[1].b = 3;
+  (*indices)[1].c = 0;
 
   // Right side.
-  (*indices)[6]  = 1;
-  (*indices)[7]  = 5;
-  (*indices)[8]  = 6;
-  (*indices)[9]  = 6;
-  (*indices)[10] = 2;
-  (*indices)[11] = 1;
+  (*indices)[2].a = 1;
+  (*indices)[2].b = 5;
+  (*indices)[2].c = 6;
+  (*indices)[3].a = 6;
+  (*indices)[3].b = 2;
+  (*indices)[3].c = 1;
 
   // Backside.
-  (*indices)[12] = 7;
-  (*indices)[13] = 6;
-  (*indices)[14] = 5;
-  (*indices)[15] = 5;
-  (*indices)[16] = 4;
-  (*indices)[17] = 7;
+  (*indices)[4].a = 7;
+  (*indices)[4].b = 6;
+  (*indices)[4].c = 5;
+  (*indices)[5].a = 5;
+  (*indices)[5].b = 4;
+  (*indices)[5].c = 7;
 
   // Left side.
-  (*indices)[18] = 4;
-  (*indices)[19] = 0;
-  (*indices)[20] = 3;
-  (*indices)[21] = 3;
-  (*indices)[22] = 7;
-  (*indices)[23] = 4;
+  (*indices)[6].a = 4;
+  (*indices)[6].b = 0;
+  (*indices)[6].c = 3;
+  (*indices)[7].a = 3;
+  (*indices)[7].b = 7;
+  (*indices)[7].c = 4;
 
   // Bottom side.
-  (*indices)[24] = 4;
-  (*indices)[25] = 5;
-  (*indices)[26] = 1;
-  (*indices)[27] = 1;
-  (*indices)[28] = 0;
-  (*indices)[29] = 4;
+  (*indices)[8].a = 4;
+  (*indices)[8].b = 5;
+  (*indices)[8].c = 1;
+  (*indices)[9].a = 1;
+  (*indices)[9].b = 0;
+  (*indices)[9].c = 4;
 
   // Top side.
-  (*indices)[30] = 3;
-  (*indices)[31] = 2;
-  (*indices)[32] = 6;
-  (*indices)[33] = 6;
-  (*indices)[34] = 7;
-  (*indices)[35] = 3;
+  (*indices)[10].a = 3;
+  (*indices)[10].b = 2;
+  (*indices)[10].c = 6;
+  (*indices)[11].a = 6;
+  (*indices)[11].b = 7;
+  (*indices)[11].c = 3;
 }
