@@ -17,30 +17,29 @@
 
 
 /* Standard includes */
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
 #include <time.h>
 
 #include "helper/shared_headers.h"
 
 /* Local includes */
-#include "helper/keymap.h"
-#include "helper/matrix.h"
-#include "helper/macros.h"
 #include "helper/create_shader_program.h"
 #include "helper/draw.h"
+#include "helper/keymap.h"
+#include "helper/macros.h"
+#include "helper/matrix.h"
+#include "helper/vertex.h"
+#include "parser/obj_parser.h"
 #include "shape/cone.h"
-#include "shape/flattened_cone.h"
 #include "shape/cube.h"
 #include "shape/cuboid.h"
 #include "shape/cylinder.h"
+#include "shape/flattened_cone.h"
 #include "shape/hyper_rectangle.h"
 #include "shape/polygon.h"
-#include "helper/vertex.h"
-#include "parser/obj_parser.h"
-
 
 /*----------------------------------------------------------------*/
 
@@ -84,12 +83,12 @@ int mouse_x;
 int mouse_y;
 
 
-void mouse_passive(int x, int y){
+void mouse_passive(int x, int y) {
   mouse_x = x;
   mouse_y = y;
 }
 
-void mouse_motion(int x, int y){
+void mouse_motion(int x, int y) {
   static const float SPEED = 0.1 / (2 * M_PI);
 
   rotate_x += (mouse_y - y) * SPEED; // rotate around x axis when mouse moves up/down
