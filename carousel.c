@@ -244,8 +244,8 @@ void display() {
     if (!keymap.w && keymap.s) { matrix_translate_z(-camera_speed, camera_matrix);         } // backward
     if (keymap.q && !keymap.e) { matrix_rotate_y(+camera_speed / 2 / M_PI, camera_matrix); } // rotate left
     if (!keymap.q && keymap.e) { matrix_rotate_y(-camera_speed / 2 / M_PI, camera_matrix); } // rotate right
-    if (keymap.r && !keymap.f) { matrix_translate_y(-camera_speed, camera_matrix);         } // up
-    if (!keymap.r && keymap.f) { matrix_translate_y(+camera_speed, camera_matrix);         } // down
+    if (keymap.r && !keymap.f) { matrix_translate_y(-camera_speed / 2.0, camera_matrix);   } // up
+    if (!keymap.r && keymap.f) { matrix_translate_y(+camera_speed / 2.0, camera_matrix);   } // down
   } else {
     long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
     float rotation = (elapsed_time / 500.0) * camera_speed;
