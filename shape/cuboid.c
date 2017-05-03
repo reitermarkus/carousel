@@ -10,21 +10,21 @@ void cuboid(float w, float h, float d, struct vertex** vertices, long* vertex_co
   *indices = malloc(*index_count * sizeof(**indices));
 
   SET_VERTEX_POSITION((*vertices)[0], -w, -h, d);
-  SET_VERTEX_COLOR((*vertices)[0], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+  SET_VERTEX_COLOR((*vertices)[0], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   SET_VERTEX_POSITION((*vertices)[1], w, -h, d);
-  SET_VERTEX_COLOR((*vertices)[1], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+  SET_VERTEX_COLOR((*vertices)[1], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   SET_VERTEX_POSITION((*vertices)[2], w, h, d);
-  SET_VERTEX_COLOR((*vertices)[2], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+  SET_VERTEX_COLOR((*vertices)[2], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   SET_VERTEX_POSITION((*vertices)[3], -w, h, d);
-  SET_VERTEX_COLOR((*vertices)[3], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+  SET_VERTEX_COLOR((*vertices)[3], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   SET_VERTEX_POSITION((*vertices)[4], -w, -h, -d);
-  SET_VERTEX_COLOR((*vertices)[4], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+  SET_VERTEX_COLOR((*vertices)[4], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   SET_VERTEX_POSITION((*vertices)[5], w, -h, -d);
-  SET_VERTEX_COLOR((*vertices)[5], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+  SET_VERTEX_COLOR((*vertices)[5], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   SET_VERTEX_POSITION((*vertices)[6], w, h, -d);
-  SET_VERTEX_COLOR((*vertices)[6], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+  SET_VERTEX_COLOR((*vertices)[6], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   SET_VERTEX_POSITION((*vertices)[7], -w, h, -d);
-  SET_VERTEX_COLOR((*vertices)[7], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+  SET_VERTEX_COLOR((*vertices)[7], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
 
   // Front side.
   (*indices)[0].a = 0;

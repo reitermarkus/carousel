@@ -4,10 +4,11 @@
 #include "helper/shared_headers.h"
 #include "helper/matrix.h"
 
-#define SET_VERTEX_COLOR(vertex, r_val, g_val, b_val) do { \
+#define SET_VERTEX_COLOR(vertex, r_val, g_val, b_val, a_val) do { \
   (vertex).color.r = (r_val);                              \
   (vertex).color.g = (g_val);                              \
   (vertex).color.b = (b_val);                              \
+  (vertex).color.a = (a_val);                              \
 } while (0)
 
 #define SET_VERTEX_POSITION(vertex, x_val, y_val, z_val) do { \
@@ -21,7 +22,7 @@ struct position {
 };
 
 struct color {
-  GLfloat r, g, b;
+  GLfloat r, g, b, a;
 };
 
 struct index {

@@ -16,4 +16,6 @@
 
 #define RGB_RAND (rand() % 256)
 
+#define ALPHA_RAND (0.5 + (rand() % 50) / 100.0)
+
 #endif // __MACROS_H__

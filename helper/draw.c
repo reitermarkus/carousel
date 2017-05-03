@@ -34,7 +34,7 @@ void draw(struct object_data* object, matrix projection_matrix, matrix view_matr
   glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);
   glVertexAttribPointer(
     v_color,                       // attribute index
-    3,                             // attribute length (r, g, b)
+    4,                             // attribute length (r, g, b, a)
     GL_FLOAT,                      // attribute type
     GL_FALSE,                      // normalize points
     sizeof(struct vertex),         // offset between indices

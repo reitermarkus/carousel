@@ -165,7 +165,7 @@ void init_ext_obj(struct object_data* obj, char* filename){
       ext_obj.vertex_list[i]->e[2]
     );
 
-    SET_VERTEX_COLOR(obj->vertices[i], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
+    SET_VERTEX_COLOR(obj->vertices[i], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   }
 
   // Indices
@@ -241,13 +241,14 @@ void display() {
   display_object(&center_pillar_top);
   display_object(&center_pillar_mid_bottom);
   display_object(&center_pillar_mid_top);
-  display_object(&roof);
   display_object(&scene_floor);
 
   for (int i = 0; i < number_of_sides; i++) {
     display_object(&(pillars[i]));
     display_object(&(cubes[i]));
   }
+
+  display_object(&roof);
 
   // Swap between front and back buffer.
   glutSwapBuffers();
@@ -596,6 +597,10 @@ int main(int argc, char** argv) {
   glutIdleFunc(on_idle);
   glutReshapeFunc(resize_window);
   glutDisplayFunc(display);
+
+  // Enable blending for transparency.
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   keymap_init(&keymap);
   glutKeyboardFunc(keyboard_event);
