@@ -135,12 +135,6 @@ void setup_data_buffers(struct object_data* object) {
 *
 *******************************************************************/
 
-
-void setup_shader_program_ext_obj(obj_scene_data* obj) {
-  // Put linked shader program into drawing pipeline.
-  obj->obj_data.shader_program = create_shader_program(obj->obj_data.vertex_shader_file,obj->obj_data.fragment_shader_file);
-}
-
 void init_ext_obj(struct object_data* obj, char* filename){
   obj_scene_data ext_obj;
 
