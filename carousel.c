@@ -174,6 +174,12 @@ void init_ext_obj(struct object_data* obj, char* filename){
     obj->indices[i].b = ext_obj.face_list[i]->vertex_index[1];
     obj->indices[i].c = ext_obj.face_list[i]->vertex_index[2];
   }
+
+  // Textures
+  for (int i = 0; i < ext_obj.vertex_count; i++) {
+    obj->vertices[i].texture.u = ext_obj.vertex_texture_list[i]->e[0];
+    obj->vertices[i].texture.v = ext_obj.vertex_texture_list[i]->e[1];
+  }
 }
 
 /******************************************************************

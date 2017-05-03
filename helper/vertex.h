@@ -29,14 +29,20 @@ struct index {
   GLushort a, b, c;
 };
 
+struct texture {
+  GLfloat u, v;
+};
+
 struct vertex {
   struct position position;
   struct color color;
+  struct texture texture;
 };
 
 enum attribute_index {
   v_position = 0,
-  v_color = 1
+  v_color = 1,
+  v_texture = 2
 };
 
 struct object_data {

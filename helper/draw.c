@@ -41,6 +41,17 @@ void draw(struct object_data* object, matrix projection_matrix, matrix view_matr
     (void*)sizeof(struct position) // offset to color values
   );
 
+  glEnableVertexAttribArray(v_texture);
+  glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);
+ 	glVertexAttribPointer(
+ 		v_texture,                                      // attribute. No particular reason for 1, but must match the layout in the shader.
+ 		2,                                              // size : U+V => 2
+ 		GL_FLOAT,                                       // type
+ 		GL_FALSE,                                       // normalized?
+ 		sizeof(struct vertex),                          // stride
+ 		(void*)(sizeof(struct position) + sizeof(struct color)) // array buffer offset
+ 	);
+
   // Bind index array.
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (*object).ibo);
 
@@ -56,4 +67,5 @@ void draw(struct object_data* object, matrix projection_matrix, matrix view_matr
 
   glDisableVertexAttribArray(v_position);
   glDisableVertexAttribArray(v_color);
+  glDisableVertexAttribArray(v_texture);
 }
