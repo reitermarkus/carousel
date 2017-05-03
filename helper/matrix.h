@@ -19,6 +19,8 @@ void matrix_translate_x(float x, matrix result_matrix);
 void matrix_translate_y(float y, matrix result_matrix);
 void matrix_translate_z(float z, matrix result_matrix);
 
+void matrix_scale(float scale, matrix result_matrix);
+
 void matrix_perspective(float fov, float aspect, float near_plane, float far_plane, matrix result_matrix);
 
 #endif // __MATRIX_H__

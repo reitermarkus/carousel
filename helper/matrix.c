@@ -141,6 +141,17 @@ void matrix_multiply(matrix m1, matrix m2, matrix result_matrix) {
   memcpy(result_matrix, temp, sizeof(matrix));
 }
 
+void matrix_scale(float scale, matrix result_matrix) {
+  matrix temp = {
+    {scale, 0.0,   0.0,   0.0},
+    {0.0,   scale, 0.0,   0.0},
+    {0.0,   0.0,   scale, 0.0},
+    {0.0,   0.0,   0.0,   1.0},
+  };
+
+  matrix_multiply(result_matrix, temp, result_matrix);
+}
+
 void matrix_perspective(float fov, float aspect, float near_plane, float far_plane, matrix result_matrix) {
   float f = 1.0 / tan(fov / 2.0);
   float c1 = -(far_plane + near_plane) / (far_plane - near_plane);
