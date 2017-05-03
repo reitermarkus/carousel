@@ -119,13 +119,13 @@ void setup_data_buffers(struct object_data* object) {
   // Bind buffer object for vertices and colors.
   glGenBuffers(1, &(object->vbo));
   glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
-  glBufferData(GL_ARRAY_BUFFER, object->vertices_size, object->vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, object->vertex_count * sizeof(*object->vertices), object->vertices, GL_STATIC_DRAW);
   free(object->vertices);
 
   // Bind buffer object for indices.
   glGenBuffers(1, &(object->ibo));
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->indices_size, object->indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->index_count * sizeof(*object->indices), object->indices, GL_STATIC_DRAW);
   free(object->indices);
 }
 
@@ -151,11 +151,11 @@ void init_ext_obj(struct object_data* obj, char* filename){
 
   //  Copy mesh data from structs into appropriate arrays.
 
-  obj->vertices_size = ext_obj.vertex_count * sizeof(*obj->vertices);
-  obj->indices_size = ext_obj.face_count * sizeof(*obj->indices);
+  obj->vertex_count = ext_obj.vertex_count;
+  obj->index_count = ext_obj.face_count;
 
-  obj->vertices = malloc(obj->vertices_size);
-  obj->indices = malloc(obj->indices_size);
+  obj->vertices = malloc(obj->vertex_count * sizeof(*obj->vertices));
+  obj->indices = malloc(obj->index_count * sizeof(*obj->indices));
 
   // Vertices
   for (int i = 0; i < ext_obj.vertex_count; i++) {
@@ -412,9 +412,8 @@ void initialize() {
   matrix_identity(extern_object.translation_matrix);
   matrix_translate_y(2.75, extern_object.translation_matrix);
 
-
   /* Setup vertex, color, and index buffer objects for ROOF*/
-  cone(20, BASE_RADIUS , ROOF_HEIGHT, &(roof.vertices), &(roof.vertices_size), &(roof.indices), &(roof.indices_size));
+  cone(20, BASE_RADIUS , ROOF_HEIGHT, &(roof.vertices), &(roof.vertex_count), &(roof.indices), &(roof.index_count));
   setup_data_buffers(&roof);
   roof.vertex_shader_file = "shader/vertex_shader.vs";
   roof.fragment_shader_file = "shader/fragment_shader.fs";
@@ -422,7 +421,7 @@ void initialize() {
   matrix_identity(roof.translation_matrix);
 
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR BOTTOM*/
-  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &(center_pillar_bottom.vertices), &(center_pillar_bottom.vertices_size), &(center_pillar_bottom.indices), &(center_pillar_bottom.indices_size));
+  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &(center_pillar_bottom.vertices), &(center_pillar_bottom.vertex_count), &(center_pillar_bottom.indices), &(center_pillar_bottom.index_count));
   setup_data_buffers(&center_pillar_bottom);
   center_pillar_bottom.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_bottom.fragment_shader_file = "shader/fragment_shader.fs";
@@ -430,7 +429,7 @@ void initialize() {
   matrix_identity(center_pillar_bottom.translation_matrix);
 
     /* Setup vertex, color, and index buffer objects for CENTER PILLAR TOP*/
-  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &(center_pillar_top.vertices), &(center_pillar_top.vertices_size), &(center_pillar_top.indices), &(center_pillar_top.indices_size));
+  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &(center_pillar_top.vertices), &(center_pillar_top.vertex_count), &(center_pillar_top.indices), &(center_pillar_top.index_count));
   setup_data_buffers(&center_pillar_top);
   center_pillar_top.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_top.fragment_shader_file = "shader/fragment_shader.fs";
@@ -438,7 +437,7 @@ void initialize() {
   matrix_identity(center_pillar_top.translation_matrix);
 
     /* Setup vertex, color, and index buffer objects for CENTER PILLAR MID BOTTOM*/
-  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_bottom.vertices), &(center_pillar_mid_bottom.vertices_size), &(center_pillar_mid_bottom.indices), &(center_pillar_mid_bottom.indices_size));
+  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_bottom.vertices), &(center_pillar_mid_bottom.vertex_count), &(center_pillar_mid_bottom.indices), &(center_pillar_mid_bottom.index_count));
   setup_data_buffers(&center_pillar_mid_bottom);
   center_pillar_mid_bottom.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_mid_bottom.fragment_shader_file = "shader/fragment_shader.fs";
@@ -446,7 +445,7 @@ void initialize() {
   matrix_identity(center_pillar_mid_bottom.translation_matrix);
 
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR MID TOP*/
-  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_top.vertices), &(center_pillar_mid_top.vertices_size), &(center_pillar_mid_top.indices), &(center_pillar_mid_top.indices_size));
+  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_top.vertices), &(center_pillar_mid_top.vertex_count), &(center_pillar_mid_top.indices), &(center_pillar_mid_top.index_count));
   setup_data_buffers(&center_pillar_mid_top);
   center_pillar_mid_top.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_mid_top.fragment_shader_file = "shader/fragment_shader.fs";
@@ -454,7 +453,7 @@ void initialize() {
   matrix_identity(center_pillar_mid_top.translation_matrix);
 
    /* Setup vertex, color, and index buffer objects for BASE*/
-  cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertices_size), &(base.indices), &(base.indices_size));
+  cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertex_count), &(base.indices), &(base.index_count));
   setup_data_buffers(&base);
   base.vertex_shader_file = "shader/vertex_shader.vs";
   base.fragment_shader_file = "shader/fragment_shader.fs";
@@ -462,7 +461,7 @@ void initialize() {
   matrix_identity(base.translation_matrix);
 
   /* Setup vertex, color, and index buffer objects for FLOOR*/
-  hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &(scene_floor.vertices), &(scene_floor.vertices_size), &(scene_floor.indices), &(scene_floor.indices_size));
+  hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &(scene_floor.vertices), &(scene_floor.vertex_count), &(scene_floor.indices), &(scene_floor.index_count));
   setup_data_buffers(&scene_floor);
   scene_floor.vertex_shader_file = "shader/vertex_shader.vs";
   scene_floor.fragment_shader_file = "shader/fragment_shader.fs";
@@ -472,7 +471,7 @@ void initialize() {
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data cube_object;
 
-    cube(0.15, &(cube_object.vertices), &(cube_object.vertices_size), &(cube_object.indices), &(cube_object.indices_size));
+    cube(0.15, &(cube_object.vertices), &(cube_object.vertex_count), &(cube_object.indices), &(cube_object.index_count));
     /* Setup vertex, color, and index buffer objects for cubes*/
     setup_data_buffers(&cube_object);
     cube_object.vertex_shader_file = "shader/vertex_shader.vs";
@@ -485,7 +484,7 @@ void initialize() {
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data pillar;
 
-    cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertices_size), &(pillar.indices), &(pillar.indices_size));
+    cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertex_count), &(pillar.indices), &(pillar.index_count));
     /* Setup vertex, color, and index buffer objects */
     setup_data_buffers(&pillar);
     pillar.vertex_shader_file = "shader/vertex_shader.vs";

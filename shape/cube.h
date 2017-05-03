@@ -4,6 +4,6 @@
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"
 
-void cube(float h, struct vertex** vertices, long* vertices_size, struct index** indices, long* indices_size);
+void cube(float h, struct vertex** vertices, long* vertex_count, struct index** indices, long* index_count);
 
 #endif

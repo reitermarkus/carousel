@@ -41,11 +41,11 @@ enum attribute_index {
 struct object_data {
   GLuint vbo;
   struct vertex* vertices;
-  long vertices_size;
+  long vertex_count;
 
   GLuint ibo;
   struct index* indices;
-  long indices_size;
+  long index_count;
 
   GLuint shader_program;
   const char* vertex_shader_file;

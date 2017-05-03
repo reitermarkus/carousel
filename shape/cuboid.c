@@ -2,12 +2,12 @@
 
 #include "helper/macros.h"
 
-void cuboid(float w, float h, float d, struct vertex** vertices, long* vertices_size, struct index** indices, long* indices_size) {
-  *vertices_size = 8 * sizeof(**vertices);
-  *vertices = malloc(*vertices_size);
+void cuboid(float w, float h, float d, struct vertex** vertices, long* vertex_count, struct index** indices, long* index_count) {
+  *vertex_count = 8;
+  *vertices = malloc(*vertex_count * sizeof(**vertices));
 
-  *indices_size = 12 * sizeof(**indices);
-  *indices = malloc(*indices_size);
+  *index_count = 12;
+  *indices = malloc(*index_count * sizeof(**indices));
 
   SET_VERTEX_POSITION((*vertices)[0], -w, -h, d);
   SET_VERTEX_COLOR((*vertices)[0], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));

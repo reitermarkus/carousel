@@ -6,30 +6,30 @@
 
 #include "helper/macros.h"
 
-void abstract_shape(int edges, float bottom_radius, float top_radius, float height, float bottom_center_y_offset, float top_center_y_offset, struct vertex** vertices, long* vertices_size, struct index** indices, long* indices_size) {
+void abstract_shape(int edges, float bottom_radius, float top_radius, float height, float bottom_center_y_offset, float top_center_y_offset, struct vertex** vertices, long* vertex_count, struct index** indices, long* index_count) {
   float step = 2.0 * M_PI / (float)edges; // circumfence divided by parts
 
   // Vertex count is number of edges + 1 (center vertex) if height is 0,
   // otherwise (number of edges + 1) * 2.
-  unsigned int vertex_count = edges + 1;
+  *vertex_count = edges + 1;
   if (height != 0) {
-    vertex_count *= 2;
+    *vertex_count *= 2;
   } else if (top_center_y_offset != 0) {
-    vertex_count += 1;
+    *vertex_count += 1;
   }
-  *vertices_size = vertex_count * sizeof(**vertices);
-  *vertices = malloc(*vertices_size);
+
+  *vertices = malloc(*vertex_count * sizeof(**vertices));
 
   // Index count is number of edges if height is 0,
   // otherwise (number of edges) * 4, to account for the side panels.
-  unsigned int index_count = edges;
+  *index_count = edges;
   if (top_center_y_offset != 0) {
-    index_count *= 2;
+    *index_count *= 2;
   } else if (height != 0) {
-    index_count *= 4;
+    *index_count *= 4;
   }
-  *indices_size = index_count * sizeof(**indices);
-  *indices = malloc(*indices_size);
+
+  *indices = malloc(*index_count * sizeof(**indices));
 
   struct vertex* vertex = (struct vertex*)(*vertices);
 
