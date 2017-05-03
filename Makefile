@@ -1,25 +1,20 @@
 PROGRAM = carousel
 
-HELPERS = $(addprefix helper/, load_file.o matrix.o draw.o create_shader_program.o keymap.o)
-SHAPES = $(addprefix shape/, abstract_shape.o cylinder.o cube.o cuboid.o cone.o flattened_cone.o hyper_rectangle.o polygon.o)
-OBJ_PARSER = $(addprefix parser/, obj_parser.o list.o)
-
-OBJ = $(PROGRAM).o $(HELPERS) $(SHAPES) $(OBJ_PARSER)
+OBJ = $(patsubst %.c, %.o, $(wildcard *.c */*.c))
 
 CFLAGS = -g -O2 -Wall -Werror -Wextra -std=c11 -I$(CURDIR)
 
 LDLIBS = -lm
 
-ifneq ($(OS),Windows_NT)
-  UNAME_S = $(shell uname -s)
-  ifeq ($(UNAME_S),Darwin)
+ifeq ($(OS), Windows_NT)
+  LDLIBS += -lglut -lGLEW -IGL -lopengl32
+else
+  ifeq ($(shell uname -s), Darwin)
     CFLAGS += -Wno-deprecated-declarations
     LDLIBS += -framework GLUT -framework OpenGL
   else
     LDLIBS += -lglut -lGLEW -lGL
   endif
-else
-  LDLIBS += -lglut -lGLEW -IGL -lopengl32
 endif
 
 $(PROGRAM): $(OBJ)
