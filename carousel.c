@@ -65,7 +65,7 @@ static struct object_data cubes[number_of_sides];
 static struct object_data scene_floor;
 
 /* Structures for loading of OBJ data */
-obj_scene_data extern_object;
+struct object_data extern_object;
 
 static const float PILLAR_HEIGHT = 1.5;
 static const float BASE_HEIGHT = .15;
@@ -136,55 +136,45 @@ void setup_data_buffers(struct object_data* object) {
 *
 *******************************************************************/
 
-void setup_data_buffer_ext_obj(obj_scene_data* obj){
-  // for MAC
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-
-  glGenBuffers(1, &(obj->obj_data.vbo));
-  glBindBuffer(GL_ARRAY_BUFFER, obj->obj_data.vbo);
-  glBufferData(GL_ARRAY_BUFFER, obj->vertex_count * 3 * sizeof(GLfloat), obj->vertex_buffer_data, GL_STATIC_DRAW);
-
-  glGenBuffers(1, &(obj->obj_data.ibo));
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->obj_data.ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj->face_count * 3 * sizeof(GLushort), obj->index_buffer_data, GL_STATIC_DRAW);
-}
 
 void setup_shader_program_ext_obj(obj_scene_data* obj) {
   // Put linked shader program into drawing pipeline.
   obj->obj_data.shader_program = create_shader_program(obj->obj_data.vertex_shader_file,obj->obj_data.fragment_shader_file);
 }
 
-void init_ext_obj(obj_scene_data* obj, char* filename){
-  if (parse_obj_scene(obj, filename) == -1) {
+void init_ext_obj(struct object_data* obj, char* filename){
+  obj_scene_data ext_obj;
+
+  if (parse_obj_scene(&ext_obj, filename) == -1) {
     printf("Could not load file. Exiting.\n");
     exit(EXIT_FAILURE);
   }
 
   //  Copy mesh data from structs into appropriate arrays.
-  int vert = obj->vertex_count;
-  int indx = obj->face_count;
 
-  obj->vertex_buffer_data = (GLfloat*) calloc (vert*3, sizeof(GLfloat));
-  obj->index_buffer_data = (GLushort*) calloc (indx*3, sizeof(GLushort));
+  obj->vertices_size = ext_obj.vertex_count * sizeof(*obj->vertices);
+  obj->indices_size = ext_obj.face_count * sizeof(*obj->indices);
+
+  obj->vertices = malloc(obj->vertices_size);
+  obj->indices = malloc(obj->indices_size);
 
   // Vertices
-  for (int i = 0; i < vert; i++){
-    obj->vertex_buffer_data[i*3] = (GLfloat)((obj->vertex_list[i])->e[0]);
-    obj->vertex_buffer_data[i*3+1] = (GLfloat)((obj->vertex_list[i])->e[1]);
-    obj->vertex_buffer_data[i*3+2] = (GLfloat)((obj->vertex_list[i])->e[2]);
+  for (int i = 0; i < ext_obj.vertex_count; i++) {
+    SET_VERTEX_POSITION(obj->vertices[i],
+      ext_obj.vertex_list[i]->e[0],
+      ext_obj.vertex_list[i]->e[1],
+      ext_obj.vertex_list[i]->e[2]
+    );
+
+    SET_VERTEX_COLOR(obj->vertices[i], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND));
   }
 
   // Indices
-  for (int i = 0; i < indx; i++)  {
-    obj->index_buffer_data[i*3] = (GLushort)(obj->face_list[i])->vertex_index[0];
-    obj->index_buffer_data[i*3+1] = (GLushort)(obj->face_list[i])->vertex_index[1];
-    obj->index_buffer_data[i*3+2] = (GLushort)(obj->face_list[i])->vertex_index[2];
+  for (int i = 0; i < ext_obj.face_count; i++) {
+    obj->indices[i].a = ext_obj.face_list[i]->vertex_index[0];
+    obj->indices[i].b = ext_obj.face_list[i]->vertex_index[1];
+    obj->indices[i].c = ext_obj.face_list[i]->vertex_index[2];
   }
-
-  setup_data_buffer_ext_obj(obj);
-  setup_shader_program_ext_obj(obj);
 }
 
 /******************************************************************
@@ -205,24 +195,6 @@ void setup_shader_program(struct object_data* object) {
 
 void display_object(struct object_data* object) {
   draw(object, projection_matrix, view_matrix);
-}
-
-// Displays an external ".obj" object
-void display_ext_object(obj_scene_data* obj){
-  glEnableVertexAttribArray(0);
-
-  glBindBuffer(GL_ARRAY_BUFFER, obj->obj_data.vbo);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->obj_data.ibo);
-
-  GLint size;
-  glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-
-  /* Issue draw command, using indexed triangle list */
-  glDrawElements(GL_TRIANGLES, size/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
-
-  /* Disable attributes */
-  glDisableVertexAttribArray(0);
 }
 
 void display() {
@@ -264,7 +236,7 @@ void display() {
   matrix_rotate_y(-rotate_y, mouse_matrix);
   matrix_rotate_x(-rotate_x, mouse_matrix);
 
-  display_ext_object(&extern_object);
+  display_object(&extern_object);
   display_object(&base);
   display_object(&center_pillar_bottom);
   display_object(&center_pillar_top);
@@ -433,10 +405,13 @@ void initialize() {
   matrix_identity(mouse_matrix);
 
   // Setup external object
-  extern_object.obj_data.vertex_shader_file = "shader/vertex_shader.vs";
-  extern_object.obj_data.fragment_shader_file = "shader/fragment_shader.fs";
   init_ext_obj(&extern_object, "models/tigercub.obj");
-  matrix_identity(extern_object.obj_data.translation_matrix);
+  setup_data_buffers(&extern_object);
+  extern_object.vertex_shader_file = "shader/vertex_shader.vs";
+  extern_object.fragment_shader_file = "shader/fragment_shader.fs";
+  setup_shader_program(&extern_object);
+  matrix_identity(extern_object.translation_matrix);
+  matrix_translate_y(2.75, extern_object.translation_matrix);
 
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
@@ -534,8 +509,6 @@ void resize_window(int width, int height) {
   float far_plane = 50.0;
   matrix_perspective(fovy, aspect, near_plane, far_plane, projection_matrix);
 }
-
-
 
 void keyboard_event(unsigned char key, int x, int y) {
   (void)x;
