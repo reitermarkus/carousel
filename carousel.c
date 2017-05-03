@@ -26,7 +26,8 @@
 #include "helper/shared_headers.h"
 
 /* Local includes */
-#include "helper/create_shader_program.h"
+#include "helper/shader_program.h"
+
 #include "helper/draw.h"
 #include "helper/keymap.h"
 #include "helper/macros.h"
@@ -111,10 +112,8 @@ void mouse_motion(int x, int y) {
 *******************************************************************/
 
 void setup_data_buffers(struct object_data* object) {
-  // for MAC
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
+  glGenVertexArrays(1, &(object->vao));
+  glBindVertexArray(object->vao);
 
   // Bind buffer object for vertices and colors.
   glGenBuffers(1, &(object->vbo));
@@ -127,6 +126,48 @@ void setup_data_buffers(struct object_data* object) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->index_count * sizeof(*object->indices), object->indices, GL_STATIC_DRAW);
   free(object->indices);
+
+  // Bind vertex positions.
+  glEnableVertexAttribArray(v_position);
+  glVertexAttribPointer(
+    v_position,                    // attribute index
+    3,                             // attribute length (x, y, z)
+    GL_FLOAT,                      // attribute type
+    GL_FALSE,                      // normalized?
+    sizeof(struct vertex),         // offset between indices
+    0                              // offset to vertex values
+  );
+
+  // Bind vertex colors.
+  glEnableVertexAttribArray(v_color);
+  glVertexAttribPointer(
+    v_color,                       // attribute index
+    4,                             // attribute length (r, g, b, a)
+    GL_FLOAT,                      // attribute type
+    GL_FALSE,                      // normalized?
+    sizeof(struct vertex),         // offset between indices
+    (void*)sizeof(struct position) // offset to color values
+  );
+
+  // Bind vertex textures.
+  glEnableVertexAttribArray(v_texture);
+ 	glVertexAttribPointer(
+ 		v_texture,                                              // attribute index
+ 		2,                                                      // attribute length (u, v)
+ 		GL_FLOAT,                                               // attribute type
+ 		GL_FALSE,                                               // normalized?
+ 		sizeof(struct vertex),                                  // offset between indices
+ 		(void*)(sizeof(struct position) + sizeof(struct color)) // offset to texture values
+ 	);
+
+  // Bind indices.
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
+
+  glBindVertexArray(0);
+
+  glDisableVertexAttribArray(v_position);
+  glDisableVertexAttribArray(v_color);
+  glDisableVertexAttribArray(v_texture);
 }
 
 /******************************************************************

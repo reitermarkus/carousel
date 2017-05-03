@@ -46,6 +46,8 @@ enum attribute_index {
 };
 
 struct object_data {
+  GLuint vao;
+
   GLuint vbo;
   struct vertex* vertices;
   long vertex_count;

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "helper/shared_headers.h"
+#include "helper/shader_program.h"
 
 static void set_shader_matrix(GLuint shader_program, const char* matrix_name, matrix matrix) {
   GLint uniform_location = glGetUniformLocation(shader_program, matrix_name);
@@ -17,43 +18,9 @@ static void set_shader_matrix(GLuint shader_program, const char* matrix_name, ma
 }
 
 void draw(struct object_data* object, matrix projection_matrix, matrix view_matrix) {
-  // Bind vertex array.
-  glEnableVertexAttribArray(v_position);
-  glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);
-  glVertexAttribPointer(
-    v_position,                    // attribute index
-    3,                             // attribute length (x, y, z)
-    GL_FLOAT,                      // attribute type
-    GL_FALSE,                      // normalize points
-    sizeof(struct vertex),         // offset between indices
-    0                              // offset to vertex values
-  );
+  glBindVertexArray(object->vao);
 
-  // Bind color array.
-  glEnableVertexAttribArray(v_color);
-  glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);
-  glVertexAttribPointer(
-    v_color,                       // attribute index
-    4,                             // attribute length (r, g, b, a)
-    GL_FLOAT,                      // attribute type
-    GL_FALSE,                      // normalize points
-    sizeof(struct vertex),         // offset between indices
-    (void*)sizeof(struct position) // offset to color values
-  );
-
-  glEnableVertexAttribArray(v_texture);
-  glBindBuffer(GL_ARRAY_BUFFER, (*object).vbo);
- 	glVertexAttribPointer(
- 		v_texture,                                      // attribute. No particular reason for 1, but must match the layout in the shader.
- 		2,                                              // size : U+V => 2
- 		GL_FLOAT,                                       // type
- 		GL_FALSE,                                       // normalized?
- 		sizeof(struct vertex),                          // stride
- 		(void*)(sizeof(struct position) + sizeof(struct color)) // array buffer offset
- 	);
-
-  // Bind index array.
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (*object).ibo);
+  use_shader(object->shader_program);
 
   // Associate program with shader matrices.
   set_shader_matrix(object->shader_program, "projection_matrix", projection_matrix);
@@ -63,9 +30,7 @@ void draw(struct object_data* object, matrix projection_matrix, matrix view_matr
   // Draw triangles using index array.
   GLint size;
   glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-  glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 
-  glDisableVertexAttribArray(v_position);
-  glDisableVertexAttribArray(v_color);
-  glDisableVertexAttribArray(v_texture);
+  glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+  glBindVertexArray(0);
 }

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "create_shader_program.h"
+#include "shader_program.h"
 
 #include "helper/load_file.h"
 
@@ -65,8 +65,16 @@ GLuint create_shader_program(const char* vertex_shader, const char* fragment_sha
     exit(EXIT_FAILURE);
   }
 
+  return shader_program;
+}
+
+
+void use_shader(GLuint shader_program) {
   // Check if shader program can be executed.
   glValidateProgram(shader_program);
+
+  GLint success = 0;
+  GLchar error_log[1024];
   glGetProgramiv(shader_program, GL_VALIDATE_STATUS, &success);
 
   if (success == 0) {
@@ -76,6 +84,4 @@ GLuint create_shader_program(const char* vertex_shader, const char* fragment_sha
   }
 
   glUseProgram(shader_program);
-
-  return shader_program;
 }
