@@ -352,6 +352,12 @@ void on_idle() {
     matrix_multiply(mouse_matrix, pillars[i].translation_matrix, pillars[i].translation_matrix);
   }
 
+  matrix_identity(extern_object.translation_matrix);
+  matrix_translate_y(2.25, extern_object.translation_matrix);
+  matrix_translate_z(0.275, extern_object.translation_matrix);
+  matrix_scale(6, extern_object.translation_matrix);
+  matrix_rotate_y(rotation, extern_object.translation_matrix);
+
   for (int i=0; i < number_of_sides; i++){
     // Initialize cube matrix.
     matrix_identity(cubes[i].translation_matrix);
@@ -410,7 +416,6 @@ void initialize() {
   extern_object.fragment_shader_file = "shader/fragment_shader.fs";
   setup_shader_program(&extern_object);
   matrix_identity(extern_object.translation_matrix);
-  matrix_translate_y(2.75, extern_object.translation_matrix);
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
   cone(20, BASE_RADIUS , ROOF_HEIGHT, &(roof.vertices), &(roof.vertex_count), &(roof.indices), &(roof.index_count));
