@@ -36,7 +36,6 @@ struct texture {
 struct vertex {
   struct position position;
   struct color color;
-  struct texture texture;
 };
 
 enum attribute_index {
@@ -55,6 +54,10 @@ struct object_data {
   GLuint ibo;
   struct index* indices;
   long index_count;
+
+  GLuint tbo;
+  struct texture* textures;
+  long texture_count;
 
   GLuint shader_program;
   const char* vertex_shader_file;

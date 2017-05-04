@@ -42,6 +42,9 @@
 #include "shape/hyper_rectangle.h"
 #include "shape/polygon.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 /*----------------------------------------------------------------*/
 
 static matrix projection_matrix;
@@ -65,6 +68,7 @@ static struct object_data cubes[number_of_sides];
 static struct object_data scene_floor;
 
 /* Structures for loading of OBJ data */
+GLuint tiger_texture;
 struct object_data extern_object;
 
 static const float PILLAR_HEIGHT = 1.5;
@@ -130,35 +134,42 @@ void setup_data_buffers(struct object_data* object) {
   // Bind vertex positions.
   glEnableVertexAttribArray(v_position);
   glVertexAttribPointer(
-    v_position,                    // attribute index
-    3,                             // attribute length (x, y, z)
-    GL_FLOAT,                      // attribute type
-    GL_FALSE,                      // normalized?
-    sizeof(struct vertex),         // offset between indices
-    0                              // offset to vertex values
+    v_position,            // attribute index
+    3,                     // attribute length (x, y, z)
+    GL_FLOAT,              // attribute type
+    GL_FALSE,              // normalized?
+    sizeof(struct vertex), // offset between indices
+    0                      // offset to vertex values
   );
 
   // Bind vertex colors.
   glEnableVertexAttribArray(v_color);
   glVertexAttribPointer(
-    v_color,                       // attribute index
-    4,                             // attribute length (r, g, b, a)
-    GL_FLOAT,                      // attribute type
-    GL_FALSE,                      // normalized?
-    sizeof(struct vertex),         // offset between indices
-    (void*)sizeof(struct position) // offset to color values
+    v_color,                         // attribute index
+    4,                               // attribute length (r, g, b, a)
+    GL_FLOAT,                        // attribute type
+    GL_FALSE,                        // normalized?
+    sizeof(struct vertex),           // offset between indices
+    (GLvoid*)sizeof(struct position) // offset to color values
   );
 
-  // Bind vertex textures.
-  glEnableVertexAttribArray(v_texture);
- 	glVertexAttribPointer(
- 		v_texture,                                              // attribute index
- 		2,                                                      // attribute length (u, v)
- 		GL_FLOAT,                                               // attribute type
- 		GL_FALSE,                                               // normalized?
- 		sizeof(struct vertex),                                  // offset between indices
- 		(void*)(sizeof(struct position) + sizeof(struct color)) // offset to texture values
- 	);
+  if (object->texture_count != 0) {
+    glGenBuffers(1, &(object->tbo));
+    glBindBuffer(GL_ARRAY_BUFFER, object->tbo);
+    glBufferData(GL_ARRAY_BUFFER, object->texture_count * sizeof(*object->textures), object->textures, GL_STATIC_DRAW);
+    free(object->textures);
+
+    // Bind vertex textures.
+    glEnableVertexAttribArray(v_texture);
+   	glVertexAttribPointer(
+   		v_texture,                                                // attribute index
+   		2,                                                        // attribute length (u, v)
+   		GL_FLOAT,                                                 // attribute type
+   		GL_FALSE,                                                 // normalized?
+   		0,                                                        // offset between indices
+   		0                                                         // offset to texture values
+   	);
+  }
 
   // Bind indices.
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
@@ -188,9 +199,11 @@ void init_ext_obj(struct object_data* obj, char* filename){
 
   obj->vertex_count = ext_obj.vertex_count;
   obj->index_count = ext_obj.face_count;
+  obj->texture_count = ext_obj.face_count * 3;
 
   obj->vertices = malloc(obj->vertex_count * sizeof(*obj->vertices));
   obj->indices = malloc(obj->index_count * sizeof(*obj->indices));
+  obj->textures = malloc(obj->texture_count * sizeof(*obj->textures));
 
   // Vertices
   for (int i = 0; i < ext_obj.vertex_count; i++) {
@@ -203,17 +216,21 @@ void init_ext_obj(struct object_data* obj, char* filename){
     SET_VERTEX_COLOR(obj->vertices[i], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   }
 
-  // Indices
   for (int i = 0; i < ext_obj.face_count; i++) {
+    // Indices
     obj->indices[i].a = ext_obj.face_list[i]->vertex_index[0];
     obj->indices[i].b = ext_obj.face_list[i]->vertex_index[1];
     obj->indices[i].c = ext_obj.face_list[i]->vertex_index[2];
-  }
 
-  // Textures
-  for (int i = 0; i < ext_obj.vertex_count; i++) {
-    obj->vertices[i].texture.u = ext_obj.vertex_texture_list[i]->e[0];
-    obj->vertices[i].texture.v = ext_obj.vertex_texture_list[i]->e[1];
+    // Textures
+    for (int j = 0; j < 3; j++) {
+      int index = ext_obj.face_list[i]->texture_index[j];
+
+      if (index >= 0) {
+        obj->textures[i + j].u = ext_obj.vertex_texture_list[index]->e[0];
+        obj->textures[i + j].v = ext_obj.vertex_texture_list[index]->e[1];
+      }
+    }
   }
 }
 
@@ -275,6 +292,10 @@ void display() {
   matrix_identity(mouse_matrix);
   matrix_rotate_y(-rotate_y, mouse_matrix);
   matrix_rotate_x(-rotate_x, mouse_matrix);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tiger_texture);
+  glUniform1i(glGetUniformLocation(extern_object.shader_program, "tiger_texture"), 0);
 
   display_object(&extern_object);
   display_object(&base);
@@ -432,6 +453,34 @@ void on_idle() {
 *
 *******************************************************************/
 
+GLuint load_texture(char* file_path) {
+  // Load and create a texture.
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on our texture object
+
+  // Set our texture parameters.
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  // Set texture filtering.
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // Load, create texture and generate mipmaps.
+  int width, height, components;
+  unsigned char* image = stbi_load(file_path, &width, &height, &components, 0);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, components == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, image);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  stbi_image_free(image);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  return texture;
+}
+
 void initialize() {
   // Set background color based on system time.
   time_t current_time = time(NULL);
@@ -451,16 +500,19 @@ void initialize() {
   matrix_identity(camera_matrix);
   matrix_identity(mouse_matrix);
 
+  tiger_texture = load_texture("models/tigercub/tigercub.png");
+
   // Setup external object
   init_ext_obj(&extern_object, "models/tigercub.obj");
   setup_data_buffers(&extern_object);
   extern_object.vertex_shader_file = "shader/vertex_shader.vs";
-  extern_object.fragment_shader_file = "shader/fragment_shader.fs";
+  extern_object.fragment_shader_file = "shader/texture_shader.fs";
   setup_shader_program(&extern_object);
   matrix_identity(extern_object.translation_matrix);
 
   /* Setup vertex, color, and index buffer objects for ROOF*/
   cone(20, BASE_RADIUS , ROOF_HEIGHT, &(roof.vertices), &(roof.vertex_count), &(roof.indices), &(roof.index_count));
+  roof.texture_count = 0;
   setup_data_buffers(&roof);
   roof.vertex_shader_file = "shader/vertex_shader.vs";
   roof.fragment_shader_file = "shader/fragment_shader.fs";
@@ -469,6 +521,7 @@ void initialize() {
 
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR BOTTOM*/
   flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &(center_pillar_bottom.vertices), &(center_pillar_bottom.vertex_count), &(center_pillar_bottom.indices), &(center_pillar_bottom.index_count));
+  center_pillar_bottom.texture_count = 0;
   setup_data_buffers(&center_pillar_bottom);
   center_pillar_bottom.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_bottom.fragment_shader_file = "shader/fragment_shader.fs";
@@ -477,6 +530,7 @@ void initialize() {
 
     /* Setup vertex, color, and index buffer objects for CENTER PILLAR TOP*/
   flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &(center_pillar_top.vertices), &(center_pillar_top.vertex_count), &(center_pillar_top.indices), &(center_pillar_top.index_count));
+  center_pillar_top.texture_count = 0;
   setup_data_buffers(&center_pillar_top);
   center_pillar_top.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_top.fragment_shader_file = "shader/fragment_shader.fs";
@@ -485,6 +539,7 @@ void initialize() {
 
     /* Setup vertex, color, and index buffer objects for CENTER PILLAR MID BOTTOM*/
   flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_bottom.vertices), &(center_pillar_mid_bottom.vertex_count), &(center_pillar_mid_bottom.indices), &(center_pillar_mid_bottom.index_count));
+  center_pillar_mid_bottom.texture_count = 0;
   setup_data_buffers(&center_pillar_mid_bottom);
   center_pillar_mid_bottom.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_mid_bottom.fragment_shader_file = "shader/fragment_shader.fs";
@@ -493,6 +548,7 @@ void initialize() {
 
   /* Setup vertex, color, and index buffer objects for CENTER PILLAR MID TOP*/
   flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_top.vertices), &(center_pillar_mid_top.vertex_count), &(center_pillar_mid_top.indices), &(center_pillar_mid_top.index_count));
+  center_pillar_mid_top.texture_count = 0;
   setup_data_buffers(&center_pillar_mid_top);
   center_pillar_mid_top.vertex_shader_file = "shader/vertex_shader.vs";
   center_pillar_mid_top.fragment_shader_file = "shader/fragment_shader.fs";
@@ -501,6 +557,7 @@ void initialize() {
 
    /* Setup vertex, color, and index buffer objects for BASE*/
   cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertex_count), &(base.indices), &(base.index_count));
+  base.texture_count = 0;
   setup_data_buffers(&base);
   base.vertex_shader_file = "shader/vertex_shader.vs";
   base.fragment_shader_file = "shader/fragment_shader.fs";
@@ -509,6 +566,7 @@ void initialize() {
 
   /* Setup vertex, color, and index buffer objects for FLOOR*/
   hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &(scene_floor.vertices), &(scene_floor.vertex_count), &(scene_floor.indices), &(scene_floor.index_count));
+  scene_floor.texture_count = 0;
   setup_data_buffers(&scene_floor);
   scene_floor.vertex_shader_file = "shader/vertex_shader.vs";
   scene_floor.fragment_shader_file = "shader/fragment_shader.fs";
@@ -520,6 +578,7 @@ void initialize() {
 
     cube(0.15, &(cube_object.vertices), &(cube_object.vertex_count), &(cube_object.indices), &(cube_object.index_count));
     /* Setup vertex, color, and index buffer objects for cubes*/
+    cube_object.texture_count = 0;
     setup_data_buffers(&cube_object);
     cube_object.vertex_shader_file = "shader/vertex_shader.vs";
     cube_object.fragment_shader_file = "shader/fragment_shader.fs";
@@ -533,6 +592,7 @@ void initialize() {
 
     cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertex_count), &(pillar.indices), &(pillar.index_count));
     /* Setup vertex, color, and index buffer objects */
+    pillar.texture_count = 0;
     setup_data_buffers(&pillar);
     pillar.vertex_shader_file = "shader/vertex_shader.vs";
     pillar.fragment_shader_file = "shader/fragment_shader.fs";
