@@ -260,8 +260,10 @@ void init_ext_obj(struct object_data* obj, char* filename){
 *
 *******************************************************************/
 
-void setup_shader_program(struct object_data* object) {
+void setup_shader_program(struct object_data* object, const char* vertex_shader_file, const char* fragment_shader_file) {
   // Put linked shader program into drawing pipeline.
+  object->vertex_shader_file = vertex_shader_file;
+  object->fragment_shader_file = fragment_shader_file;
   object->shader_program = create_shader_program(object->vertex_shader_file, object->fragment_shader_file);
 }
 
@@ -522,102 +524,73 @@ void initialize() {
 
   tiger_texture = load_texture("models/tigercub/tigercub.png");
 
-  // Setup external object
+  // External Object
+  init_object_data(&extern_object);
   init_ext_obj(&extern_object, "models/tigercub.obj");
   setup_data_buffers(&extern_object);
-  extern_object.vertex_shader_file = "shader/vertex_shader.vs";
-  extern_object.fragment_shader_file = "shader/texture_shader.fs";
-  setup_shader_program(&extern_object);
-  matrix_identity(extern_object.translation_matrix);
+  setup_shader_program(&extern_object, "shader/vertex_shader.vs", "shader/texture_shader.fs");
 
-  /* Setup vertex, color, and index buffer objects for ROOF*/
+  // Roof
+  init_object_data(&roof);
   cone(20, BASE_RADIUS , ROOF_HEIGHT, &(roof.vertices), &(roof.vertex_count), &(roof.indices), &(roof.index_count));
-  roof.texture_count = 0;
   setup_data_buffers(&roof);
-  roof.vertex_shader_file = "shader/vertex_shader.vs";
-  roof.fragment_shader_file = "shader/fragment_shader.fs";
-  setup_shader_program(&roof);
-  matrix_identity(roof.translation_matrix);
+  setup_shader_program(&roof, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
-  /* Setup vertex, color, and index buffer objects for CENTER PILLAR BOTTOM*/
+  // Center Pillar Bottom
+  init_object_data(&center_pillar_bottom);
   flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &(center_pillar_bottom.vertices), &(center_pillar_bottom.vertex_count), &(center_pillar_bottom.indices), &(center_pillar_bottom.index_count));
-  center_pillar_bottom.texture_count = 0;
   setup_data_buffers(&center_pillar_bottom);
-  center_pillar_bottom.vertex_shader_file = "shader/vertex_shader.vs";
-  center_pillar_bottom.fragment_shader_file = "shader/fragment_shader.fs";
-  setup_shader_program(&center_pillar_bottom);
-  matrix_identity(center_pillar_bottom.translation_matrix);
+  setup_shader_program(&center_pillar_bottom, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
-    /* Setup vertex, color, and index buffer objects for CENTER PILLAR TOP*/
+  // Center Pillar Top
+  init_object_data(&center_pillar_top);
   flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &(center_pillar_top.vertices), &(center_pillar_top.vertex_count), &(center_pillar_top.indices), &(center_pillar_top.index_count));
-  center_pillar_top.texture_count = 0;
   setup_data_buffers(&center_pillar_top);
-  center_pillar_top.vertex_shader_file = "shader/vertex_shader.vs";
-  center_pillar_top.fragment_shader_file = "shader/fragment_shader.fs";
-  setup_shader_program(&center_pillar_top);
-  matrix_identity(center_pillar_top.translation_matrix);
+  setup_shader_program(&center_pillar_top, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
-    /* Setup vertex, color, and index buffer objects for CENTER PILLAR MID BOTTOM*/
+  // Center Pillar Mid Bottom
+  init_object_data(&center_pillar_mid_bottom);
   flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_bottom.vertices), &(center_pillar_mid_bottom.vertex_count), &(center_pillar_mid_bottom.indices), &(center_pillar_mid_bottom.index_count));
-  center_pillar_mid_bottom.texture_count = 0;
   setup_data_buffers(&center_pillar_mid_bottom);
-  center_pillar_mid_bottom.vertex_shader_file = "shader/vertex_shader.vs";
-  center_pillar_mid_bottom.fragment_shader_file = "shader/fragment_shader.fs";
-  setup_shader_program(&center_pillar_mid_bottom);
-  matrix_identity(center_pillar_mid_bottom.translation_matrix);
+  setup_shader_program(&center_pillar_mid_bottom, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
-  /* Setup vertex, color, and index buffer objects for CENTER PILLAR MID TOP*/
+  // Center Pillar Mid Top
+  init_object_data(&center_pillar_mid_top);
   flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_top.vertices), &(center_pillar_mid_top.vertex_count), &(center_pillar_mid_top.indices), &(center_pillar_mid_top.index_count));
-  center_pillar_mid_top.texture_count = 0;
   setup_data_buffers(&center_pillar_mid_top);
-  center_pillar_mid_top.vertex_shader_file = "shader/vertex_shader.vs";
-  center_pillar_mid_top.fragment_shader_file = "shader/fragment_shader.fs";
-  setup_shader_program(&center_pillar_mid_top);
-  matrix_identity(center_pillar_mid_top.translation_matrix);
+  setup_shader_program(&center_pillar_mid_top, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
-   /* Setup vertex, color, and index buffer objects for BASE*/
+   // Base
+  init_object_data(&base);
   cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertex_count), &(base.indices), &(base.index_count));
-  base.texture_count = 0;
   setup_data_buffers(&base);
-  base.vertex_shader_file = "shader/vertex_shader.vs";
-  base.fragment_shader_file = "shader/fragment_shader.fs";
-  setup_shader_program(&base);
-  matrix_identity(base.translation_matrix);
+  setup_shader_program(&base, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
-  /* Setup vertex, color, and index buffer objects for FLOOR*/
+  // Floor
+  init_object_data(&scene_floor);
   hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &(scene_floor.vertices), &(scene_floor.vertex_count), &(scene_floor.indices), &(scene_floor.index_count));
-  scene_floor.texture_count = 0;
   setup_data_buffers(&scene_floor);
-  scene_floor.vertex_shader_file = "shader/vertex_shader.vs";
-  scene_floor.fragment_shader_file = "shader/fragment_shader.fs";
-  setup_shader_program(&scene_floor);
-  matrix_identity(scene_floor.translation_matrix);
+  setup_shader_program(&scene_floor, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
+  // Cubes
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data cube_object;
+    init_object_data(&cube_object);
 
     cube(0.15, &(cube_object.vertices), &(cube_object.vertex_count), &(cube_object.indices), &(cube_object.index_count));
-    /* Setup vertex, color, and index buffer objects for cubes*/
-    cube_object.texture_count = 0;
     setup_data_buffers(&cube_object);
-    cube_object.vertex_shader_file = "shader/vertex_shader.vs";
-    cube_object.fragment_shader_file = "shader/fragment_shader.fs";
-    setup_shader_program(&cube_object);
-    matrix_identity(cube_object.translation_matrix);
+    setup_shader_program(&cube_object, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
     cubes[i] = cube_object;
   }
 
+  // Pillars
   for (int i = 0; i < number_of_sides; i++) {
     struct object_data pillar;
+    init_object_data(&pillar);
 
     cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertex_count), &(pillar.indices), &(pillar.index_count));
-    /* Setup vertex, color, and index buffer objects */
-    pillar.texture_count = 0;
     setup_data_buffers(&pillar);
-    pillar.vertex_shader_file = "shader/vertex_shader.vs";
-    pillar.fragment_shader_file = "shader/fragment_shader.fs";
-    setup_shader_program(&pillar);
-    matrix_identity(pillar.translation_matrix);
+    setup_shader_program(&pillar, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
     pillars[i] = pillar;
   }
 }

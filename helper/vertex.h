@@ -76,5 +76,6 @@ struct object_data {
 };
 
 void calculate_normals(struct object_data* obj);
+void init_object_data(struct object_data* obj);
 
 #endif // __VERTEX_H__

@@ -74,3 +74,28 @@ void calculate_normals(struct object_data* obj) {
   calculate_face_normals(obj);
   calculate_vertex_normals(obj);
 }
+
+void init_object_data(struct object_data* obj) {
+  obj->vao = -1;
+
+  obj->vbo = -1;
+  obj->vertices = NULL;
+  obj->vertex_count = 0;
+
+  obj->ibo = -1;
+  obj->indices = NULL;
+  obj->index_count = 0;
+
+  obj->tbo = -1;
+  obj->textures = NULL;
+  obj->texture_count = 0;
+
+  obj->nbo = -1;
+  obj->face_normals = NULL;
+
+  obj->shader_program = 0;
+  obj->vertex_shader_file = NULL;
+  obj->fragment_shader_file = NULL;
+
+  matrix_identity(obj->translation_matrix);
+}
