@@ -2,7 +2,7 @@ PROGRAM = carousel
 
 OBJ = $(patsubst %.c, %.o, $(wildcard *.c */*.c))
 
-CFLAGS = -g -O2 -Wall -Werror -Wextra -std=c11 -I$(CURDIR)
+CFLAGS = -g -O2 -Wall -Werror -Wextra -std=c11 "-I$(CURDIR)" -D_POSIX_C_SOURCE=200112L
 
 LDLIBS = -lm
 

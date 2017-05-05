@@ -452,8 +452,13 @@ void on_idle() {
     matrix_rotate_y(rotation, cubes[i].translation_matrix);
     matrix_multiply(mouse_matrix, cubes[i].translation_matrix, cubes[i].translation_matrix);
   }
+
   // Request redrawing of window content.
   glutPostRedisplay();
+
+  // Reduce GPU usage.
+  struct timespec sleep_time = { 0, 10000000L };
+  nanosleep(&sleep_time, NULL);
 }
 
 
