@@ -92,7 +92,7 @@ typedef struct {
 } obj_light_quad;
 
 typedef struct {
-  //  vector extreme_dimensions[2];
+  // vector extreme_dimensions[2];
   char scene_filename[PATH_MAX];
   char material_filename[PATH_MAX];
 
@@ -114,48 +114,40 @@ typedef struct {
 } obj_growable_scene_data;
 
 typedef struct {
+  int vertex_count;
   obj_vector **vertex_list;
+
+  int vertex_normal_count;
   obj_vector **vertex_normal_list;
+
+  int vertex_texture_count;
   obj_vector2 **vertex_texture_list;
 
+  int face_count;
   obj_face **face_list;
+
+  int sphere_count;
   obj_sphere **sphere_list;
+
+  int plane_count;
   obj_plane **plane_list;
 
+  int light_point_count;
   obj_light_point **light_point_list;
+
+  int light_quad_count;
   obj_light_quad **light_quad_list;
+
+  int light_disc_count;
   obj_light_disc **light_disc_list;
 
-  obj_material **material_list;
-
-//--
-  struct object_data obj_data;
-
-  /* Array for holding vertex data of the two models */
-  GLfloat *vertex_buffer_data;
-
-  /* Array for holding indices of the two models */
-  GLushort *index_buffer_data;
-//--
-
-  int vertex_count;
-  int vertex_normal_count;
-  int vertex_texture_count;
-
-  int face_count;
-  int sphere_count;
-  int plane_count;
-
-  int light_point_count;
-  int light_quad_count;
-  int light_disc_count;
-
   int material_count;
+  obj_material **material_list;
 
   obj_camera *camera;
 } obj_scene_data;
 
-int parse_obj_scene(obj_scene_data *data_out, const char *filename);
-void delete_obj_data(obj_scene_data *data_out);
+int parse_obj_scene_data(obj_scene_data *data_out, const char *filename);
+void delete_obj_scene_data(obj_scene_data *data_out);
 
 #endif // __OBJ_PARSER_H__

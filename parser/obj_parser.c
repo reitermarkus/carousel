@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <libgen.h>
 
 #include "list.h"
@@ -157,7 +158,7 @@ obj_light_disc* obj_parse_light_disc(obj_growable_scene_data *scene) {
   return obj;
 }
 
-obj_vector* obj_parse_vector() {
+obj_vector* obj_parse_vector3() {
   obj_vector *v = (obj_vector*)malloc(sizeof(obj_vector));
   v->e[0] = atof(strtok(NULL, OBJ_WHITESPACE));
   v->e[1] = atof(strtok(NULL, OBJ_WHITESPACE));
@@ -188,10 +189,16 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
   char material_open = 0;
   obj_material *current_mtl = NULL;
 
-  // open scene
-  FILE *mtl_file_stream = fopen(filename, "r");
-  if (mtl_file_stream == 0) {
-    fprintf(stderr, "Error reading file: %s\n", filename);
+  char *resolved_filename = realpath(filename, NULL);
+
+  if (resolved_filename == NULL) {
+    fprintf(stderr, "Error reading file %s: %s\n", filename, strerror(errno));
+    return -1;
+  }
+
+  FILE *mtl_file_stream = fopen(resolved_filename, "r");
+  if (mtl_file_stream == NULL) {
+    fprintf(stderr, "Error reading file %s: %s\n", resolved_filename, strerror(errno));
     return -1;
   }
 
@@ -268,18 +275,21 @@ int obj_parse_mtl_file(char *filename, list *material_list) {
 }
 
 int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filename) {
-  FILE* obj_file_stream;
   int current_material = -1;
   char *current_token = NULL;
   char current_line[OBJ_LINE_MAX];
   int line_number = 0;
-  // open scene
 
   char *resolved_filename = realpath(filename, NULL);
 
-  obj_file_stream = fopen(resolved_filename, "r");
-  if (obj_file_stream == 0) {
-    fprintf(stderr, "Error reading file: %s\n", resolved_filename);
+  if (resolved_filename == NULL) {
+    fprintf(stderr, "Error reading file %s: %s\n", filename, strerror(errno));
+    return -1;
+  }
+
+  FILE* obj_file_stream = fopen(resolved_filename, "r");
+  if (obj_file_stream == NULL) {
+    fprintf(stderr, "Error reading file %s: %s\n", resolved_filename, strerror(errno));
     return -1;
   }
 
@@ -293,13 +303,13 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
       continue;
     } else if (strcmp(current_token, "v") == 0) {
       // process vertex
-      list_add_item(&growable_data->vertex_list,  obj_parse_vector(), NULL);
+      list_add_item(&growable_data->vertex_list, obj_parse_vector3(), NULL);
     } else if (strcmp(current_token, "vn") == 0) {
       // process vertex normal
-      list_add_item(&growable_data->vertex_normal_list,  obj_parse_vector(), NULL);
+      list_add_item(&growable_data->vertex_normal_list, obj_parse_vector3(), NULL);
     } else if (strcmp(current_token, "vt") == 0) {
       // process vertex texture
-      list_add_item(&growable_data->vertex_texture_list,  obj_parse_vector2(), NULL);
+      list_add_item(&growable_data->vertex_texture_list, obj_parse_vector2(), NULL);
     } else if (strcmp(current_token, "f") == 0) {
       // process face
       obj_face *face = obj_parse_face(growable_data);
@@ -338,10 +348,10 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
       growable_data->camera = (obj_camera*)malloc(sizeof(obj_camera));
       obj_parse_camera(growable_data, growable_data->camera);
     } else if (strcmp(current_token, "usemtl") == 0) {
-      //  usemtl
+      // usemtl
       current_material = list_find(&growable_data->material_list, strtok(NULL, OBJ_WHITESPACE));
     } else if (strcmp(current_token, "mtllib") == 0) {
-      //  mtllib
+      // mtllib
       strncpy(growable_data->material_filename, strtok(NULL, OBJ_WHITESPACE), PATH_MAX);
 
       char mtl_file_path[PATH_MAX];
@@ -358,13 +368,12 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
       }
 
       obj_parse_mtl_file(mtl_file_path, &growable_data->material_list);
-      continue;
     } else if (strcmp(current_token, "o") == 0) {
       // object name
     } else if (strcmp(current_token, "s") == 0) {
       // smoothing
     } else if (strcmp(current_token, "g") == 0) {
-      //  group
+      // group
     } else {
       printf("Unknown command '%s' in scene code at line %i: \"%s\".\n", current_token, line_number, current_line);
     }
@@ -409,7 +418,7 @@ void obj_free_temp_storage(obj_growable_scene_data *growable_data) {
   obj_free_half_list(&growable_data->material_list);
 }
 
-void delete_obj_data(obj_scene_data *data_out) {
+void delete_obj_scene_data(obj_scene_data *data_out) {
   FREE_ELEMENT(data_out->vertex_list, data_out->vertex_count);
   FREE_ELEMENT(data_out->vertex_normal_list, data_out->vertex_normal_count);
   FREE_ELEMENT(data_out->vertex_texture_list, data_out->vertex_texture_count);
@@ -456,7 +465,7 @@ void obj_copy_to_out_storage(obj_scene_data *data_out, obj_growable_scene_data *
   data_out->camera = growable_data->camera;
 }
 
-int parse_obj_scene(obj_scene_data *data_out, const char *filename) {
+int parse_obj_scene_data(obj_scene_data *data_out, const char *filename) {
   obj_growable_scene_data growable_data;
 
   obj_init_temp_storage(&growable_data);
@@ -469,4 +478,3 @@ int parse_obj_scene(obj_scene_data *data_out, const char *filename) {
   obj_free_temp_storage(&growable_data);
   return parsed_lines;
 }
-

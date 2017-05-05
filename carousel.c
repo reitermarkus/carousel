@@ -204,12 +204,12 @@ void setup_data_buffers(struct object_data* object) {
 void init_ext_obj(struct object_data* obj, char* filename){
   obj_scene_data ext_obj;
 
-  if (parse_obj_scene(&ext_obj, filename) == -1) {
+  if (parse_obj_scene_data(&ext_obj, filename) == -1) {
     printf("Could not load file. Exiting.\n");
     exit(EXIT_FAILURE);
   }
 
-  //  Copy mesh data from structs into appropriate arrays.
+  // Copy mesh data from structs into appropriate arrays.
 
   obj->vertex_count = ext_obj.vertex_count;
   obj->index_count = ext_obj.face_count;
@@ -247,7 +247,7 @@ void init_ext_obj(struct object_data* obj, char* filename){
     }
   }
 
-  delete_obj_data(&ext_obj);
+  delete_obj_scene_data(&ext_obj);
 }
 
 /******************************************************************
