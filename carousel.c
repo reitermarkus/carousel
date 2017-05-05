@@ -245,6 +245,8 @@ void init_ext_obj(struct object_data* obj, char* filename){
       }
     }
   }
+
+  delete_obj_data(&ext_obj);
 }
 
 /******************************************************************
