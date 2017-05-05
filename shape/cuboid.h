@@ -4,6 +4,6 @@
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"
 
-void cuboid(float d, float h, float w, struct vertex** vertices, long* vertex_count, struct index** indices, long* index_count);
+void cuboid(float d, float h, float w, struct object_data* obj);
 
 #endif // __CUBOID_H__

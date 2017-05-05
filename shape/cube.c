@@ -2,6 +2,6 @@
 
 #include "cuboid.h"
 
-void cube(float h, struct vertex** vertices, long* vertex_count, struct index** indices, long* index_count) {
-  cuboid(h, h, h, vertices, vertex_count, indices, index_count);
+void cube(float h, struct object_data* obj) {
+  cuboid(h, h, h, obj);
 }

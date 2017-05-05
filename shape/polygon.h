@@ -4,6 +4,6 @@
 #include "helper/shared_headers.h"
 #include "helper/vertex.h"
 
-void polygon(int edges, float radius, struct vertex** vertices, long* vertex_count, struct index** indices, long* index_count);
+void polygon(int edges, float radius, struct object_data* obj);
 
 #endif // __POLYGON_H__

@@ -532,66 +532,60 @@ void initialize() {
 
   // Roof
   init_object_data(&roof);
-  cone(20, BASE_RADIUS , ROOF_HEIGHT, &(roof.vertices), &(roof.vertex_count), &(roof.indices), &(roof.index_count));
+  cone(20, BASE_RADIUS , ROOF_HEIGHT, &roof);
   setup_data_buffers(&roof);
   setup_shader_program(&roof, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   // Center Pillar Bottom
   init_object_data(&center_pillar_bottom);
-  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &(center_pillar_bottom.vertices), &(center_pillar_bottom.vertex_count), &(center_pillar_bottom.indices), &(center_pillar_bottom.index_count));
+  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &center_pillar_bottom);
   setup_data_buffers(&center_pillar_bottom);
   setup_shader_program(&center_pillar_bottom, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   // Center Pillar Top
   init_object_data(&center_pillar_top);
-  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &(center_pillar_top.vertices), &(center_pillar_top.vertex_count), &(center_pillar_top.indices), &(center_pillar_top.index_count));
+  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &center_pillar_top);
   setup_data_buffers(&center_pillar_top);
   setup_shader_program(&center_pillar_top, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   // Center Pillar Mid Bottom
   init_object_data(&center_pillar_mid_bottom);
-  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_bottom.vertices), &(center_pillar_mid_bottom.vertex_count), &(center_pillar_mid_bottom.indices), &(center_pillar_mid_bottom.index_count));
+  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &center_pillar_mid_bottom);
   setup_data_buffers(&center_pillar_mid_bottom);
   setup_shader_program(&center_pillar_mid_bottom, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   // Center Pillar Mid Top
   init_object_data(&center_pillar_mid_top);
-  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &(center_pillar_mid_top.vertices), &(center_pillar_mid_top.vertex_count), &(center_pillar_mid_top.indices), &(center_pillar_mid_top.index_count));
+  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &center_pillar_mid_top);
   setup_data_buffers(&center_pillar_mid_top);
   setup_shader_program(&center_pillar_mid_top, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
    // Base
   init_object_data(&base);
-  cylinder(20, BASE_RADIUS, BASE_HEIGHT, &(base.vertices), &(base.vertex_count), &(base.indices), &(base.index_count));
+  cylinder(20, BASE_RADIUS, BASE_HEIGHT, &base);
   setup_data_buffers(&base);
   setup_shader_program(&base, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   // Floor
   init_object_data(&scene_floor);
-  hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &(scene_floor.vertices), &(scene_floor.vertex_count), &(scene_floor.indices), &(scene_floor.index_count));
+  hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &scene_floor);
   setup_data_buffers(&scene_floor);
   setup_shader_program(&scene_floor, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   // Cubes
   for (int i = 0; i < number_of_sides; i++) {
-    struct object_data cube_object;
-    init_object_data(&cube_object);
-
-    cube(0.15, &(cube_object.vertices), &(cube_object.vertex_count), &(cube_object.indices), &(cube_object.index_count));
-    setup_data_buffers(&cube_object);
-    setup_shader_program(&cube_object, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
-    cubes[i] = cube_object;
+    init_object_data(&cubes[i]);
+    cube(0.15, &cubes[i]);
+    setup_data_buffers(&cubes[i]);
+    setup_shader_program(&cubes[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
   }
 
   // Pillars
   for (int i = 0; i < number_of_sides; i++) {
-    struct object_data pillar;
-    init_object_data(&pillar);
-
-    cylinder(7, .03, PILLAR_HEIGHT, &(pillar.vertices), &(pillar.vertex_count), &(pillar.indices), &(pillar.index_count));
-    setup_data_buffers(&pillar);
-    setup_shader_program(&pillar, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
-    pillars[i] = pillar;
+    init_object_data(&pillars[i]);
+    cylinder(7, .03, PILLAR_HEIGHT, &pillars[i]);
+    setup_data_buffers(&pillars[i]);
+    setup_shader_program(&pillars[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
   }
 }
 
