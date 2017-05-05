@@ -14,6 +14,10 @@ out vec2 v_texture;
 
 void main() {
   gl_Position = projection_matrix * view_matrix * model_matrix * vec4(position.x, position.y, position.z, 1.0);
+
+	mat4 normal_matrix = transpose(inverse(view_matrix * model_matrix));
+	vec3 normal = normalize((normal_matrix * vec4(normalize(normal), 1.0)).xyz);
+
   v_color = vec4(color.r, color.g, color.b, color.a);
   v_texture = texture;
 }

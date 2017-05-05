@@ -116,6 +116,8 @@ void mouse_motion(int x, int y) {
 *******************************************************************/
 
 void setup_data_buffers(struct object_data* object) {
+  calculate_normals(object);
+
   glGenVertexArrays(1, &(object->vao));
   glBindVertexArray(object->vao);
 
@@ -153,6 +155,16 @@ void setup_data_buffers(struct object_data* object) {
     (GLvoid*)sizeof(struct position) // offset to color values
   );
 
+  glEnableVertexAttribArray(v_normal);
+  glVertexAttribPointer(
+    v_normal,                                                 // attribute index
+    3,                                                        // attribute length (r, g, b, a)
+    GL_FLOAT,                                                 // attribute type
+    GL_FALSE,                                                 // normalized?
+    sizeof(struct vertex),                                    // offset between indices
+    (GLvoid*)(sizeof(struct position) + sizeof(struct color)) // offset to color values
+  );
+
   if (object->texture_count != 0) {
     glGenBuffers(1, &(object->tbo));
     glBindBuffer(GL_ARRAY_BUFFER, object->tbo);
@@ -178,6 +190,7 @@ void setup_data_buffers(struct object_data* object) {
 
   glDisableVertexAttribArray(v_position);
   glDisableVertexAttribArray(v_color);
+  glDisableVertexAttribArray(v_normal);
   glDisableVertexAttribArray(v_texture);
 }
 

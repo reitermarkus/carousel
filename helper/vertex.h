@@ -66,8 +66,7 @@ struct object_data {
   long texture_count;
 
   GLuint nbo;
-  struct normal* normals;
-  long normal_count;
+  struct normal* face_normals;
 
   GLuint shader_program;
   const char* vertex_shader_file;
@@ -75,5 +74,7 @@ struct object_data {
 
   matrix translation_matrix;
 };
+
+void calculate_normals(struct object_data* obj);
 
 #endif // __VERTEX_H__
