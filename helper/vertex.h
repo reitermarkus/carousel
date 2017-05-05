@@ -33,15 +33,21 @@ struct texture {
   GLfloat u, v;
 };
 
+struct normal {
+  GLfloat a, b, c;
+};
+
 struct vertex {
   struct position position;
   struct color color;
+  struct normal normal;
 };
 
 enum attribute_index {
   v_position = 0,
   v_color = 1,
-  v_texture = 2
+  v_texture = 2,
+  v_normal = 3
 };
 
 struct object_data {
@@ -58,6 +64,10 @@ struct object_data {
   GLuint tbo;
   struct texture* textures;
   long texture_count;
+
+  GLuint nbo;
+  struct normal* normals;
+  long normal_count;
 
   GLuint shader_program;
   const char* vertex_shader_file;
