@@ -17,9 +17,4 @@ struct hsv {
   int value;
 };
 
-struct hsv col;
-struct frgb v;
-GLfloat hue = 180;
-GLfloat value = 100;
-
-#endif 
+#endif

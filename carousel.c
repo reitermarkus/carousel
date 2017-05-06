@@ -60,6 +60,11 @@ float light_position_1[] = { 3.0, 10.0, 5.0 };
 float light_position_2[] = { -3.0, 5.0, -2.0 };
 float light_color_1[] = { 1.0, 1.0, 1.0 };
 
+struct hsv col;
+struct frgb v;
+GLfloat hue = 180;
+GLfloat value = 100;
+
 float ambient_factor = 0.1;
 float diffuse_factor = 0.6;
 float specular_factor = 0.2;
