@@ -298,10 +298,6 @@ void setup_shader_program(struct object_data* object, const char* vertex_shader_
 }
 
 void display_object(struct object_data* object) {
-   
-  draw(object, projection_matrix, view_matrix);
-    /*--------------------------*/
-
 	GLint model_matrix = glGetUniformLocation(object->shader_program, "model_matrix");
 	if (model_matrix == -1) {
 		fprintf(stderr, "Could not bind uniform model_matrix\n");
@@ -324,8 +320,6 @@ void display_object(struct object_data* object) {
 	glUniform3f(light_pos_1_uniform, light_position_1[0], light_position_1[1],
 			light_position_1[2]);
 
-
-
 	GLint light_pos_2_uniform = glGetUniformLocation(object->shader_program,
 			"light_position_2");
 	if (view_uniform == -1) {
@@ -346,7 +340,7 @@ void display_object(struct object_data* object) {
   col.hue = hue;
 	col.value = value;
 	col.saturation = 100;
-  /*These rgb values below correspond specifically to hsv above (180,100,100),  
+  /*These rgb values below correspond specifically to hsv above (180,100,100),
     they would need to be computed for any hsv value */
   v.r = 0.0; v.g = 1.0; v.b = 1.0;
 
@@ -381,10 +375,7 @@ void display_object(struct object_data* object) {
 	}
 	glUniform1f(specular_factor_uniform, specular_factor * specular_toggle);
 
-	//draw down the objects
-	//~ drawGraphic(sphere, RotationUniform);
-	//~ glutSwapBuffers();
-
+  draw(object, projection_matrix, view_matrix);
 }
 
 void display() {
