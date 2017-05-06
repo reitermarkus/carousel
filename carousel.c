@@ -33,6 +33,7 @@
 #include "helper/macros.h"
 #include "helper/matrix.h"
 #include "helper/vertex.h"
+#include "helper/color.h"
 #include "helper/load_texture.h"
 #include "parser/obj_parser.h"
 #include "shape/cone.h"
@@ -53,6 +54,23 @@ static matrix view_matrix;
 static matrix camera_matrix;
 static matrix mouse_matrix;
 
+/**/
+
+float light_position_1[] = { 3.0, 10.0, 5.0 };
+float light_position_2[] = { -3.0, 5.0, -2.0 };
+float light_color_1[] = { 1.0, 1.0, 1.0 };
+
+float ambient_factor = 0.1;
+float diffuse_factor = 0.6;
+float specular_factor = 0.2;
+
+int ambient_toggle = 1;
+int diffuse_toggle = 1;
+int specular_toggle = 1;
+int light_1_toggle = 1;
+
+/**/
+
 static const float camera_height = -2;
 static const float camera_distance = -15.0;
 static const float camera_speed = 0.1;
@@ -71,6 +89,14 @@ static struct object_data scene_floor;
 /* Structures for loading of OBJ data */
 GLuint tiger_texture;
 struct object_data extern_object;
+
+
+/*----------------------------------------------------------------------*/
+
+struct graphic_buffer* gb_extern_object;
+
+/*----------------------------------------------------------------------*/
+
 
 static const float PILLAR_HEIGHT = 1.5;
 static const float BASE_HEIGHT = .15;
@@ -104,9 +130,6 @@ void mouse_motion(int x, int y) {
   glutPostRedisplay();
 }
 
-
-
-/*----------------------------------------------------------------*/
 
 /******************************************************************
 *
@@ -250,6 +273,7 @@ void init_ext_obj(struct object_data* obj, char* filename){
   delete_obj_scene_data(&ext_obj);
 }
 
+
 /******************************************************************
 *
 * display
@@ -269,12 +293,99 @@ void setup_shader_program(struct object_data* object, const char* vertex_shader_
 }
 
 void display_object(struct object_data* object) {
+   
   draw(object, projection_matrix, view_matrix);
+    /*--------------------------*/
+
+	GLint model_matrix = glGetUniformLocation(object->shader_program, "model_matrix");
+	if (model_matrix == -1) {
+		fprintf(stderr, "Could not bind uniform model_matrix\n");
+		exit(-1);
+	}
+
+	GLint view_uniform = glGetUniformLocation(object->shader_program, "view_matrix");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform ViewMatrix\n");
+		exit(-1);
+	}
+	glUniformMatrix4fv(view_uniform, 1, GL_TRUE, *view_matrix);
+
+	GLint light_pos_1_uniform = glGetUniformLocation(object->shader_program,
+			"light_position_1");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform light_position_1\n");
+		exit(-1);
+	}
+	glUniform3f(light_pos_1_uniform, light_position_1[0], light_position_1[1],
+			light_position_1[2]);
+
+
+
+	GLint light_pos_2_uniform = glGetUniformLocation(object->shader_program,
+			"light_position_2");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform light_position_2\n");
+		exit(-1);
+	}
+	glUniform3f(light_pos_2_uniform, light_position_2[0], light_position_2[1],
+			light_position_2[2]);
+
+	GLint light_col_1_uniform = glGetUniformLocation(object->shader_program, "light_color_1");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform light_color_1\n");
+		exit(-1);
+	}
+	glUniform3f(light_col_1_uniform, light_color_1[0]*light_1_toggle, light_color_1[1]*light_1_toggle,
+			light_color_1[2]*light_1_toggle);
+
+  col.hue = hue;
+	col.value = value;
+	col.saturation = 100;
+  /*These rgb values below correspond specifically to hsv above (180,100,100),  
+    they would need to be computed for any hsv value */
+  v.r = 0.0; v.g = 1.0; v.b = 1.0;
+
+	GLint light_col_2_uniform = glGetUniformLocation(object->shader_program, "light_color_2");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform light_color_2\n");
+		exit(-1);
+	}
+	glUniform3f(light_col_2_uniform, v.r, v.g,v.b);
+
+	GLint ambient_factor_uniform = glGetUniformLocation(object->shader_program,
+			"ambient_factor");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform ambient_factor\n");
+		exit(-1);
+	}
+	glUniform1f(ambient_factor_uniform, ambient_factor * ambient_toggle);
+
+	GLint diffuse_factor_uniform = glGetUniformLocation(object->shader_program,
+			"diffuse_factor");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform diffuse_factor\n");
+		exit(-1);
+	}
+	glUniform1f(diffuse_factor_uniform, diffuse_factor * diffuse_toggle);
+
+	GLint specular_factor_uniform = glGetUniformLocation(object->shader_program,
+			"specular_factor");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform specular_factor\n");
+		exit(-1);
+	}
+	glUniform1f(specular_factor_uniform, specular_factor * specular_toggle);
+
+	//draw down the objects
+	//~ drawGraphic(sphere, RotationUniform);
+	//~ glutSwapBuffers();
+
 }
 
 void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
   if (keymap.space) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
