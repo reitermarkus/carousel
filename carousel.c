@@ -655,12 +655,12 @@ void initialize() {
 
   // Floor
   init_object_data(&scene_floor);
-  hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &scene_floor);
+  hyper_rectangle(BASE_RADIUS * 4, BASE_HEIGHT, BASE_RADIUS * 4, &scene_floor);
   setup_data_buffers(&scene_floor);
   setup_shader_program(&scene_floor, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   init_object_data(&light_1);
-  cube(0.1, &light_1);
+  cube(0.2, &light_1);
   setup_data_buffers(&light_1);
   setup_shader_program(&light_1, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
   matrix_translate_x(light_position_1[0], light_1.translation_matrix);
@@ -670,7 +670,7 @@ void initialize() {
   // Cubes
   for (int i = 0; i < number_of_sides; i++) {
     init_object_data(&cubes[i]);
-    cube(0.15, &cubes[i]);
+    cube(0.3, &cubes[i]);
     setup_data_buffers(&cubes[i]);
     setup_shader_program(&cubes[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
   }
