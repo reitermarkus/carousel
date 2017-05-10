@@ -14,8 +14,9 @@
 #define G(g) ((g) / 255.0)
 #define B(b) ((b) / 255.0)
 
-#define RGB_RAND (rand() % 256)
+// #define RGB_RAND (rand() % 256)
+#define RGB_RAND (200)
 
-#define ALPHA_RAND (0.5 + (rand() % 50) / 100.0)
+#define ALPHA_RAND (1.0)
 
 #endif // __MACROS_H__
