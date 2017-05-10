@@ -27,8 +27,9 @@ void main() {
   vec3 reflect_direction = reflect(-light_direction, normal);
 
   vec3 ambient = vec3(ambient_factor);
-  vec3 diffuse = vec3(diffuse_factor) * max(dot(normal, light_direction), 0.0);
-  vec3 specular = vec3(specular_factor) * pow(max(dot(reflect_direction, view_direction), 0.0), 100);
+  vec3 diffuse = vec3(diffuse_factor * max(dot(normal, light_direction), 0.0));
+  float specular_shininess = 32;
+  vec3 specular = vec3(specular_factor * pow(max(dot(reflect_direction, view_direction), 0.0), specular_shininess));
 
   ambient_sum += ambient;
   diffuse_sum += diffuse;
@@ -38,5 +39,5 @@ void main() {
 
   vec4 texture_color = texture(tiger_texture, v_texture);
 
-  fragment_color = v_color * vec4(ambient_sum + ((diffuse_sum + spec_sum) * light_color_1), 1) /* * texture_color */;
+  fragment_color = v_color * vec4(ambient_sum + ((diffuse_sum + spec_sum) * light_color_1), 1); // * texture_color;
 }
