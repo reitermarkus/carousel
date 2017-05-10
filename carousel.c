@@ -56,7 +56,7 @@ static matrix mouse_matrix;
 
 /**/
 
-float light_position_1[] = { 0, 3.0, 5.0 };
+float light_position_1[] = { 0, 4.0, -7.0 };
 //float light_position_2[] = { -3.0, 5.0, -2.0 };
 float light_color_1[] = { 1.0, 1.0, 1.0 };
 
@@ -90,6 +90,8 @@ static struct object_data roof;
 static struct object_data pillars[number_of_sides];
 static struct object_data cubes[number_of_sides];
 static struct object_data scene_floor;
+
+static struct object_data light_1;
 
 /* Structures for loading of OBJ data */
 GLuint tiger_texture;
@@ -431,6 +433,7 @@ void display() {
   display_object(&center_pillar_mid_bottom);
   display_object(&center_pillar_mid_top);
   display_object(&scene_floor);
+  display_object(&light_1);
 
   for (int i = 0; i < number_of_sides; i++) {
     display_object(&(pillars[i]));
@@ -655,6 +658,14 @@ void initialize() {
   hyper_rectangle(BASE_RADIUS * 2.2, BASE_HEIGHT * 0.4, BASE_RADIUS * 2.2, &scene_floor);
   setup_data_buffers(&scene_floor);
   setup_shader_program(&scene_floor, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+
+  init_object_data(&light_1);
+  cube(0.1, &light_1);
+  setup_data_buffers(&light_1);
+  setup_shader_program(&light_1, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  matrix_translate_x(light_position_1[0], light_1.translation_matrix);
+  matrix_translate_y(light_position_1[1], light_1.translation_matrix);
+  matrix_translate_z(light_position_1[2], light_1.translation_matrix);
 
   // Cubes
   for (int i = 0; i < number_of_sides; i++) {
