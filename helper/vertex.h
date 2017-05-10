@@ -1,6 +1,8 @@
 #ifndef __VERTEX_H__
 #define __VERTEX_H__
 
+#include <stdlib.h>
+
 #include "helper/shared_headers.h"
 #include "helper/matrix.h"
 
@@ -55,15 +57,15 @@ struct object_data {
 
   GLuint vbo;
   struct vertex* vertices;
-  long vertex_count;
+  size_t vertex_count;
 
   GLuint ibo;
   struct index* indices;
-  long index_count;
+  size_t index_count;
 
   GLuint tbo;
   struct texture* textures;
-  long texture_count;
+  size_t texture_count;
 
   GLuint nbo;
   struct normal* face_normals;

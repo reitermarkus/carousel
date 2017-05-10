@@ -32,6 +32,7 @@
 #include "helper/keymap.h"
 #include "helper/macros.h"
 #include "helper/matrix.h"
+#include "helper/light.h"
 #include "helper/vertex.h"
 #include "helper/color.h"
 #include "helper/load_texture.h"
@@ -56,14 +57,16 @@ static matrix mouse_matrix;
 
 /**/
 
-float light_position_1[] = { 0, 4.0, -7.0 };
-//float light_position_2[] = { -3.0, 5.0, -2.0 };
-float light_color_1[] = { 1.0, 1.0, 1.0 };
-
-struct hsv col;
-struct frgb v;
-GLfloat hue = 180;
-GLfloat value = 100;
+struct light lights[] = {
+  {
+    .position = { 0, 4.0, -7.0 },
+    .color    = { 1.0, 0.5, 0.0 },
+  },
+  {
+    .position = { 0, 4.0, 7.0 },
+    .color    = { 1.0, 1.0, 1.0 },
+  },
+};
 
 float ambient_factor = 0.5;
 float diffuse_factor = 0.5;
@@ -72,7 +75,9 @@ float specular_factor = 0.5;
 int ambient_toggle = 1;
 int diffuse_toggle = 1;
 int specular_toggle = 1;
+
 int light_1_toggle = 1;
+int light_2_toggle = 1;
 
 /**/
 
@@ -91,7 +96,7 @@ static struct object_data pillars[number_of_sides];
 static struct object_data cubes[number_of_sides];
 static struct object_data scene_floor;
 
-static struct object_data light_1;
+static struct object_data light_object[2];
 
 /* Structures for loading of OBJ data */
 GLuint tiger_texture;
@@ -303,63 +308,66 @@ void display_object(struct object_data* object) {
 	GLint model_matrix = glGetUniformLocation(object->shader_program, "model_matrix");
 	if (model_matrix == -1) {
 		fprintf(stderr, "Could not bind uniform model_matrix\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	GLint view_uniform = glGetUniformLocation(object->shader_program, "view_matrix");
 	if (view_uniform == -1) {
 		fprintf(stderr, "Could not bind uniform ViewMatrix\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	glUniformMatrix4fv(view_uniform, 1, GL_TRUE, *view_matrix);
 
-	GLint light_pos_1_uniform = glGetUniformLocation(object->shader_program,
-			"light_position_1");
+	GLint light_count_uniform = glGetUniformLocation(object->shader_program, "light_count");
 	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform light_position_1\n");
-		exit(-1);
+		fprintf(stderr, "Could not bind uniform lights[0].position\n");
+		exit(EXIT_FAILURE);
 	}
-	glUniform3f(light_pos_1_uniform, light_position_1[0], light_position_1[1],
-			light_position_1[2]);
+	glUniform1i(light_count_uniform, sizeof(lights) / sizeof(*lights));
 
-      /*
-	GLint light_pos_2_uniform = glGetUniformLocation(object->shader_program,
-			"light_position_2");
+	GLint light_pos_1_uniform = glGetUniformLocation(object->shader_program, "lights[0].position");
 	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform light_position_2\n");
-		exit(-1);
+		fprintf(stderr, "Could not bind uniform lights[0].position\n");
+		exit(EXIT_FAILURE);
 	}
-	glUniform3f(light_pos_2_uniform, light_position_2[0], light_position_2[1],
-			light_position_2[2]);
+	glUniform3fv(light_pos_1_uniform, 1, &(lights[0].position.x));
 
-      */
-	GLint light_col_1_uniform = glGetUniformLocation(object->shader_program, "light_color_1");
+
+	GLint light_pos_2_uniform = glGetUniformLocation(object->shader_program, "lights[1].position");
 	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform light_color_1\n");
-		exit(-1);
+		fprintf(stderr, "Could not bind uniform lights[1].position\n");
+		exit(EXIT_FAILURE);
 	}
-	glUniform3f(light_col_1_uniform, light_color_1[0]*light_1_toggle, light_color_1[1]*light_1_toggle,
-			light_color_1[2]*light_1_toggle);
+	glUniform3fv(light_pos_2_uniform, 1, &(lights[1].position.x));
 
-  col.hue = hue;
-	col.value = value;
-	col.saturation = 100;
-  /*These rgb values below correspond specifically to hsv above (180,100,100),
-    they would need to be computed for any hsv value */
-  v.r = 0.0; v.g = 1.0; v.b = 1.0;
-
-	GLint light_col_2_uniform = glGetUniformLocation(object->shader_program, "light_color_2");
+	GLint light_col_1_uniform = glGetUniformLocation(object->shader_program, "lights[0].color");
 	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform light_color_2\n");
-		exit(-1);
+		fprintf(stderr, "Could not bind uniform lights[0].color\n");
+		exit(EXIT_FAILURE);
 	}
-	glUniform3f(light_col_2_uniform, v.r, v.g,v.b);
+	glUniform3f(light_col_1_uniform,
+    lights[0].color.r * light_1_toggle,
+    lights[0].color.g * light_1_toggle,
+		lights[0].color.b * light_1_toggle
+  );
+
+	GLint light_col_2_uniform = glGetUniformLocation(object->shader_program, "lights[1].color");
+	if (view_uniform == -1) {
+		fprintf(stderr, "Could not bind uniform lights[1].color\n");
+		exit(EXIT_FAILURE);
+	}
+	glUniform3f(light_col_2_uniform,
+    lights[1].color.r * light_2_toggle,
+    lights[1].color.g * light_2_toggle,
+		lights[1].color.b * light_2_toggle
+  );
+
 
 	GLint ambient_factor_uniform = glGetUniformLocation(object->shader_program,
 			"ambient_factor");
 	if (view_uniform == -1) {
 		fprintf(stderr, "Could not bind uniform ambient_factor\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	glUniform1f(ambient_factor_uniform, ambient_factor * ambient_toggle);
 
@@ -367,7 +375,7 @@ void display_object(struct object_data* object) {
 			"diffuse_factor");
 	if (view_uniform == -1) {
 		fprintf(stderr, "Could not bind uniform diffuse_factor\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	glUniform1f(diffuse_factor_uniform, diffuse_factor * diffuse_toggle);
 
@@ -375,7 +383,7 @@ void display_object(struct object_data* object) {
 			"specular_factor");
 	if (view_uniform == -1) {
 		fprintf(stderr, "Could not bind uniform specular_factor\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	glUniform1f(specular_factor_uniform, specular_factor * specular_toggle);
 
@@ -433,7 +441,10 @@ void display() {
   display_object(&center_pillar_mid_bottom);
   display_object(&center_pillar_mid_top);
   display_object(&scene_floor);
-  display_object(&light_1);
+
+  for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
+    display_object(&light_object[i]);
+  }
 
   for (int i = 0; i < number_of_sides; i++) {
     display_object(&(pillars[i]));
@@ -659,13 +670,20 @@ void initialize() {
   setup_data_buffers(&scene_floor);
   setup_shader_program(&scene_floor, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
-  init_object_data(&light_1);
-  cube(0.2, &light_1);
-  setup_data_buffers(&light_1);
-  setup_shader_program(&light_1, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
-  matrix_translate_x(light_position_1[0], light_1.translation_matrix);
-  matrix_translate_y(light_position_1[1], light_1.translation_matrix);
-  matrix_translate_z(light_position_1[2], light_1.translation_matrix);
+  for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
+    init_object_data(&light_object[i]);
+    cube(0.2, &light_object[i]);
+
+    for (size_t j = 0; j < light_object[i].vertex_count; j++) {
+      SET_VERTEX_COLOR(light_object[i].vertices[j], lights[i].color.r, lights[i].color.g, lights[i].color.b, 1.0);
+    }
+
+    setup_data_buffers(&light_object[i]);
+    setup_shader_program(&light_object[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+    matrix_translate_x(lights[i].position.x, light_object[i].translation_matrix);
+    matrix_translate_y(lights[i].position.y, light_object[i].translation_matrix);
+    matrix_translate_z(lights[i].position.z * 1.1, light_object[i].translation_matrix);
+  }
 
   // Cubes
   for (int i = 0; i < number_of_sides; i++) {

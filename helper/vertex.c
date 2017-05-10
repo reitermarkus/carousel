@@ -29,7 +29,7 @@ static void calculate_face_normals(struct object_data* obj) {
 
   obj->face_normals = malloc(obj->index_count * sizeof(*obj->face_normals));
 
-  for (int i = 0; i < obj->index_count; i++) {
+  for (size_t i = 0; i < obj->index_count; i++) {
     obj->face_normals[i] = face_normal(
       obj->vertices[obj->indices[i].a].position,
       obj->vertices[obj->indices[i].b].position,
@@ -53,10 +53,10 @@ static struct normal* normalize(struct normal* normal) {
 static void calculate_vertex_normals(struct object_data* obj) {
   puts("Calculating vertex normals ...");
 
-  for(int i = 0; i < obj->vertex_count; i++) {
+  for(size_t i = 0; i < obj->vertex_count; i++) {
     struct normal normal_sum = {0, 0, 0};
 
-    for(int j = 0; j < obj->index_count; j++) {
+    for(size_t j = 0; j < obj->index_count; j++) {
       if ((obj->indices[j].a == i) || (obj->indices[j].b == i) || (obj->indices[j].c == i)) {
         normal_sum.a += obj->face_normals[j].a;
         normal_sum.b += obj->face_normals[j].b;
