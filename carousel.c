@@ -56,8 +56,8 @@ static matrix mouse_matrix;
 
 /**/
 
-float light_position_1[] = { 3.0, 10.0, 5.0 };
-float light_position_2[] = { -3.0, 5.0, -2.0 };
+float light_position_1[] = { 0, 3.0, 5.0 };
+//float light_position_2[] = { -3.0, 5.0, -2.0 };
 float light_color_1[] = { 1.0, 1.0, 1.0 };
 
 struct hsv col;
@@ -65,9 +65,9 @@ struct frgb v;
 GLfloat hue = 180;
 GLfloat value = 100;
 
-float ambient_factor = 0.1;
-float diffuse_factor = 0.6;
-float specular_factor = 0.2;
+float ambient_factor = 0.5;
+float diffuse_factor = 0.5;
+float specular_factor = 0.5;
 
 int ambient_toggle = 1;
 int diffuse_toggle = 1;
@@ -320,6 +320,7 @@ void display_object(struct object_data* object) {
 	glUniform3f(light_pos_1_uniform, light_position_1[0], light_position_1[1],
 			light_position_1[2]);
 
+      /*
 	GLint light_pos_2_uniform = glGetUniformLocation(object->shader_program,
 			"light_position_2");
 	if (view_uniform == -1) {
@@ -329,6 +330,7 @@ void display_object(struct object_data* object) {
 	glUniform3f(light_pos_2_uniform, light_position_2[0], light_position_2[1],
 			light_position_2[2]);
 
+      */
 	GLint light_col_1_uniform = glGetUniformLocation(object->shader_program, "light_color_1");
 	if (view_uniform == -1) {
 		fprintf(stderr, "Could not bind uniform light_color_1\n");
@@ -610,7 +612,7 @@ void initialize() {
   init_object_data(&extern_object);
   init_ext_obj(&extern_object, "models/tigercub.obj");
   setup_data_buffers(&extern_object);
-  setup_shader_program(&extern_object, "shader/vertex_shader.vs", "shader/texture_shader.fs");
+  setup_shader_program(&extern_object, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   // Roof
   init_object_data(&roof);
