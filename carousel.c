@@ -791,6 +791,10 @@ int main(int argc, char** argv) {
   }
   #endif
 
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+  glFrontFace(GL_CCW);
+
   // Setup scene and rendering parameters.
   initialize();
 
