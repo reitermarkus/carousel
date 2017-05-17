@@ -438,6 +438,7 @@ void on_idle() {
   matrix_translate_z(0.275, extern_object.translation_matrix);
   matrix_scale(6, extern_object.translation_matrix);
   matrix_rotate_y(rotation, extern_object.translation_matrix);
+  matrix_multiply(mouse_matrix, extern_object.translation_matrix, extern_object.translation_matrix);
 
   for (int i=0; i < number_of_sides; i++){
     // Initialize cube matrix.
