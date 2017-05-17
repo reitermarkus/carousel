@@ -83,20 +83,20 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
         // Connect the triangle between the top center vertex
         // with the current and next vertex of the base polygon.
         obj->indices[k].a = 0 + edges + 1;
-        obj->indices[k].b = curr_i_base;
-        obj->indices[k].c = next_i_base;
+        obj->indices[k].b = next_i_base;
+        obj->indices[k].c = curr_i_base;
       } else if (height != 0) {
         // Connect the triangle between the top center vertex
         // with the current and next vertex of the top polygon.
         obj->indices[k].a = 0 + edges + 1;
-        obj->indices[k].b = curr_i_top;
-        obj->indices[k].c = next_i_top;
+        obj->indices[k].b = next_i_top;
+        obj->indices[k].c = curr_i_base;
         // printf("Connecting %i (origin top) with %i and %i.\n", 0, curr_i_top, next_i_top);
 
         // Connect the first triangle of the side panel.
         obj->indices[k * 2 + 0].a = curr_i_base;
-        obj->indices[k * 2 + 0].b = next_i_base;
-        obj->indices[k * 2 + 0].c = curr_i_top;
+        obj->indices[k * 2 + 0].b = curr_i_top;
+        obj->indices[k * 2 + 0].c = next_i_base;
         // printf("Connecting %i and %i and %i.\n", curr_i_base, next_i_base, curr_i_top);
 
         // Connect the second triangle of the side panel.
