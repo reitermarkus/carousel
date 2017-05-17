@@ -32,6 +32,9 @@ switch back to automatic mode, press the delete key.
 | D        | move right                |
 | R        | move up                   |
 | F        | move down                 |
+| H        | brighter                 |
+| J        | darker                 |
+| K       | change color                 |
 | spacebar | show wireframe model      |
 | delete   | reset camera to auto-mode |
 

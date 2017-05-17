@@ -9,6 +9,9 @@ void keymap_init(struct keymap *keymap) {
   keymap->e     = false;
   keymap->r     = false;
   keymap->f     = false;
+  keymap->h		= false;
+  keymap->j		= false;
+  keymap->k		= false;
   keymap->space = false;
 }
 
@@ -37,6 +40,15 @@ bool keymap_set_key(struct keymap *keymap, unsigned char key, bool value) {
       break;
     case 'e':
       keymap->e = value;
+      break;
+    case 'h':
+      keymap->h = value;
+      break;
+    case 'j':
+      keymap->j = value;
+      break;
+    case 'k':
+      keymap->k = value;
       break;
     case ' ':
       keymap->space = value;

@@ -13,6 +13,9 @@ struct keymap {
     e,
     r,
     f,
+    h,
+    j,
+    k,
     space
   ;
 };

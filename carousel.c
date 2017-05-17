@@ -72,6 +72,8 @@ float ambient_factor = 0.5;
 float diffuse_factor = 0.5;
 float specular_factor = 0.5;
 
+float factor_brightness = 0.003;
+
 int ambient_toggle = 1;
 int diffuse_toggle = 1;
 int specular_toggle = 1;
@@ -412,6 +414,18 @@ void display() {
     if (!keymap.q && keymap.e) { matrix_rotate_y(-camera_speed / 2 / M_PI, camera_matrix); } // rotate right
     if (keymap.r && !keymap.f) { matrix_translate_y(-camera_speed / 2.0, camera_matrix);   } // up
     if (!keymap.r && keymap.f) { matrix_translate_y(+camera_speed / 2.0, camera_matrix);   } // down
+    // make darker
+    if (!keymap.h && keymap.j) { ambient_factor  -= factor_brightness;
+								 diffuse_factor  -= factor_brightness;
+								 specular_factor -= factor_brightness;}
+    // make brighter
+    if (keymap.h && !keymap.j) { ambient_factor  += factor_brightness;
+								 diffuse_factor  += factor_brightness;
+								 specular_factor += factor_brightness;}
+	// change color
+    if(keymap.k) { get_random_color(&(lights[0].color));
+				   get_random_color(&(lights[1].color));}
+
   } else {
     long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
     float rotation = (elapsed_time / 500.0) * camera_speed;
@@ -561,7 +575,6 @@ void on_idle() {
   matrix_translate_z(0.275, extern_object.translation_matrix);
   matrix_scale(6, extern_object.translation_matrix);
   matrix_rotate_y(rotation, extern_object.translation_matrix);
-  matrix_multiply(mouse_matrix, extern_object.translation_matrix, extern_object.translation_matrix);
 
   for (int i=0; i < number_of_sides; i++){
     // Initialize cube matrix.
@@ -733,7 +746,7 @@ void keyboard_event_up(unsigned char key, int x, int y) {
   (void)y;
 
   keymap_set_key(&keymap, key, false);
-
+  
   switch(key) {
     case 0x7f: // delete key
       if (!automatic_camera) {
