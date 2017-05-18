@@ -22,21 +22,22 @@ The program starts with the camera in automatic mode, when a
 direction key is pressed, it will change to manual mode, to
 switch back to automatic mode, press the delete key.
 
-| Key      | Command                   |
-|----------|---------------------------|
-| Q        | rotate left               |
-| E        | rotate right              |
-| W        | move forward              |
-| S        | move backward             |
-| A        | move left                 |
-| D        | move right                |
-| R        | move up                   |
-| F        | move down                 |
-| H        | brighter                 |
-| J        | darker                 |
-| K       | change color                 |
-| spacebar | show wireframe model      |
-| delete   | reset camera to auto-mode |
+| Key      | Command                    |
+|----------|----------------------------|
+| Q        | rotate left                |
+| E        | rotate right               |
+| W        | move forward               |
+| S        | move backward              |
+| A        | move left                  |
+| D        | move right                 |
+| R        | move up                    |
+| F        | move down                  |
+| H        | brighten ambient color     |
+| J        | darken ambient color       |
+| K        | change light color hue (-) |
+| L        | change light color hue (+) |
+| spacebar | show wireframe model       |
+| delete   | reset camera to auto-mode  |
 
 
 # Mouse Controls

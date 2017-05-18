@@ -50,6 +50,9 @@ bool keymap_set_key(struct keymap *keymap, unsigned char key, bool value) {
     case 'k':
       keymap->k = value;
       break;
+    case 'l':
+      keymap->l = value;
+      break;
     case ' ':
       keymap->space = value;
       break;

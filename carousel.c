@@ -73,6 +73,7 @@ float diffuse_factor = 0.5;
 float specular_factor = 0.5;
 
 float factor_brightness = 0.003;
+float factor_hue = 0.05;
 
 int ambient_toggle = 1;
 int diffuse_toggle = 1;
@@ -347,10 +348,14 @@ void display_object(struct object_data* object) {
 		fprintf(stderr, "Could not bind uniform lights[0].color\n");
 		exit(EXIT_FAILURE);
 	}
+
+  struct rgb color;
+  hsv_to_rgb(lights[0].color, &color);
+
 	glUniform3f(light_col_1_uniform,
-    lights[0].color.h * light_1_toggle,
-    lights[0].color.s * light_1_toggle,
-		lights[0].color.v * light_1_toggle
+    color.r * light_1_toggle,
+    color.g * light_1_toggle,
+		color.b * light_1_toggle
   );
 
 	GLint light_col_2_uniform = glGetUniformLocation(object->shader_program, "lights[1].color");
@@ -358,10 +363,13 @@ void display_object(struct object_data* object) {
 		fprintf(stderr, "Could not bind uniform lights[1].color\n");
 		exit(EXIT_FAILURE);
 	}
+
+  hsv_to_rgb(lights[1].color, &color);
+
 	glUniform3f(light_col_2_uniform,
-    lights[1].color.h * light_2_toggle,
-    lights[1].color.s * light_2_toggle,
-		lights[1].color.v * light_2_toggle
+    color.r * light_2_toggle,
+    color.g * light_2_toggle,
+		color.b * light_2_toggle
   );
 
 
@@ -421,8 +429,13 @@ void display() {
 
   // change color
   if(keymap.k) {
-    get_random_color(&(lights[0].color));
-		get_random_color(&(lights[1].color));
+    lights[0].color.h -= 1;
+    lights[1].color.h -= 1;
+  }
+
+  if (keymap.l) {
+    lights[0].color.h += 1;
+    lights[1].color.h += 1;
   }
 
   if (!automatic_camera) {

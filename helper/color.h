@@ -9,4 +9,7 @@ struct hsv {
   float h, s, v;
 };
 
+void rgb_to_hsv(struct rgb color, struct hsv* out);
+void hsv_to_rgb(struct hsv color, struct rgb* out);
+
 #endif
