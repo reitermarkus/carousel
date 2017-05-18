@@ -60,11 +60,11 @@ static matrix mouse_matrix;
 struct light lights[] = {
   {
     .position = { 0, 4.0, -7.0 },
-    .color    = { 0.0, 1.0, 1.0 },
+    .color    = { 0.5, 1.0, 1.0 },
   },
   {
     .position = { 0, 4.0, 7.0 },
-    .color    = { 0.0, 1.0, 1.0 },
+    .color    = { 1.0, 1.0, 1.0 },
   },
 };
 
@@ -423,14 +423,36 @@ void display() {
     ambient_factor = fmin(ambient_factor + factor_brightness, 1.0);
   }
 
-  // change color
+  if (keymap.one) {
+    light_1_toggle = !light_1_toggle;
+    keymap.one = false;
+  }
+
+  if (keymap.two) {
+    light_2_toggle = !light_2_toggle;
+    keymap.two = false;
+  }
+
+  if (keymap.six) {
+    ambient_toggle = !ambient_toggle;
+    keymap.six = false;
+  }
+
+  if (keymap.seven) {
+    diffuse_toggle = !diffuse_toggle;
+    keymap.seven = false;
+  }
+
+  if (keymap.eight) {
+    specular_toggle = !specular_toggle;
+    keymap.eight = false;
+  }
+
   if(keymap.k) {
-    lights[0].color.h -= 1;
-    lights[1].color.h -= 1;
+    lights[0].color.h += 1;
   }
 
   if (keymap.l) {
-    lights[0].color.h += 1;
     lights[1].color.h += 1;
   }
 

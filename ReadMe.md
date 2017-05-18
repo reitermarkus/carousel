@@ -34,8 +34,13 @@ switch back to automatic mode, press the delete key.
 | F        | move down                  |
 | H        | brighten ambient color     |
 | J        | darken ambient color       |
-| K        | change light color hue (-) |
-| L        | change light color hue (+) |
+| K        | change light 1 hue         |
+| L        | change light 2 hue         |
+| 1        | toggle light 1             |
+| 2        | toggle light 2             |
+| 6        | toggle ambient light       |
+| 7        | toggle diffuse light       |
+| 8        | toggle specular light      |
 | spacebar | show wireframe model       |
 | delete   | reset camera to auto-mode  |
 

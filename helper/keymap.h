@@ -5,6 +5,11 @@
 
 struct keymap {
   bool
+    one,
+    two,
+    six,
+    seven,
+    eight,
     w,
     a,
     s,
