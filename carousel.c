@@ -404,57 +404,28 @@ void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
   if (keymap.space) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   } else {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   }
 
-  matrix_identity(view_matrix);
+  // Brightness
+  if (!keymap.h && keymap.j) { ambient_factor = fmax(ambient_factor - factor_brightness, 0.0); }
+  if (keymap.h && !keymap.j) { ambient_factor = fmin(ambient_factor + factor_brightness, 1.0); }
 
-  // make darker
-  if (!keymap.h && keymap.j) {
-    ambient_factor = fmax(ambient_factor - factor_brightness, 0.0);
-  }
+  // Light Toggle
+  if (keymap.one) { light_1_toggle = !light_1_toggle; keymap.one = false; }
+  if (keymap.two) { light_2_toggle = !light_2_toggle; keymap.two = false; }
 
-  // make brighter
-  if (keymap.h && !keymap.j) {
-    ambient_factor = fmin(ambient_factor + factor_brightness, 1.0);
-  }
+  // Ambient/Diffuse/Specular Toggle
+  if (keymap.six)   { ambient_toggle  = !ambient_toggle;  keymap.six = false; }
+  if (keymap.seven) { diffuse_toggle  = !diffuse_toggle;  keymap.seven = false; }
+  if (keymap.eight) { specular_toggle = !specular_toggle; keymap.eight = false; }
 
-  if (keymap.one) {
-    light_1_toggle = !light_1_toggle;
-    keymap.one = false;
-  }
-
-  if (keymap.two) {
-    light_2_toggle = !light_2_toggle;
-    keymap.two = false;
-  }
-
-  if (keymap.six) {
-    ambient_toggle = !ambient_toggle;
-    keymap.six = false;
-  }
-
-  if (keymap.seven) {
-    diffuse_toggle = !diffuse_toggle;
-    keymap.seven = false;
-  }
-
-  if (keymap.eight) {
-    specular_toggle = !specular_toggle;
-    keymap.eight = false;
-  }
-
-  if(keymap.k) {
-    lights[0].color.h += 1;
-  }
-
-  if (keymap.l) {
-    lights[1].color.h += 1;
-  }
+  // Hue
+  if (keymap.k) { lights[0].color.h = fmod(lights[0].color.h + 1, 360); }
+  if (keymap.l) { lights[1].color.h = fmod(lights[1].color.h + 1, 360); }
 
   if (!automatic_camera) {
     if (keymap.a && !keymap.d) { matrix_translate_x(+camera_speed, camera_matrix);         } // left
@@ -477,6 +448,7 @@ void display() {
     matrix_rotate_y(-rotation, camera_matrix);
   }
 
+  matrix_identity(view_matrix);
   matrix_multiply(camera_matrix, view_matrix, view_matrix);
 
   matrix_identity(mouse_matrix);
