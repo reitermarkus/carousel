@@ -23,4 +23,6 @@ void matrix_scale(float scale, matrix result_matrix);
 
 void matrix_perspective(float fov, float aspect, float near_plane, float far_plane, matrix result_matrix);
 
+void matrix_multiply_pos(matrix m1, float vector[3]);
+
 #endif // __MATRIX_H__

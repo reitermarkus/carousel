@@ -4,6 +4,17 @@
 #include <math.h>
 
 #include "matrix.h"
+#include "vertex.h"
+
+void matrix_multiply_pos(matrix m1, float vector[3]) {
+  float temp[3] = {
+    m1[0][0] * vector[0] + m1[0][1] * vector[1] + m1[0][2] * vector[2] + m1[0][3],
+    m1[1][0] * vector[0] + m1[1][1] * vector[1] + m1[1][2] * vector[2] + m1[1][3],
+    m1[2][0] * vector[0] + m1[2][1] * vector[1] + m1[2][2] * vector[2] + m1[2][3],
+  };
+
+  memcpy(vector, temp, sizeof(temp));
+}
 
 void matrix_print(matrix m) {
   printf("┌──────────┬──────────┬──────────┬──────────┐\n");

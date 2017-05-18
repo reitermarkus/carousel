@@ -59,12 +59,12 @@ static matrix mouse_matrix;
 
 struct light lights[] = {
   {
-    .position = { 0, 4.0, -7.0 },
-    .color    = { 0.5, 1.0, 1.0 },
+    .position = { 0, 1.55, 1.5 },
+    .color    = { 90.0, 1.0, 1.0 },
   },
   {
     .position = { 0, 4.0, 7.0 },
-    .color    = { 1.0, 1.0, 1.0 },
+    .color    = { 0.0, 1.0, 1.0 },
   },
 };
 
@@ -498,6 +498,24 @@ void on_idle() {
 
   // Rotate clock-wise by using negative angle.
   float rotation = -angle;
+
+  matrix temp;
+  matrix_identity(temp);
+
+  float light_pos[3] = { 0, 1.55, 1.5 };
+
+  matrix_rotate_y(rotation, temp);
+  matrix_multiply_pos(temp, light_pos);
+
+  lights[0].position.x = light_pos[0];
+  lights[0].position.y = light_pos[1];
+  lights[0].position.z = light_pos[2];
+
+  matrix_identity(light_object[0].translation_matrix);
+  matrix_rotate_y(rotation, light_object[0].translation_matrix);
+  matrix_translate_x(lights[0].position.x, light_object[0].translation_matrix);
+  matrix_translate_y(lights[0].position.y, light_object[0].translation_matrix);
+  matrix_translate_z(lights[0].position.z, light_object[0].translation_matrix);
 
   // Initialize center pillar matrix.
   matrix_identity(center_pillar_bottom.translation_matrix);
