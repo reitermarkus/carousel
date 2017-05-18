@@ -72,7 +72,7 @@ float ambient_factor = 0.5;
 float diffuse_factor = 0.5;
 float specular_factor = 0.5;
 
-float factor_brightness = 0.003;
+float factor_brightness = 0.005;
 float factor_hue = 0.05;
 
 int ambient_toggle = 1;
@@ -415,16 +415,12 @@ void display() {
 
   // make darker
   if (!keymap.h && keymap.j) {
-    ambient_factor  -= factor_brightness;
-    // diffuse_factor  -= factor_brightness;
-    // specular_factor -= factor_brightness;
+    ambient_factor = fmax(ambient_factor - factor_brightness, 0.0);
   }
 
   // make brighter
   if (keymap.h && !keymap.j) {
-    ambient_factor  += factor_brightness;
-	  // diffuse_factor  += factor_brightness;
-    // specular_factor += factor_brightness;
+    ambient_factor = fmin(ambient_factor + factor_brightness, 1.0);
   }
 
   // change color
