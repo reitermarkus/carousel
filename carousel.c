@@ -60,11 +60,11 @@ static matrix mouse_matrix;
 struct light lights[] = {
   {
     .position = { 0, 4.0, -7.0 },
-    .color    = { 1.0, 0.5, 0.0 },
+    .color    = { 0.0, 1.0, 1.0 },
   },
   {
     .position = { 0, 4.0, 7.0 },
-    .color    = { 1.0, 1.0, 1.0 },
+    .color    = { 0.0, 1.0, 1.0 },
   },
 };
 
@@ -348,9 +348,9 @@ void display_object(struct object_data* object) {
 		exit(EXIT_FAILURE);
 	}
 	glUniform3f(light_col_1_uniform,
-    lights[0].color.r * light_1_toggle,
-    lights[0].color.g * light_1_toggle,
-		lights[0].color.b * light_1_toggle
+    lights[0].color.h * light_1_toggle,
+    lights[0].color.s * light_1_toggle,
+		lights[0].color.v * light_1_toggle
   );
 
 	GLint light_col_2_uniform = glGetUniformLocation(object->shader_program, "lights[1].color");
@@ -359,9 +359,9 @@ void display_object(struct object_data* object) {
 		exit(EXIT_FAILURE);
 	}
 	glUniform3f(light_col_2_uniform,
-    lights[1].color.r * light_2_toggle,
-    lights[1].color.g * light_2_toggle,
-		lights[1].color.b * light_2_toggle
+    lights[1].color.h * light_2_toggle,
+    lights[1].color.s * light_2_toggle,
+		lights[1].color.v * light_2_toggle
   );
 
 
@@ -688,7 +688,7 @@ void initialize() {
     cube(0.2, &light_object[i]);
 
     for (size_t j = 0; j < light_object[i].vertex_count; j++) {
-      SET_VERTEX_COLOR(light_object[i].vertices[j], lights[i].color.r, lights[i].color.g, lights[i].color.b, 1.0);
+      SET_VERTEX_COLOR(light_object[i].vertices[j], lights[i].color.h, lights[i].color.s, lights[i].color.v, 1.0);
     }
 
     setup_data_buffers(&light_object[i]);

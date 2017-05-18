@@ -10,11 +10,11 @@ struct frgb {
     float b;
 };
 
-/* Struct for hsv values */
-struct hsv {
-  int hue;
-  int saturation;
-  int value;
-};
+//~ /* Struct for hsv values */
+//~ struct hsv {
+  //~ int hue;
+  //~ int saturation;
+  //~ int value;
+//~ };
 
 #endif
