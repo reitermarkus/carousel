@@ -79,8 +79,7 @@ int ambient_toggle = 1;
 int diffuse_toggle = 1;
 int specular_toggle = 1;
 
-int light_1_toggle = 1;
-int light_2_toggle = 1;
+int light_toggle[2] = {1, 1};
 
 /**/
 
@@ -328,50 +327,43 @@ void display_object(struct object_data* object) {
 	}
 	glUniform1i(light_count_uniform, sizeof(lights) / sizeof(*lights));
 
-	GLint light_pos_1_uniform = glGetUniformLocation(object->shader_program, "lights[0].position");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform lights[0].position\n");
-		exit(EXIT_FAILURE);
-	}
-	glUniform3fv(light_pos_1_uniform, 1, &(lights[0].position.x));
+  for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
+    struct rgb color;
+    hsv_to_rgb(lights[i].color, &color);
 
+    char* pos_format_string = "lights[%d].position";
+    int pos_string_size = snprintf(NULL, 0, pos_format_string, i);
+    char * pos_string = malloc(pos_string_size + 1);
+    sprintf(pos_string, pos_format_string, i);
 
-	GLint light_pos_2_uniform = glGetUniformLocation(object->shader_program, "lights[1].position");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform lights[1].position\n");
-		exit(EXIT_FAILURE);
-	}
-	glUniform3fv(light_pos_2_uniform, 1, &(lights[1].position.x));
+  	GLint light_pos_uniform = glGetUniformLocation(object->shader_program, pos_string);
+  	if (view_uniform == -1) {
+  		fprintf(stderr, "Could not bind uniform %s\n", pos_string);
+  		exit(EXIT_FAILURE);
+  	}
+  	glUniform3fv(light_pos_uniform, 1, &(lights[i].position.x));
 
-	GLint light_col_1_uniform = glGetUniformLocation(object->shader_program, "lights[0].color");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform lights[0].color\n");
-		exit(EXIT_FAILURE);
-	}
+    free(pos_string);
 
-  struct rgb color;
-  hsv_to_rgb(lights[0].color, &color);
+    char* color_format_string = "lights[%d].color";
+    int color_string_size = snprintf(NULL, 0, color_format_string, i);
+    char * color_string = malloc(color_string_size + 1);
+    sprintf(color_string, color_format_string, i);
 
-	glUniform3f(light_col_1_uniform,
-    color.r * light_1_toggle,
-    color.g * light_1_toggle,
-		color.b * light_1_toggle
-  );
+  	GLint light_col_uniform = glGetUniformLocation(object->shader_program, color_string);
+  	if (view_uniform == -1) {
+  		fprintf(stderr, "Could not bind uniform %s\n", color_string);
+  		exit(EXIT_FAILURE);
+  	}
 
-	GLint light_col_2_uniform = glGetUniformLocation(object->shader_program, "lights[1].color");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform lights[1].color\n");
-		exit(EXIT_FAILURE);
-	}
+    free(color_string);
 
-  hsv_to_rgb(lights[1].color, &color);
-
-	glUniform3f(light_col_2_uniform,
-    color.r * light_2_toggle,
-    color.g * light_2_toggle,
-		color.b * light_2_toggle
-  );
-
+  	glUniform3f(light_col_uniform,
+      color.r * light_toggle[i],
+      color.g * light_toggle[i],
+  		color.b * light_toggle[i]
+    );
+  }
 
 	GLint ambient_factor_uniform = glGetUniformLocation(object->shader_program,
 			"ambient_factor");
@@ -415,8 +407,8 @@ void display() {
   if (keymap.h && !keymap.j) { ambient_factor = fmin(ambient_factor + factor_brightness, 1.0); }
 
   // Light Toggle
-  if (keymap.one) { light_1_toggle = !light_1_toggle; keymap.one = false; }
-  if (keymap.two) { light_2_toggle = !light_2_toggle; keymap.two = false; }
+  if (keymap.one) { light_toggle[0] = !light_toggle[0]; keymap.one = false; }
+  if (keymap.two) { light_toggle[1] = !light_toggle[1]; keymap.two = false; }
 
   // Ambient/Diffuse/Specular Toggle
   if (keymap.six)   { ambient_toggle  = !ambient_toggle;  keymap.six = false; }
