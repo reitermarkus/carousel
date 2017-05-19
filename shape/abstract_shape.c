@@ -90,7 +90,7 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
         // with the current and next vertex of the top polygon.
         obj->indices[k].a = 0 + edges + 1;
         obj->indices[k].b = next_i_top;
-        obj->indices[k].c = curr_i_base;
+        obj->indices[k].c = curr_i_top;
         // printf("Connecting %i (origin top) with %i and %i.\n", 0, curr_i_top, next_i_top);
 
         // Connect the first triangle of the side panel.
