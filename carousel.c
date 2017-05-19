@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <alloca.h>
 #include <time.h>
 
 #include "helper/shared_headers.h"
@@ -333,7 +334,7 @@ void display_object(struct object_data* object) {
 
     char* pos_format_string = "lights[%d].position";
     int pos_string_size = snprintf(NULL, 0, pos_format_string, i);
-    char * pos_string = malloc(pos_string_size + 1);
+    char * pos_string = alloca(pos_string_size + 1);
     sprintf(pos_string, pos_format_string, i);
 
   	GLint light_pos_uniform = glGetUniformLocation(object->shader_program, pos_string);
@@ -343,11 +344,9 @@ void display_object(struct object_data* object) {
   	}
   	glUniform3fv(light_pos_uniform, 1, &(lights[i].position.x));
 
-    free(pos_string);
-
     char* color_format_string = "lights[%d].color";
     int color_string_size = snprintf(NULL, 0, color_format_string, i);
-    char * color_string = malloc(color_string_size + 1);
+    char * color_string = alloca(color_string_size + 1);
     sprintf(color_string, color_format_string, i);
 
   	GLint light_col_uniform = glGetUniformLocation(object->shader_program, color_string);
@@ -355,8 +354,6 @@ void display_object(struct object_data* object) {
   		fprintf(stderr, "Could not bind uniform %s\n", color_string);
   		exit(EXIT_FAILURE);
   	}
-
-    free(color_string);
 
   	glUniform3f(light_col_uniform,
       color.r * light_toggle[i],
@@ -596,7 +593,7 @@ void on_idle() {
   matrix_translate_z(0.275, extern_object.translation_matrix);
   matrix_scale(6, extern_object.translation_matrix);
   matrix_rotate_y(rotation, extern_object.translation_matrix);
-  matrix_multiply(mouse_matrix, extern_object.translation_matrix, extern_object.translation_matrix); 
+  matrix_multiply(mouse_matrix, extern_object.translation_matrix, extern_object.translation_matrix);
 
   for (int i=0; i < number_of_sides; i++){
     // Initialize cube matrix.

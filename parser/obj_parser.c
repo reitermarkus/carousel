@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <alloca.h>
 #include <errno.h>
 #include <libgen.h>
 
@@ -360,11 +361,10 @@ int obj_parse_obj_file(obj_growable_scene_data *growable_data, const char *filen
         strcpy(mtl_file_path, growable_data->material_filename);
       } else {
         // relative path
-        char* filename_dup = malloc(strlen(filename) + 1);
+        char* filename_dup = alloca(strlen(filename) + 1);
         strcpy(filename_dup, filename);
         char* mtl_file_dirname = dirname(filename_dup);
         sprintf(mtl_file_path, "%s/%s", mtl_file_dirname, growable_data->material_filename);
-        free(filename_dup);
       }
 
       obj_parse_mtl_file(mtl_file_path, &growable_data->material_list);
