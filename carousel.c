@@ -64,7 +64,7 @@ struct light lights[] = {
     .color    = { 90.0, 1.0, 1.0 },
   },
   {
-    .position = { 0, 4.0, 7.0 },
+    .position = { 0, 5.0, 7.0 },
     .color    = { 0.0, 1.0, 1.0 },
   },
 };
@@ -88,7 +88,7 @@ static const float camera_height = -2;
 static const float camera_distance = -15.0;
 static const float camera_speed = 0.1;
 
-enum { number_of_sides = 8 };
+enum { number_of_sides = 7 };
 static struct object_data base;
 static struct object_data center_pillar_bottom;
 static struct object_data center_pillar_top;
@@ -96,28 +96,27 @@ static struct object_data center_pillar_mid_bottom;
 static struct object_data center_pillar_mid_top;
 static struct object_data roof;
 static struct object_data pillars[number_of_sides];
-static struct object_data cubes[number_of_sides];
 static struct object_data scene_floor;
 
 static struct object_data light_object[2];
 
 /* Structures for loading of OBJ data */
 GLuint tiger_texture;
-struct object_data extern_object;
+struct object_data extern_object[number_of_sides];
 
 
 /*----------------------------------------------------------------------*/
 
-struct graphic_buffer* gb_extern_object;
+struct graphic_buffer* gb_extern_object[number_of_sides];
 
 /*----------------------------------------------------------------------*/
 
 
-static const float PILLAR_HEIGHT = 1.5;
+static const float PILLAR_HEIGHT = 2.0;
 static const float BASE_HEIGHT = .15;
-static const float BASE_RADIUS = 2.5;
-static const float ROOF_HEIGHT = 1.0;
-static const float CENTER_PILLAR_RADIUS = 0.5;
+static const float BASE_RADIUS = 3.5;
+static const float ROOF_HEIGHT = 1.2;
+static const float CENTER_PILLAR_RADIUS = .7;
 
 struct keymap keymap;
 
@@ -443,12 +442,14 @@ void display() {
   matrix_identity(mouse_matrix);
   matrix_rotate_y(-rotate_y, mouse_matrix);
   matrix_rotate_x(-rotate_x, mouse_matrix);
-
+  
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tiger_texture);
-  glUniform1i(glGetUniformLocation(extern_object.shader_program, "tiger_texture"), 0);
+    
+  for (int i = 0; i < number_of_sides; i++){
+    glUniform1i(glGetUniformLocation(extern_object[i].shader_program, "tiger_texture"), 0);  
+  }
 
-  display_object(&extern_object);
   display_object(&base);
   display_object(&center_pillar_bottom);
   display_object(&center_pillar_top);
@@ -456,13 +457,16 @@ void display() {
   display_object(&center_pillar_mid_top);
   display_object(&scene_floor);
 
+  for (int i = 0; i < number_of_sides; i++){
+    display_object(&extern_object[i]);
+  }
+
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
     display_object(&light_object[i]);
   }
 
   for (int i = 0; i < number_of_sides; i++) {
     display_object(&(pillars[i]));
-    display_object(&(cubes[i]));
   }
 
   display_object(&roof);
@@ -491,7 +495,7 @@ void on_idle() {
   matrix temp;
   matrix_identity(temp);
 
-  float light_pos[3] = { 0, 1.55, 1.5 };
+  float light_pos[3] = { 0, 2.04, 1.5 };
 
   matrix_rotate_y(rotation, temp);
   matrix_multiply_pos(temp, light_pos);
@@ -588,30 +592,27 @@ void on_idle() {
     matrix_multiply(mouse_matrix, pillars[i].translation_matrix, pillars[i].translation_matrix);
   }
 
-  matrix_identity(extern_object.translation_matrix);
-  matrix_translate_y(2.25, extern_object.translation_matrix);
-  matrix_translate_z(0.275, extern_object.translation_matrix);
-  matrix_scale(6, extern_object.translation_matrix);
-  matrix_rotate_y(rotation, extern_object.translation_matrix);
-  matrix_multiply(mouse_matrix, extern_object.translation_matrix, extern_object.translation_matrix);
 
-  for (int i=0; i < number_of_sides; i++){
-    // Initialize cube matrix.
-    matrix_identity(cubes[i].translation_matrix);
-
-    // Move cube towards the edge.
-    matrix_translate_z(-(BASE_RADIUS / 7 * 6), cubes[i].translation_matrix);
-
+  for (int i = 0; i < number_of_sides; i++){
+    matrix_identity(extern_object[i].translation_matrix);
+	matrix_rotate_y(45, extern_object[i].translation_matrix);    
+    
     // Move cube up and down.
     float up_down_speed = M_PI;
-    matrix_translate_y((sin(rotation * up_down_speed + i * M_PI) / 5) + PILLAR_HEIGHT / 2.175, cubes[i].translation_matrix);
+    matrix_translate_y((sin(rotation * up_down_speed + i * M_PI) / 5) + PILLAR_HEIGHT / 4.175, extern_object[i].translation_matrix);
 
+    // Move cube towards the edge.
+    matrix_translate_z(-(BASE_RADIUS / 7 * 6), extern_object[i].translation_matrix);
+    
+    //~ matrix_translate_y(2.25, extern_object[i].translation_matrix);
+    //~ matrix_translate_z(0.275, extern_object[i].translation_matrix);
+    matrix_scale(2, extern_object[i].translation_matrix);
+    
     // Rotate cube around the center to the corresponding edge.
-    matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, cubes[i].translation_matrix);
-
-    // Apply general rotation to cube.
-    matrix_rotate_y(rotation, cubes[i].translation_matrix);
-    matrix_multiply(mouse_matrix, cubes[i].translation_matrix, cubes[i].translation_matrix);
+    matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, extern_object[i].translation_matrix);
+    
+    matrix_rotate_y(rotation, extern_object[i].translation_matrix);
+    matrix_multiply(mouse_matrix, extern_object[i].translation_matrix, extern_object[i].translation_matrix);
   }
 
   // Request redrawing of window content.
@@ -655,10 +656,12 @@ void initialize() {
   tiger_texture = load_texture("models/tigercub/tigercub.png");
 
   // External Object
-  init_object_data(&extern_object);
-  init_ext_obj(&extern_object, "models/tigercub.obj");
-  setup_data_buffers(&extern_object);
-  setup_shader_program(&extern_object, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  for (int i = 0; i < number_of_sides; i++) {
+	init_object_data(&extern_object[i]);
+    init_ext_obj(&extern_object[i], "models/tigercub.obj");
+    setup_data_buffers(&extern_object[i]);
+    setup_shader_program(&extern_object[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  }
 
   // Roof
   init_object_data(&roof);
@@ -715,14 +718,6 @@ void initialize() {
     matrix_translate_x(lights[i].position.x, light_object[i].translation_matrix);
     matrix_translate_y(lights[i].position.y, light_object[i].translation_matrix);
     matrix_translate_z(lights[i].position.z * 1.1, light_object[i].translation_matrix);
-  }
-
-  // Cubes
-  for (int i = 0; i < number_of_sides; i++) {
-    init_object_data(&cubes[i]);
-    cube(0.3, &cubes[i]);
-    setup_data_buffers(&cubes[i]);
-    setup_shader_program(&cubes[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
   }
 
   // Pillars
