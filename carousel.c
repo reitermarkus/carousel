@@ -97,6 +97,7 @@ static struct object_data center_pillar_mid_top;
 static struct object_data roof;
 static struct object_data pillars[number_of_sides];
 static struct object_data scene_floor;
+static struct object_data palm_tree;
 
 static struct object_data light_object[2];
 
@@ -462,6 +463,8 @@ void display() {
   display_object(&center_pillar_mid_top);
   display_object(&scene_floor);
 
+  display_object(&palm_tree);
+
   for (int i = 0; i < number_of_sides; i++){
     display_object(&extern_object[i]);
   }
@@ -664,6 +667,16 @@ void initialize() {
 
   GLuint plane_texture = load_texture("models/plane.jpg");
   GLuint grass_texture = load_texture("models/grass.png");
+  GLuint palm_texture = load_texture("models/Hyophorbe_lagenicaulis_dif.jpg");
+
+  init_object_data(&palm_tree);
+  init_ext_obj(&palm_tree, "models/Hyophorbe_lagenicaulis.obj");
+  setup_data_buffers(&palm_tree);
+  palm_tree.texture = palm_texture;
+  palm_tree.shader_program = shader_program;
+  matrix_scale(0.025, palm_tree.translation_matrix);
+  matrix_translate_x(5, palm_tree.translation_matrix);
+  matrix_translate_z(-5, palm_tree.translation_matrix);
 
   // External Object
   for (int i = 0; i < number_of_sides; i++) {
