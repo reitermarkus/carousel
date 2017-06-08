@@ -660,6 +660,8 @@ void initialize() {
   matrix_identity(camera_matrix);
   matrix_identity(mouse_matrix);
 
+  GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
+
   GLuint plane_texture = load_texture("models/plane.jpg");
 
   // External Object
@@ -674,50 +676,50 @@ void initialize() {
     }
 
     extern_object[i].texture = plane_texture;
-    setup_shader_program(&extern_object[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+    extern_object[i].shader_program = shader_program;
   }
 
   // Roof
   init_object_data(&roof);
   cone(20, BASE_RADIUS , ROOF_HEIGHT, &roof);
   setup_data_buffers(&roof);
-  setup_shader_program(&roof, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  roof.shader_program = shader_program;
 
   // Center Pillar Bottom
   init_object_data(&center_pillar_bottom);
   flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &center_pillar_bottom);
   setup_data_buffers(&center_pillar_bottom);
-  setup_shader_program(&center_pillar_bottom, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  center_pillar_bottom.shader_program = shader_program;
 
   // Center Pillar Top
   init_object_data(&center_pillar_top);
   flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &center_pillar_top);
   setup_data_buffers(&center_pillar_top);
-  setup_shader_program(&center_pillar_top, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  center_pillar_top.shader_program = shader_program;
 
   // Center Pillar Mid Bottom
   init_object_data(&center_pillar_mid_bottom);
   flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &center_pillar_mid_bottom);
   setup_data_buffers(&center_pillar_mid_bottom);
-  setup_shader_program(&center_pillar_mid_bottom, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  center_pillar_mid_bottom.shader_program = shader_program;
 
   // Center Pillar Mid Top
   init_object_data(&center_pillar_mid_top);
   flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &center_pillar_mid_top);
   setup_data_buffers(&center_pillar_mid_top);
-  setup_shader_program(&center_pillar_mid_top, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  center_pillar_mid_top.shader_program = shader_program;
 
    // Base
   init_object_data(&base);
   cylinder(20, BASE_RADIUS, BASE_HEIGHT, &base);
   setup_data_buffers(&base);
-  setup_shader_program(&base, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  base.shader_program = shader_program;
 
   // Floor
   init_object_data(&scene_floor);
   hyper_rectangle(BASE_RADIUS * 4, BASE_HEIGHT, BASE_RADIUS * 4, &scene_floor);
   setup_data_buffers(&scene_floor);
-  setup_shader_program(&scene_floor, "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  scene_floor.shader_program = shader_program;
 
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
     init_object_data(&light_object[i]);
@@ -728,7 +730,7 @@ void initialize() {
     }
 
     setup_data_buffers(&light_object[i]);
-    setup_shader_program(&light_object[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+    light_object[i].shader_program = shader_program;
     matrix_translate_x(lights[i].position.x, light_object[i].translation_matrix);
     matrix_translate_y(lights[i].position.y, light_object[i].translation_matrix);
     matrix_translate_z(lights[i].position.z * 1.1, light_object[i].translation_matrix);
@@ -739,7 +741,7 @@ void initialize() {
     init_object_data(&pillars[i]);
     cylinder(7, .03, PILLAR_HEIGHT, &pillars[i]);
     setup_data_buffers(&pillars[i]);
-    setup_shader_program(&pillars[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
+    pillars[i].shader_program = shader_program;
   }
 }
 
