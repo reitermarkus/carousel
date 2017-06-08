@@ -442,12 +442,12 @@ void display() {
   matrix_identity(mouse_matrix);
   matrix_rotate_y(-rotate_y, mouse_matrix);
   matrix_rotate_x(-rotate_x, mouse_matrix);
-  
+
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tiger_texture);
-    
+
   for (int i = 0; i < number_of_sides; i++){
-    glUniform1i(glGetUniformLocation(extern_object[i].shader_program, "tiger_texture"), 0);  
+    glUniform1i(glGetUniformLocation(extern_object[i].shader_program, "tiger_texture"), 0);
   }
 
   display_object(&base);

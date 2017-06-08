@@ -20,7 +20,7 @@ GLuint load_texture(const char* file_path) {
   int width, height, components;
   unsigned char* image = stbi_load(file_path, &width, &height, &components, 0);
 
-  // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, components == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, image);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, components == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, image);
   glGenerateMipmap(GL_TEXTURE_2D);
 
   stbi_image_free(image);

@@ -61,5 +61,5 @@ void main() {
 
   vec4 texture_color = texture(tiger_texture, vector.texture);
 
-  fragment_color = vector.color * vec4(ambient_sum + diffuse_sum + spec_sum, 1); // * texture_color;
+  fragment_color = vector.color * vec4(ambient_sum + diffuse_sum + spec_sum, 1) * texture_color;
 }
