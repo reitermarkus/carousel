@@ -155,7 +155,9 @@ void mouse_motion(int x, int y) {
 *******************************************************************/
 
 void setup_data_buffers(struct object_data* object) {
-  calculate_normals(object);
+  if (object->face_normals == NULL) {
+    calculate_normals(object);
+  }
 
   glGenVertexArrays(1, &(object->vao));
   glBindVertexArray(object->vao);
@@ -164,13 +166,11 @@ void setup_data_buffers(struct object_data* object) {
   glGenBuffers(1, &(object->vbo));
   glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
   glBufferData(GL_ARRAY_BUFFER, object->vertex_count * sizeof(*object->vertices), object->vertices, GL_STATIC_DRAW);
-  free(object->vertices);
 
   // Bind buffer object for indices.
   glGenBuffers(1, &(object->ibo));
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->index_count * sizeof(*object->indices), object->indices, GL_STATIC_DRAW);
-  free(object->indices);
 
   // Bind vertex positions.
   glEnableVertexAttribArray(v_position);
@@ -208,7 +208,6 @@ void setup_data_buffers(struct object_data* object) {
     glGenBuffers(1, &(object->tbo));
     glBindBuffer(GL_ARRAY_BUFFER, object->tbo);
     glBufferData(GL_ARRAY_BUFFER, object->texture_count * sizeof(*object->textures), object->textures, GL_STATIC_DRAW);
-    free(object->textures);
 
     // Bind vertex textures.
     glEnableVertexAttribArray(v_texture);
@@ -402,6 +401,19 @@ void display_object(struct object_data* object) {
   draw(object, projection_matrix, view_matrix);
 }
 
+void update_light_colors() {
+  for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
+    struct rgb color;
+    hsv_to_rgb(lights[i].color, &color);
+
+    for (size_t j = 0; j < light_object[i].vertex_count; j++) {
+      SET_VERTEX_COLOR(light_object[i].vertices[j], color.r, color.g, color.b, 1.0);
+    }
+
+    setup_data_buffers(&light_object[i]);
+  }
+}
+
 void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -426,8 +438,8 @@ void display() {
   if (keymap.eight) { specular_toggle = !specular_toggle; keymap.eight = false; }
 
   // Hue
-  if (keymap.k) { lights[0].color.h = fmod(lights[0].color.h + 1, 360); }
-  if (keymap.l) { lights[1].color.h = fmod(lights[1].color.h + 1, 360); }
+  if (keymap.k) { lights[0].color.h = fmod(lights[0].color.h + 1, 360); update_light_colors(); }
+  if (keymap.l) { lights[1].color.h = fmod(lights[1].color.h + 1, 360); update_light_colors(); }
 
   if (!automatic_camera) {
     if (keymap.a && !keymap.d) { matrix_translate_x(+camera_speed, camera_matrix);         } // left
@@ -665,6 +677,7 @@ void initialize() {
   matrix_identity(mouse_matrix);
 
   GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
 
   GLuint plane_texture = load_texture("models/plane.jpg");
   GLuint grass_texture = load_texture("models/grass.png");
@@ -757,11 +770,14 @@ void initialize() {
     cube(LIGHT_SIZE, &light_object[i]);
 
     for (size_t j = 0; j < light_object[i].vertex_count; j++) {
-      SET_VERTEX_COLOR(light_object[i].vertices[j], lights[i].color.h, lights[i].color.s, lights[i].color.v, 1.0);
+      struct rgb color;
+      hsv_to_rgb(lights[i].color, &color);
+
+      SET_VERTEX_COLOR(light_object[i].vertices[j], color.r, color.g, color.b, 1.0);
     }
 
     setup_data_buffers(&light_object[i]);
-    light_object[i].shader_program = shader_program;
+    light_object[i].shader_program = light_shader_program;
     matrix_translate_x(lights[i].position.x, light_object[i].translation_matrix);
     matrix_translate_y(lights[i].position.y, light_object[i].translation_matrix);
     matrix_translate_z(lights[i].position.z * 1.1, light_object[i].translation_matrix);

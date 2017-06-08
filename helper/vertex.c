@@ -27,7 +27,7 @@ static struct normal face_normal(struct position p1, struct position p2, struct 
 static void calculate_face_normals(struct object_data* obj) {
   puts("Calculating face normals ...");
 
-  obj->face_normals = malloc(obj->index_count * sizeof(*obj->face_normals));
+  obj->face_normals = realloc(obj->face_normals, obj->index_count * sizeof(*obj->face_normals));
 
   for (size_t i = 0; i < obj->index_count; i++) {
     obj->face_normals[i] = face_normal(
