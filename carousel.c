@@ -88,7 +88,7 @@ static const float camera_height = -2;
 static const float camera_distance = -15.0;
 static const float camera_speed = 0.1;
 
-enum { number_of_sides = 7 };
+enum { number_of_sides = 6 };
 static struct object_data base;
 static struct object_data center_pillar_bottom;
 static struct object_data center_pillar_top;
@@ -112,11 +112,12 @@ struct graphic_buffer* gb_extern_object[number_of_sides];
 /*----------------------------------------------------------------------*/
 
 
-static const float PILLAR_HEIGHT = 2.0;
-static const float BASE_HEIGHT = .15;
-static const float BASE_RADIUS = 3.5;
-static const float ROOF_HEIGHT = 1.2;
-static const float CENTER_PILLAR_RADIUS = .7;
+static const float PILLAR_HEIGHT = 2.5;
+static const float BASE_HEIGHT = .25;
+static const float BASE_RADIUS = 5;
+static const float ROOF_HEIGHT = 1.5;
+static const float CENTER_PILLAR_RADIUS = .8;
+static const float LIGHT_SIZE = 0.2;
 
 struct keymap keymap;
 
@@ -503,7 +504,7 @@ void on_idle() {
   matrix temp;
   matrix_identity(temp);
 
-  float light_pos[3] = { 0, 2.04, 1.5 };
+  float light_pos[3] = { 0, PILLAR_HEIGHT + BASE_HEIGHT - LIGHT_SIZE / 2, 1.5 };
 
   matrix_rotate_y(rotation, temp);
   matrix_multiply_pos(temp, light_pos);
@@ -590,7 +591,7 @@ void on_idle() {
     matrix_translate_y(BASE_HEIGHT, pillars[i].translation_matrix);
 
     // Move pillar towards the edge.
-    matrix_translate_z(-(BASE_RADIUS / 7 * 6), pillars[i].translation_matrix);
+    matrix_translate_z(-(BASE_RADIUS / 3 * 2), pillars[i].translation_matrix);
 
     // Rotate pillar around the center to the corresponding edge.
     matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, pillars[i].translation_matrix);
@@ -604,19 +605,19 @@ void on_idle() {
   for (int i = 0; i < number_of_sides; i++){
     matrix_identity(extern_object[i].translation_matrix);
     matrix_rotate_y(deg_to_rad(130), extern_object[i].translation_matrix);
-    matrix_translate_y(0.5, extern_object[i].translation_matrix);
+    matrix_translate_y(0.75, extern_object[i].translation_matrix);
     matrix_translate_x(-0.2, extern_object[i].translation_matrix);
 
     // Move cube up and down.
     float up_down_speed = M_PI;
-    matrix_translate_y((sin(rotation * up_down_speed + i * M_PI) / 5) + PILLAR_HEIGHT / 4.175, extern_object[i].translation_matrix);
+    matrix_translate_y((sin(rotation * up_down_speed + i * M_PI) / 3) + PILLAR_HEIGHT / 4.175, extern_object[i].translation_matrix);
 
     // Move cube towards the edge.
-    matrix_translate_z(-(BASE_RADIUS / 7 * 6), extern_object[i].translation_matrix);
+    matrix_translate_z(-(BASE_RADIUS / 3 * 2), extern_object[i].translation_matrix);
 
     //~ matrix_translate_y(2.25, extern_object[i].translation_matrix);
     //~ matrix_translate_z(0.275, extern_object[i].translation_matrix);
-    matrix_scale(0.5, extern_object[i].translation_matrix);
+    matrix_scale(0.6, extern_object[i].translation_matrix);
 
     // Rotate cube around the center to the corresponding edge.
     matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, extern_object[i].translation_matrix);
@@ -675,8 +676,8 @@ void initialize() {
   palm_tree.texture = palm_texture;
   palm_tree.shader_program = shader_program;
   matrix_scale(0.025, palm_tree.translation_matrix);
-  matrix_translate_x(5, palm_tree.translation_matrix);
-  matrix_translate_z(-5, palm_tree.translation_matrix);
+  matrix_translate_x(BASE_RADIUS * 2 * 0.7, palm_tree.translation_matrix);
+  matrix_translate_z(-BASE_RADIUS * 2 * 0.7, palm_tree.translation_matrix);
 
   // External Object
   for (int i = 0; i < number_of_sides; i++) {
@@ -701,25 +702,25 @@ void initialize() {
 
   // Center Pillar Bottom
   init_object_data(&center_pillar_bottom);
-  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.40, &center_pillar_bottom);
+  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.66, PILLAR_HEIGHT * 0.40, &center_pillar_bottom);
   setup_data_buffers(&center_pillar_bottom);
   center_pillar_bottom.shader_program = shader_program;
 
   // Center Pillar Top
   init_object_data(&center_pillar_top);
-  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &center_pillar_top);
+  flattened_cone(15, CENTER_PILLAR_RADIUS * 0.66, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &center_pillar_top);
   setup_data_buffers(&center_pillar_top);
   center_pillar_top.shader_program = shader_program;
 
   // Center Pillar Mid Bottom
   init_object_data(&center_pillar_mid_bottom);
-  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.70, PILLAR_HEIGHT * 0.1, &center_pillar_mid_bottom);
+  flattened_cone(15, CENTER_PILLAR_RADIUS * 0.9, CENTER_PILLAR_RADIUS * 0.66, PILLAR_HEIGHT * 0.1, &center_pillar_mid_bottom);
   setup_data_buffers(&center_pillar_mid_bottom);
   center_pillar_mid_bottom.shader_program = shader_program;
 
   // Center Pillar Mid Top
   init_object_data(&center_pillar_mid_top);
-  flattened_cone(15, CENTER_PILLAR_RADIUS  * 0.70, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.1, &center_pillar_mid_top);
+  flattened_cone(15, CENTER_PILLAR_RADIUS * 0.66, CENTER_PILLAR_RADIUS * 0.9, PILLAR_HEIGHT * 0.1, &center_pillar_mid_top);
   setup_data_buffers(&center_pillar_mid_top);
   center_pillar_mid_top.shader_program = shader_program;
 
@@ -753,7 +754,7 @@ void initialize() {
 
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
     init_object_data(&light_object[i]);
-    cube(0.2, &light_object[i]);
+    cube(LIGHT_SIZE, &light_object[i]);
 
     for (size_t j = 0; j < light_object[i].vertex_count; j++) {
       SET_VERTEX_COLOR(light_object[i].vertices[j], lights[i].color.h, lights[i].color.s, lights[i].color.v, 1.0);
