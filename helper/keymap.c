@@ -1,26 +1,5 @@
 #include "keymap.h"
 
-void keymap_init(struct keymap *keymap) {
-  keymap->one   = false;
-  keymap->two   = false;
-  keymap->six   = false;
-  keymap->seven = false;
-  keymap->eight = false;
-  keymap->w     = false;
-  keymap->a     = false;
-  keymap->s     = false;
-  keymap->d     = false;
-  keymap->q     = false;
-  keymap->e     = false;
-  keymap->r     = false;
-  keymap->f     = false;
-  keymap->h      = false;
-  keymap->j      = false;
-  keymap->k      = false;
-  keymap->l      = false;
-  keymap->space = false;
-}
-
 bool keymap_set_key(struct keymap *keymap, unsigned char key, bool value) {
   switch(key) {
     case '1':

@@ -3,6 +3,27 @@
 
 #include <stdbool.h>
 
+#define KEYMAP_INIT { \
+  .one   = false,     \
+  .two   = false,     \
+  .six   = false,     \
+  .seven = false,     \
+  .eight = false,     \
+  .w     = false,     \
+  .a     = false,     \
+  .s     = false,     \
+  .d     = false,     \
+  .q     = false,     \
+  .e     = false,     \
+  .r     = false,     \
+  .f     = false,     \
+  .h      = false,    \
+  .j      = false,    \
+  .k      = false,    \
+  .l      = false,    \
+  .space = false,     \
+}
+
 struct keymap {
   bool
     one,
@@ -25,8 +46,6 @@ struct keymap {
     space
   ;
 };
-
-void keymap_init(struct keymap *keymap);
 
 bool keymap_set_key(struct keymap *keymap, unsigned char key, bool value);
 

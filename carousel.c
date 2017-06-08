@@ -28,7 +28,7 @@
 
 /* Local includes */
 #include "helper/shader_program.h"
-
+#include "helper/controls.h"
 #include "helper/draw.h"
 #include "helper/keymap.h"
 #include "helper/macros.h"
@@ -38,6 +38,7 @@
 #include "helper/color.h"
 #include "helper/load_texture.h"
 #include "parser/obj_parser.h"
+#include "helper/setup_data_buffers.h"
 #include "shape/cone.h"
 #include "shape/cube.h"
 #include "shape/cuboid.h"
@@ -49,14 +50,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-/*----------------------------------------------------------------*/
 
-static matrix projection_matrix;
-static matrix view_matrix;
-static matrix camera_matrix;
-static matrix mouse_matrix;
+matrix projection_matrix;
+matrix view_matrix;
+matrix camera_matrix;
+matrix mouse_matrix;
 
-/**/
 
 struct light lights[] = {
   {
@@ -72,21 +71,14 @@ struct light lights[] = {
 float ambient_factor = 0.5;
 float diffuse_factor = 0.5;
 float specular_factor = 0.5;
+float brightness_factor = 0.005;
 
-float factor_brightness = 0.005;
-float factor_hue = 0.05;
+extern int ambient_toggle;
+extern int diffuse_toggle;
+extern int specular_toggle;
 
-int ambient_toggle = 1;
-int diffuse_toggle = 1;
-int specular_toggle = 1;
-
-int light_toggle[2] = {1, 1};
-
-/**/
-
-static const float camera_height = -2;
-static const float camera_distance = -15.0;
-static const float camera_speed = 0.1;
+extern int light_toggle[];
+extern struct object_data light_object[];
 
 enum { number_of_sides = 6 };
 static struct object_data base;
@@ -96,21 +88,9 @@ static struct object_data center_pillar_mid_bottom;
 static struct object_data center_pillar_mid_top;
 static struct object_data roof;
 static struct object_data pillars[number_of_sides];
+static struct object_data planes[number_of_sides];
 static struct object_data scene_floor;
 static struct object_data palm_tree;
-
-static struct object_data light_object[2];
-
-/* Structures for loading of OBJ data */
-struct object_data planes[number_of_sides];
-
-
-/*----------------------------------------------------------------------*/
-
-struct graphic_buffer* gb_planes[number_of_sides];
-
-/*----------------------------------------------------------------------*/
-
 
 static const float PILLAR_HEIGHT = 2.5;
 static const float BASE_HEIGHT = .25;
@@ -119,118 +99,6 @@ static const float ROOF_HEIGHT = 1.5;
 static const float CENTER_PILLAR_RADIUS = .8;
 static const float LIGHT_SIZE = 0.2;
 
-struct keymap keymap;
-
-bool automatic_camera = true;
-
-float rotate_x = 0;
-float rotate_y = 0;
-
-int mouse_x;
-int mouse_y;
-
-
-void mouse_passive(int x, int y) {
-  mouse_x = x;
-  mouse_y = y;
-}
-
-void mouse_motion(int x, int y) {
-  static const float SPEED = 0.1 / (2 * M_PI);
-
-  rotate_x += (mouse_y - y) * SPEED; // rotate around x axis when mouse moves up/down
-  rotate_y += (mouse_x - x) * SPEED; // rotate around y axis when mouse moves left/right
-
-  mouse_passive(x, y);
-  glutPostRedisplay();
-}
-
-
-/******************************************************************
-*
-* setup_data_buffers
-*
-* Create buffer objects and load data into buffers
-*
-*******************************************************************/
-
-void setup_data_buffers(struct object_data* object) {
-  if (object->face_normals == NULL) {
-    calculate_normals(object);
-  }
-
-  glGenVertexArrays(1, &(object->vao));
-  glBindVertexArray(object->vao);
-
-  // Bind buffer object for vertices and colors.
-  glGenBuffers(1, &(object->vbo));
-  glBindBuffer(GL_ARRAY_BUFFER, object->vbo);
-  glBufferData(GL_ARRAY_BUFFER, object->vertex_count * sizeof(*object->vertices), object->vertices, GL_STATIC_DRAW);
-
-  // Bind buffer object for indices.
-  glGenBuffers(1, &(object->ibo));
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->index_count * sizeof(*object->indices), object->indices, GL_STATIC_DRAW);
-
-  // Bind vertex positions.
-  glEnableVertexAttribArray(v_position);
-  glVertexAttribPointer(
-    v_position,            // attribute index
-    3,                     // attribute length (x, y, z)
-    GL_FLOAT,              // attribute type
-    GL_FALSE,              // normalized?
-    sizeof(struct vertex), // offset between indices
-    0                      // offset to vertex values
-  );
-
-  // Bind vertex colors.
-  glEnableVertexAttribArray(v_color);
-  glVertexAttribPointer(
-    v_color,                         // attribute index
-    4,                               // attribute length (r, g, b, a)
-    GL_FLOAT,                        // attribute type
-    GL_FALSE,                        // normalized?
-    sizeof(struct vertex),           // offset between indices
-    (GLvoid*)sizeof(struct position) // offset to color values
-  );
-
-  glEnableVertexAttribArray(v_normal);
-  glVertexAttribPointer(
-    v_normal,                                                 // attribute index
-    3,                                                        // attribute length (r, g, b, a)
-    GL_FLOAT,                                                 // attribute type
-    GL_FALSE,                                                 // normalized?
-    sizeof(struct vertex),                                    // offset between indices
-    (GLvoid*)(sizeof(struct position) + sizeof(struct color)) // offset to color values
-  );
-
-  if (object->texture_count != 0) {
-    glGenBuffers(1, &(object->tbo));
-    glBindBuffer(GL_ARRAY_BUFFER, object->tbo);
-    glBufferData(GL_ARRAY_BUFFER, object->texture_count * sizeof(*object->textures), object->textures, GL_STATIC_DRAW);
-
-    // Bind vertex textures.
-    glEnableVertexAttribArray(v_texture);
-     glVertexAttribPointer(
-       v_texture,                                                // attribute index
-       2,                                                        // attribute length (u, v)
-       GL_FLOAT,                                                 // attribute type
-       GL_FALSE,                                                 // normalized?
-       0,                                                        // offset between indices
-       0                                                         // offset to texture values
-     );
-  }
-
-  // Bind indices.
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->ibo);
-
-  glBindVertexArray(0);
-
-  glDisableVertexAttribArray(v_position);
-  glDisableVertexAttribArray(v_color);
-  glDisableVertexAttribArray(v_normal);
-  glDisableVertexAttribArray(v_texture);
-}
 
 /******************************************************************
 *
@@ -394,73 +262,11 @@ void display_object(struct object_data* object) {
   draw(object, projection_matrix, view_matrix);
 }
 
-void update_light_colors() {
-  for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
-    struct rgb color;
-    hsv_to_rgb(lights[i].color, &color);
-
-    for (size_t j = 0; j < light_object[i].vertex_count; j++) {
-      SET_VERTEX_COLOR(light_object[i].vertices[j], color.r, color.g, color.b, 1.0);
-    }
-
-    setup_data_buffers(&light_object[i]);
-  }
-}
-
 void display() {
   // Clear window with color specified in `initialize`.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  if (keymap.space) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  } else {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  }
-
-  // Brightness
-  if (!keymap.h && keymap.j) { ambient_factor = fmax(ambient_factor - factor_brightness, 0.0); }
-  if (keymap.h && !keymap.j) { ambient_factor = fmin(ambient_factor + factor_brightness, 1.0); }
-
-  // Light Toggle
-  if (keymap.one) { light_toggle[0] = !light_toggle[0]; keymap.one = false; }
-  if (keymap.two) { light_toggle[1] = !light_toggle[1]; keymap.two = false; }
-
-  // Ambient/Diffuse/Specular Toggle
-  if (keymap.six)   { ambient_toggle  = !ambient_toggle;  keymap.six = false; }
-  if (keymap.seven) { diffuse_toggle  = !diffuse_toggle;  keymap.seven = false; }
-  if (keymap.eight) { specular_toggle = !specular_toggle; keymap.eight = false; }
-
-  // Hue
-  if (keymap.k) { lights[0].color.h = fmod(lights[0].color.h + 1, 360); update_light_colors(); }
-  if (keymap.l) { lights[1].color.h = fmod(lights[1].color.h + 1, 360); update_light_colors(); }
-
-  if (!automatic_camera) {
-    if (keymap.a && !keymap.d) { matrix_translate_x(+camera_speed, camera_matrix);         } // left
-    if (!keymap.a && keymap.d) { matrix_translate_x(-camera_speed, camera_matrix);         } // right
-    if (keymap.w && !keymap.s) { matrix_translate_z(+camera_speed, camera_matrix);         } // forward
-    if (!keymap.w && keymap.s) { matrix_translate_z(-camera_speed, camera_matrix);         } // backward
-    if (keymap.q && !keymap.e) { matrix_rotate_y(+camera_speed / 2 / M_PI, camera_matrix); } // rotate left
-    if (!keymap.q && keymap.e) { matrix_rotate_y(-camera_speed / 2 / M_PI, camera_matrix); } // rotate right
-    if (keymap.r && !keymap.f) { matrix_translate_y(-camera_speed / 2.0, camera_matrix);   } // up
-    if (!keymap.r && keymap.f) { matrix_translate_y(+camera_speed / 2.0, camera_matrix);   } // down
-  } else {
-    long elapsed_time = glutGet(GLUT_ELAPSED_TIME); // ms
-    float rotation = (elapsed_time / 500.0) * camera_speed;
-
-    matrix_identity(camera_matrix);
-
-    matrix_translate_x(camera_distance * sinf(rotation), camera_matrix);
-    matrix_translate_y(camera_height, camera_matrix);
-    matrix_translate_z(camera_distance * cosf(rotation), camera_matrix);
-    matrix_rotate_y(-rotation, camera_matrix);
-  }
-
-  matrix_identity(view_matrix);
-  matrix_multiply(camera_matrix, view_matrix, view_matrix);
-
-  matrix_identity(mouse_matrix);
-  matrix_rotate_y(-rotate_y, mouse_matrix);
-  matrix_rotate_x(-rotate_x, mouse_matrix);
+  handle_controls();
 
   display_object(&base);
   display_object(&center_pillar_bottom);
@@ -797,38 +603,6 @@ void resize_window(int width, int height) {
   matrix_perspective(fovy, aspect, near_plane, far_plane, projection_matrix);
 }
 
-void keyboard_event(unsigned char key, int x, int y) {
-  (void)x;
-  (void)y;
-
-  keymap_set_key(&keymap, key, true);
-
-  if (keymap.a || keymap.w || keymap.s || keymap.d || keymap.q || keymap.e || keymap.r || keymap.f) {
-    automatic_camera = false;
-  }
-
-  glutPostRedisplay();
-}
-
-void keyboard_event_up(unsigned char key, int x, int y) {
-  (void)x;
-  (void)y;
-
-  keymap_set_key(&keymap, key, false);
-
-  switch(key) {
-    case 0x7f: // delete key
-      if (!automatic_camera) {
-        automatic_camera = true;
-      }
-      rotate_x = 0;
-      rotate_y = 0;
-      break;
-  }
-
-  glutPostRedisplay();
-}
-
 
 /******************************************************************
 *
@@ -889,8 +663,7 @@ int main(int argc, char** argv) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  keymap_init(&keymap);
-  glutKeyboardFunc(keyboard_event);
+  glutKeyboardFunc(keyboard_event_down);
   glutKeyboardUpFunc(keyboard_event_up);
 
   glutMotionFunc(mouse_motion);
