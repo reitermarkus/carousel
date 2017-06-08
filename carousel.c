@@ -102,12 +102,12 @@ static struct object_data palm_tree;
 static struct object_data light_object[2];
 
 /* Structures for loading of OBJ data */
-struct object_data extern_object[number_of_sides];
+struct object_data planes[number_of_sides];
 
 
 /*----------------------------------------------------------------------*/
 
-struct graphic_buffer* gb_extern_object[number_of_sides];
+struct graphic_buffer* gb_planes[number_of_sides];
 
 /*----------------------------------------------------------------------*/
 
@@ -312,13 +312,6 @@ void init_ext_obj(struct object_data* obj, char* filename){
 *
 *******************************************************************/
 
-void setup_shader_program(struct object_data* object, const char* vertex_shader_file, const char* fragment_shader_file) {
-  // Put linked shader program into drawing pipeline.
-  object->vertex_shader_file = vertex_shader_file;
-  object->fragment_shader_file = fragment_shader_file;
-  object->shader_program = create_shader_program(object->vertex_shader_file, object->fragment_shader_file);
-}
-
 void display_object(struct object_data* object) {
   GLint model_matrix = glGetUniformLocation(object->shader_program, "model_matrix");
   if (model_matrix == -1) {
@@ -479,7 +472,7 @@ void display() {
   display_object(&palm_tree);
 
   for (int i = 0; i < number_of_sides; i++){
-    display_object(&extern_object[i]);
+    display_object(&planes[i]);
   }
 
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
@@ -613,29 +606,28 @@ void on_idle() {
     matrix_multiply(mouse_matrix, pillars[i].translation_matrix, pillars[i].translation_matrix);
   }
 
-
   for (int i = 0; i < number_of_sides; i++){
-    matrix_identity(extern_object[i].translation_matrix);
-    matrix_rotate_y(deg_to_rad(130), extern_object[i].translation_matrix);
-    matrix_translate_y(0.75, extern_object[i].translation_matrix);
-    matrix_translate_x(-0.2, extern_object[i].translation_matrix);
+    matrix_identity(planes[i].translation_matrix);
+    matrix_rotate_y(deg_to_rad(130), planes[i].translation_matrix);
+    matrix_translate_y(0.75, planes[i].translation_matrix);
+    matrix_translate_x(-0.2, planes[i].translation_matrix);
 
     // Move cube up and down.
     float up_down_speed = M_PI;
-    matrix_translate_y((sin(rotation * up_down_speed + i * M_PI) / 3) + PILLAR_HEIGHT / 4.175, extern_object[i].translation_matrix);
+    matrix_translate_y((sin(rotation * up_down_speed + i * M_PI) / 3) + PILLAR_HEIGHT / 4.175, planes[i].translation_matrix);
 
     // Move cube towards the edge.
-    matrix_translate_z(-(BASE_RADIUS / 3 * 2), extern_object[i].translation_matrix);
+    matrix_translate_z(-(BASE_RADIUS / 3 * 2), planes[i].translation_matrix);
 
-    //~ matrix_translate_y(2.25, extern_object[i].translation_matrix);
-    //~ matrix_translate_z(0.275, extern_object[i].translation_matrix);
-    matrix_scale(0.6, extern_object[i].translation_matrix);
+    //~ matrix_translate_y(2.25, planes[i].translation_matrix);
+    //~ matrix_translate_z(0.275, planes[i].translation_matrix);
+    matrix_scale(0.6, planes[i].translation_matrix);
 
     // Rotate cube around the center to the corresponding edge.
-    matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, extern_object[i].translation_matrix);
+    matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, planes[i].translation_matrix);
 
-    matrix_rotate_y(rotation, extern_object[i].translation_matrix);
-    matrix_multiply(mouse_matrix, extern_object[i].translation_matrix, extern_object[i].translation_matrix);
+    matrix_rotate_y(rotation, planes[i].translation_matrix);
+    matrix_multiply(mouse_matrix, planes[i].translation_matrix, planes[i].translation_matrix);
   }
 
   // Request redrawing of window content.
@@ -694,17 +686,17 @@ void initialize() {
 
   // External Object
   for (int i = 0; i < number_of_sides; i++) {
-    init_object_data(&extern_object[i]);
+    init_object_data(&planes[i]);
 
     if (i == 0) {
-      init_ext_obj(&extern_object[i], "models/plane.obj");
-      setup_data_buffers(&extern_object[i]);
+      init_ext_obj(&planes[i], "models/plane.obj");
+      setup_data_buffers(&planes[i]);
     } else {
-      memcpy(&extern_object[i], &extern_object[0], sizeof(extern_object[0]));
+      memcpy(&planes[i], &planes[0], sizeof(planes[0]));
     }
 
-    extern_object[i].texture = plane_texture;
-    extern_object[i].shader_program = shader_program;
+    planes[i].texture = plane_texture;
+    planes[i].shader_program = shader_program;
   }
 
   // Roof
