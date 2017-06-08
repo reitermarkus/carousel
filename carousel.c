@@ -608,22 +608,24 @@ void on_idle() {
 
   for (int i = 0; i < number_of_sides; i++){
     matrix_identity(extern_object[i].translation_matrix);
-	matrix_rotate_y(45, extern_object[i].translation_matrix);    
-    
+	  matrix_rotate_y(deg_to_rad(130), extern_object[i].translation_matrix);
+    matrix_translate_y(0.5, extern_object[i].translation_matrix);
+    matrix_translate_x(-0.2, extern_object[i].translation_matrix);
+
     // Move cube up and down.
     float up_down_speed = M_PI;
     matrix_translate_y((sin(rotation * up_down_speed + i * M_PI) / 5) + PILLAR_HEIGHT / 4.175, extern_object[i].translation_matrix);
 
     // Move cube towards the edge.
     matrix_translate_z(-(BASE_RADIUS / 7 * 6), extern_object[i].translation_matrix);
-    
+
     //~ matrix_translate_y(2.25, extern_object[i].translation_matrix);
     //~ matrix_translate_z(0.275, extern_object[i].translation_matrix);
-    matrix_scale(2, extern_object[i].translation_matrix);
-    
+    matrix_scale(0.5, extern_object[i].translation_matrix);
+
     // Rotate cube around the center to the corresponding edge.
     matrix_rotate_y(deg_to_rad(360) / (float)number_of_sides * (float)i, extern_object[i].translation_matrix);
-    
+
     matrix_rotate_y(rotation, extern_object[i].translation_matrix);
     matrix_multiply(mouse_matrix, extern_object[i].translation_matrix, extern_object[i].translation_matrix);
   }
@@ -666,12 +668,12 @@ void initialize() {
   matrix_identity(camera_matrix);
   matrix_identity(mouse_matrix);
 
-  tiger_texture = load_texture("models/tigercub/tigercub.png");
+  tiger_texture = load_texture("models/plane.jpg");
 
   // External Object
   for (int i = 0; i < number_of_sides; i++) {
 	init_object_data(&extern_object[i]);
-    init_ext_obj(&extern_object[i], "models/tigercub.obj");
+    init_ext_obj(&extern_object[i], "models/plane.obj");
     setup_data_buffers(&extern_object[i]);
     setup_shader_program(&extern_object[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
   }
