@@ -101,7 +101,6 @@ static struct object_data scene_floor;
 static struct object_data light_object[2];
 
 /* Structures for loading of OBJ data */
-GLuint tiger_texture;
 struct object_data extern_object[number_of_sides];
 
 
@@ -456,13 +455,6 @@ void display() {
   matrix_rotate_y(-rotate_y, mouse_matrix);
   matrix_rotate_x(-rotate_x, mouse_matrix);
 
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, tiger_texture);
-
-  for (int i = 0; i < number_of_sides; i++){
-    glUniform1i(glGetUniformLocation(extern_object[i].shader_program, "tiger_texture"), 0);
-  }
-
   display_object(&base);
   display_object(&center_pillar_bottom);
   display_object(&center_pillar_top);
@@ -668,13 +660,14 @@ void initialize() {
   matrix_identity(camera_matrix);
   matrix_identity(mouse_matrix);
 
-  tiger_texture = load_texture("models/plane.jpg");
+  GLuint plane_texture = load_texture("models/plane.jpg");
 
   // External Object
   for (int i = 0; i < number_of_sides; i++) {
-	init_object_data(&extern_object[i]);
+    init_object_data(&extern_object[i]);
     init_ext_obj(&extern_object[i], "models/plane.obj");
     setup_data_buffers(&extern_object[i]);
+    extern_object[i].texture = plane_texture;
     setup_shader_program(&extern_object[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
   }
 

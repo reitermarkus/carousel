@@ -90,6 +90,8 @@ void init_object_data(struct object_data* obj) {
   obj->textures = NULL;
   obj->texture_count = 0;
 
+  obj->texture = 0;
+
   obj->nbo = -1;
   obj->face_normals = NULL;
 

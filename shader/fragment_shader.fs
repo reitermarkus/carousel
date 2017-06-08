@@ -8,7 +8,7 @@ struct vector_data {
 };
 
 struct light_data {
-	vec3 position;
+  vec3 position;
   vec3 color;
 };
 
@@ -26,7 +26,7 @@ uniform float ambient_factor;
 
 out vec4 fragment_color;
 
-uniform sampler2D tiger_texture;
+uniform sampler2D texture_sampler;
 
 void light(light_data light, vector_data vector, out vec3 ambient, out vec3 diffuse, out vec3 specular) {
   vec3 normal = normalize(vector.normal);
@@ -59,7 +59,7 @@ void main() {
 
   ambient_sum /= light_count;
 
-  vec4 texture_color = texture(tiger_texture, vector.texture);
+  vec4 texture_color = texture(texture_sampler, vector.texture);
 
   fragment_color = vector.color * vec4(ambient_sum + diffuse_sum + spec_sum, 1) * texture_color;
 }

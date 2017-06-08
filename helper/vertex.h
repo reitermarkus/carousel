@@ -67,6 +67,8 @@ struct object_data {
   struct texture* textures;
   size_t texture_count;
 
+  GLuint texture;
+
   GLuint nbo;
   struct normal* face_normals;
 
