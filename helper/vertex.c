@@ -18,9 +18,9 @@ static struct normal face_normal(struct position p1, struct position p2, struct 
   };
 
   return (struct normal){
-  	(u.y * v.z) - (u.z * v.y),
-  	(u.z * v.x) - (u.x * v.z),
-  	(u.x * v.y) - (u.y * v.x),
+    (u.y * v.z) - (u.z * v.y),
+    (u.z * v.x) - (u.x * v.z),
+    (u.x * v.y) - (u.y * v.x),
   };
 }
 

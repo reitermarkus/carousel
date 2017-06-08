@@ -210,14 +210,14 @@ void setup_data_buffers(struct object_data* object) {
 
     // Bind vertex textures.
     glEnableVertexAttribArray(v_texture);
-   	glVertexAttribPointer(
-   		v_texture,                                                // attribute index
-   		2,                                                        // attribute length (u, v)
-   		GL_FLOAT,                                                 // attribute type
-   		GL_FALSE,                                                 // normalized?
-   		0,                                                        // offset between indices
-   		0                                                         // offset to texture values
-   	);
+     glVertexAttribPointer(
+       v_texture,                                                // attribute index
+       2,                                                        // attribute length (u, v)
+       GL_FLOAT,                                                 // attribute type
+       GL_FALSE,                                                 // normalized?
+       0,                                                        // offset between indices
+       0                                                         // offset to texture values
+     );
   }
 
   // Bind indices.
@@ -319,25 +319,25 @@ void setup_shader_program(struct object_data* object, const char* vertex_shader_
 }
 
 void display_object(struct object_data* object) {
-	GLint model_matrix = glGetUniformLocation(object->shader_program, "model_matrix");
-	if (model_matrix == -1) {
-		fprintf(stderr, "Could not bind uniform model_matrix\n");
-		exit(EXIT_FAILURE);
-	}
+  GLint model_matrix = glGetUniformLocation(object->shader_program, "model_matrix");
+  if (model_matrix == -1) {
+    fprintf(stderr, "Could not bind uniform model_matrix\n");
+    exit(EXIT_FAILURE);
+  }
 
-	GLint view_uniform = glGetUniformLocation(object->shader_program, "view_matrix");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform ViewMatrix\n");
-		exit(EXIT_FAILURE);
-	}
-	glUniformMatrix4fv(view_uniform, 1, GL_TRUE, *view_matrix);
+  GLint view_uniform = glGetUniformLocation(object->shader_program, "view_matrix");
+  if (view_uniform == -1) {
+    fprintf(stderr, "Could not bind uniform ViewMatrix\n");
+    exit(EXIT_FAILURE);
+  }
+  glUniformMatrix4fv(view_uniform, 1, GL_TRUE, *view_matrix);
 
-	GLint light_count_uniform = glGetUniformLocation(object->shader_program, "light_count");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform lights[0].position\n");
-		exit(EXIT_FAILURE);
-	}
-	glUniform1i(light_count_uniform, sizeof(lights) / sizeof(*lights));
+  GLint light_count_uniform = glGetUniformLocation(object->shader_program, "light_count");
+  if (view_uniform == -1) {
+    fprintf(stderr, "Could not bind uniform lights[0].position\n");
+    exit(EXIT_FAILURE);
+  }
+  glUniform1i(light_count_uniform, sizeof(lights) / sizeof(*lights));
 
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
     struct rgb color;
@@ -348,54 +348,54 @@ void display_object(struct object_data* object) {
     char * pos_string = alloca(pos_string_size + 1);
     sprintf(pos_string, pos_format_string, i);
 
-  	GLint light_pos_uniform = glGetUniformLocation(object->shader_program, pos_string);
-  	if (view_uniform == -1) {
-  		fprintf(stderr, "Could not bind uniform %s\n", pos_string);
-  		exit(EXIT_FAILURE);
-  	}
-  	glUniform3fv(light_pos_uniform, 1, &(lights[i].position.x));
+    GLint light_pos_uniform = glGetUniformLocation(object->shader_program, pos_string);
+    if (view_uniform == -1) {
+      fprintf(stderr, "Could not bind uniform %s\n", pos_string);
+      exit(EXIT_FAILURE);
+    }
+    glUniform3fv(light_pos_uniform, 1, &(lights[i].position.x));
 
     char* color_format_string = "lights[%d].color";
     int color_string_size = snprintf(NULL, 0, color_format_string, i);
     char * color_string = alloca(color_string_size + 1);
     sprintf(color_string, color_format_string, i);
 
-  	GLint light_col_uniform = glGetUniformLocation(object->shader_program, color_string);
-  	if (view_uniform == -1) {
-  		fprintf(stderr, "Could not bind uniform %s\n", color_string);
-  		exit(EXIT_FAILURE);
-  	}
+    GLint light_col_uniform = glGetUniformLocation(object->shader_program, color_string);
+    if (view_uniform == -1) {
+      fprintf(stderr, "Could not bind uniform %s\n", color_string);
+      exit(EXIT_FAILURE);
+    }
 
-  	glUniform3f(light_col_uniform,
+    glUniform3f(light_col_uniform,
       color.r * light_toggle[i],
       color.g * light_toggle[i],
-  		color.b * light_toggle[i]
+      color.b * light_toggle[i]
     );
   }
 
-	GLint ambient_factor_uniform = glGetUniformLocation(object->shader_program,
-			"ambient_factor");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform ambient_factor\n");
-		exit(EXIT_FAILURE);
-	}
-	glUniform1f(ambient_factor_uniform, ambient_factor * ambient_toggle);
+  GLint ambient_factor_uniform = glGetUniformLocation(object->shader_program,
+      "ambient_factor");
+  if (view_uniform == -1) {
+    fprintf(stderr, "Could not bind uniform ambient_factor\n");
+    exit(EXIT_FAILURE);
+  }
+  glUniform1f(ambient_factor_uniform, ambient_factor * ambient_toggle);
 
-	GLint diffuse_factor_uniform = glGetUniformLocation(object->shader_program,
-			"diffuse_factor");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform diffuse_factor\n");
-		exit(EXIT_FAILURE);
-	}
-	glUniform1f(diffuse_factor_uniform, diffuse_factor * diffuse_toggle);
+  GLint diffuse_factor_uniform = glGetUniformLocation(object->shader_program,
+      "diffuse_factor");
+  if (view_uniform == -1) {
+    fprintf(stderr, "Could not bind uniform diffuse_factor\n");
+    exit(EXIT_FAILURE);
+  }
+  glUniform1f(diffuse_factor_uniform, diffuse_factor * diffuse_toggle);
 
-	GLint specular_factor_uniform = glGetUniformLocation(object->shader_program,
-			"specular_factor");
-	if (view_uniform == -1) {
-		fprintf(stderr, "Could not bind uniform specular_factor\n");
-		exit(EXIT_FAILURE);
-	}
-	glUniform1f(specular_factor_uniform, specular_factor * specular_toggle);
+  GLint specular_factor_uniform = glGetUniformLocation(object->shader_program,
+      "specular_factor");
+  if (view_uniform == -1) {
+    fprintf(stderr, "Could not bind uniform specular_factor\n");
+    exit(EXIT_FAILURE);
+  }
+  glUniform1f(specular_factor_uniform, specular_factor * specular_toggle);
 
   draw(object, projection_matrix, view_matrix);
 }
@@ -600,7 +600,7 @@ void on_idle() {
 
   for (int i = 0; i < number_of_sides; i++){
     matrix_identity(extern_object[i].translation_matrix);
-	  matrix_rotate_y(deg_to_rad(130), extern_object[i].translation_matrix);
+    matrix_rotate_y(deg_to_rad(130), extern_object[i].translation_matrix);
     matrix_translate_y(0.5, extern_object[i].translation_matrix);
     matrix_translate_x(-0.2, extern_object[i].translation_matrix);
 

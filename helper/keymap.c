@@ -14,10 +14,10 @@ void keymap_init(struct keymap *keymap) {
   keymap->e     = false;
   keymap->r     = false;
   keymap->f     = false;
-  keymap->h		  = false;
-  keymap->j		  = false;
-  keymap->k		  = false;
-  keymap->l		  = false;
+  keymap->h      = false;
+  keymap->j      = false;
+  keymap->k      = false;
+  keymap->l      = false;
   keymap->space = false;
 }
 
