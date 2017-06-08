@@ -663,6 +663,7 @@ void initialize() {
   GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
 
   GLuint plane_texture = load_texture("models/plane.jpg");
+  GLuint grass_texture = load_texture("models/grass.png");
 
   // External Object
   for (int i = 0; i < number_of_sides; i++) {
@@ -718,7 +719,23 @@ void initialize() {
   // Floor
   init_object_data(&scene_floor);
   hyper_rectangle(BASE_RADIUS * 4, BASE_HEIGHT, BASE_RADIUS * 4, &scene_floor);
+
+  scene_floor.texture_count = scene_floor.index_count * 3;
+  scene_floor.textures = calloc(scene_floor.texture_count, sizeof(*scene_floor.textures));
+
+  // Set grass texture for top side of scene floor.
+  scene_floor.textures[0 + 4 * 3].u = 0;
+  scene_floor.textures[0 + 4 * 3].v = 0;
+  scene_floor.textures[1 + 4 * 3].u = 0;
+  scene_floor.textures[1 + 4 * 3].v = 2 * 1.77;
+  scene_floor.textures[2 + 4 * 3].u = 2 * 1;
+  scene_floor.textures[2 + 4 * 3].v = 2 * 1.77;
+  scene_floor.textures[3 + 4 * 3].u = 2 * 1;
+  scene_floor.textures[3 + 4 * 3].v = 0;
+
   setup_data_buffers(&scene_floor);
+
+  scene_floor.texture = grass_texture;
   scene_floor.shader_program = shader_program;
 
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
