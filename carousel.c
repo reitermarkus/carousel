@@ -278,8 +278,8 @@ void init_ext_obj(struct object_data* obj, char* filename){
       int index = ext_obj.face_list[i]->texture_index[j];
 
       if (index >= 0) {
-        obj->textures[i + j].u = ext_obj.vertex_texture_list[index]->e[0];
-        obj->textures[i + j].v = ext_obj.vertex_texture_list[index]->e[1];
+        obj->textures[index].u = ext_obj.vertex_texture_list[index]->e[0];
+        obj->textures[index].v = ext_obj.vertex_texture_list[index]->e[1];
       }
     }
   }
