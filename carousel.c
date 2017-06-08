@@ -665,8 +665,14 @@ void initialize() {
   // External Object
   for (int i = 0; i < number_of_sides; i++) {
     init_object_data(&extern_object[i]);
-    init_ext_obj(&extern_object[i], "models/plane.obj");
-    setup_data_buffers(&extern_object[i]);
+
+    if (i == 0) {
+      init_ext_obj(&extern_object[i], "models/plane.obj");
+      setup_data_buffers(&extern_object[i]);
+    } else {
+      memcpy(&extern_object[i], &extern_object[0], sizeof(extern_object[0]));
+    }
+
     extern_object[i].texture = plane_texture;
     setup_shader_program(&extern_object[i], "shader/vertex_shader.vs", "shader/fragment_shader.fs");
   }
