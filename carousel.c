@@ -381,6 +381,39 @@ void on_idle() {
 }
 
 
+void setup_round_texture_side(GLuint texture, size_t edges, float factor, struct object_data* obj) {
+  obj->texture_count = obj->index_count * 3;
+  obj->textures = calloc(obj->texture_count, sizeof(*obj->textures));
+
+  for (size_t i = 0; i < obj->vertex_count; i++) {
+    SET_VERTEX_COLOR(obj->vertices[i], R(255), G(255), B(255), 1.0);
+  }
+
+  for (size_t i = 0; i < obj->texture_count; i++) {
+    obj->textures[i].u = 0;
+    obj->textures[i].v = 0;
+  }
+
+  for (size_t i = 0; i < edges; i++) {
+    if (i < edges / 2) {
+      obj->textures[(i + 1) + (edges * 2 + 1)].u = i / (float)edges * factor;
+      obj->textures[(i + 1) + (edges * 2 + 1)].v = 1;
+
+      obj->textures[(i + 1) + (edges * 3 + 1)].u = i / (float)edges * factor;
+      obj->textures[(i + 1) + (edges * 3 + 1)].v = 0;
+    } else {
+      obj->textures[(i + 1) + (edges * 2 + 1)].u = (edges - i) / (float)edges * factor;
+      obj->textures[(i + 1) + (edges * 2 + 1)].v = 1;
+
+      obj->textures[(i + 1) + (edges * 3 + 1)].u = (edges - i) / (float)edges * factor;
+      obj->textures[(i + 1) + (edges * 3 + 1)].v = 0;
+    }
+  }
+
+  obj->texture = texture;
+}
+
+
 void setup_round_texture(GLuint texture, size_t edges, struct object_data* obj) {
   obj->texture_count = obj->index_count * 3;
   obj->textures = calloc(obj->texture_count, sizeof(*obj->textures));
@@ -438,6 +471,7 @@ void initialize() {
   GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
 
   GLuint roof_texture = load_texture("models/glass-dome.png");
+  GLuint pillar_texture = load_texture("models/marble.jpg");
   GLuint floor_texture = load_texture("models/floor.png");
   GLuint plane_texture = load_texture("models/plane.jpg");
   GLuint grass_texture = load_texture("models/grass.png");
@@ -500,27 +534,34 @@ void initialize() {
   setup_data_buffers(&roof);
   roof.shader_program = shader_program;
 
+  size_t pillar_edges = 15;
+  float pillar_texture_factor = 2.0;
+
   // Center Pillar Bottom
   init_object_data(&center_pillar_bottom);
-  flattened_cone(15, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.66, PILLAR_HEIGHT * 0.40, &center_pillar_bottom);
+  flattened_cone(pillar_edges, CENTER_PILLAR_RADIUS, CENTER_PILLAR_RADIUS * 0.66, PILLAR_HEIGHT * 0.40, &center_pillar_bottom);
+  setup_round_texture_side(pillar_texture, 15, pillar_texture_factor, &center_pillar_bottom);
   setup_data_buffers(&center_pillar_bottom);
   center_pillar_bottom.shader_program = shader_program;
 
   // Center Pillar Top
   init_object_data(&center_pillar_top);
-  flattened_cone(15, CENTER_PILLAR_RADIUS * 0.66, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &center_pillar_top);
+  flattened_cone(pillar_edges, CENTER_PILLAR_RADIUS * 0.66, CENTER_PILLAR_RADIUS, PILLAR_HEIGHT * 0.40, &center_pillar_top);
+  setup_round_texture_side(pillar_texture, 15, pillar_texture_factor, &center_pillar_top);
   setup_data_buffers(&center_pillar_top);
   center_pillar_top.shader_program = shader_program;
 
   // Center Pillar Mid Bottom
   init_object_data(&center_pillar_mid_bottom);
-  flattened_cone(15, CENTER_PILLAR_RADIUS * 0.9, CENTER_PILLAR_RADIUS * 0.66, PILLAR_HEIGHT * 0.1, &center_pillar_mid_bottom);
+  flattened_cone(pillar_edges, CENTER_PILLAR_RADIUS * 0.9, CENTER_PILLAR_RADIUS * 0.66, PILLAR_HEIGHT * 0.1, &center_pillar_mid_bottom);
+  setup_round_texture_side(pillar_texture, 15, pillar_texture_factor, &center_pillar_mid_bottom);
   setup_data_buffers(&center_pillar_mid_bottom);
   center_pillar_mid_bottom.shader_program = shader_program;
 
   // Center Pillar Mid Top
   init_object_data(&center_pillar_mid_top);
-  flattened_cone(15, CENTER_PILLAR_RADIUS * 0.66, CENTER_PILLAR_RADIUS * 0.9, PILLAR_HEIGHT * 0.1, &center_pillar_mid_top);
+  flattened_cone(pillar_edges, CENTER_PILLAR_RADIUS * 0.66, CENTER_PILLAR_RADIUS * 0.9, PILLAR_HEIGHT * 0.1, &center_pillar_mid_top);
+  setup_round_texture_side(pillar_texture, 15, pillar_texture_factor, &center_pillar_mid_top);
   setup_data_buffers(&center_pillar_mid_top);
   center_pillar_mid_top.shader_program = shader_program;
 
