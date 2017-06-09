@@ -12,10 +12,8 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
   // Vertex count is number of edges + 1 (center vertex) if height is 0,
   // otherwise (number of edges + 1) * 2.
   obj->vertex_count = edges + 1;
-  if (height != 0) {
+  if (height != 0 || top_center_y_offset != 0) {
     obj->vertex_count *= 2;
-  } else if (top_center_y_offset != 0) {
-    obj->vertex_count += 1;
   }
 
   obj->vertices = malloc(obj->vertex_count * sizeof(*obj->vertices));
@@ -56,7 +54,7 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
     // Assign color values to the nth vertex of the base polygon.
     SET_VERTEX_COLOR(obj->vertices[i + 1], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
 
-    if (height != 0) {
+    if (height != 0 || top_center_y_offset != 0) {
       // Assign coordinates to the nth vertex of the top polygon.
       SET_VERTEX_POSITION(obj->vertices[(i + 1) + (edges + 1)], cosf(angle) * top_radius, height, sinf(angle) * top_radius);
 
@@ -79,31 +77,22 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
       int curr_i_top = curr_i_base + edges + 1;
       int next_i_top = next_i_base + edges + 1;
 
-      if (height == 0) {
-        // Connect the triangle between the top center vertex
-        // with the current and next vertex of the base polygon.
-        obj->indices[k].a = 0 + edges + 1;
-        obj->indices[k].b = next_i_base;
-        obj->indices[k].c = curr_i_base;
-      } else if (height != 0) {
-        // Connect the triangle between the top center vertex
-        // with the current and next vertex of the top polygon.
-        obj->indices[k].a = 0 + edges + 1;
-        obj->indices[k].b = next_i_top;
-        obj->indices[k].c = curr_i_top;
-        // printf("Connecting %i (origin top) with %i and %i.\n", 0, curr_i_top, next_i_top);
+      // Connect the triangle between the top center vertex
+      // with the current and next vertex of the top polygon.
+      obj->indices[k].a = 0 + edges + 1;
+      obj->indices[k].b = next_i_top;
+      obj->indices[k].c = curr_i_top;
 
+      if (height != 0) {
         // Connect the first triangle of the side panel.
         obj->indices[k * 2 + 0].a = curr_i_base;
         obj->indices[k * 2 + 0].b = curr_i_top;
         obj->indices[k * 2 + 0].c = next_i_base;
-        // printf("Connecting %i and %i and %i.\n", curr_i_base, next_i_base, curr_i_top);
 
         // Connect the second triangle of the side panel.
         obj->indices[k * 2 + 1].a = curr_i_top;
         obj->indices[k * 2 + 1].b = next_i_top;
         obj->indices[k * 2 + 1].c = next_i_base;
-        // printf("Connecting %i and %i and %i.\n", curr_i_top, next_i_top, next_i_base);
       }
     }
 

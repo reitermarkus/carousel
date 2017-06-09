@@ -480,8 +480,8 @@ void initialize() {
 
   for (size_t i = 0; i < roof_edges; i++) {
     // Set grass texture for top side of scene floor.
-    roof.textures[i + 1].u = sinf(angle * i) * 0.5 + 0.5;
-    roof.textures[i + 1].v = cosf(angle * i) * 0.5 + 0.5;
+    roof.textures[i + 1].u = roof.textures[roof_edges + 1 + i + 1].u = sinf(angle * i) * 0.5 + 0.5;
+    roof.textures[i + 1].v = roof.textures[roof_edges + 1 + i + 1].v = cosf(angle * i) * 0.5 + 0.5;
   }
 
   roof.textures[0].u = 0.5;
