@@ -43,6 +43,7 @@
 #include "shape/cone.h"
 #include "shape/cube.h"
 #include "shape/cuboid.h"
+#include "shape/rectangle.h"
 #include "shape/cylinder.h"
 #include "shape/flattened_cone.h"
 #include "shape/hyper_rectangle.h"
@@ -61,11 +62,11 @@ matrix mouse_matrix;
 struct light lights[] = {
   {
     .position = { 0, 1.55, 1.5 },
-    .color    = { 90.0, 1.0, 1.0 },
+    .color    = { 90.0, 0, 1.0 },
   },
   {
     .position = { 0, 5.0, 7.0 },
-    .color    = { 0.0, 1.0, 1.0 },
+    .color    = { 0.0, 0, 1.0 },
   },
 };
 
@@ -92,6 +93,7 @@ static struct object_data pillars[number_of_sides];
 static struct object_data planes[number_of_sides];
 static struct object_data scene_floor;
 static struct object_data palm_tree;
+static struct object_data flowers;
 
 static const float PILLAR_HEIGHT = 2.5;
 static const float BASE_HEIGHT = .25;
@@ -222,6 +224,8 @@ void display() {
   }
 
   display_object(&roof);
+
+  display_object(&flowers);
 
   // Swap between front and back buffer.
   glutSwapBuffers();
@@ -412,6 +416,30 @@ void initialize() {
   GLuint plane_texture = load_texture("models/plane.jpg");
   GLuint grass_texture = load_texture("models/grass.png");
   GLuint palm_texture = load_texture("models/Hyophorbe_lagenicaulis_dif.jpg");
+  GLuint flower_texture = load_texture("models/blue_flowers.png");
+
+  init_object_data(&flowers);
+  rectangle(1, 1, &flowers);
+
+  flowers.texture_count = flowers.vertex_count;
+  flowers.textures = calloc(flowers.texture_count, sizeof(*flowers.textures));
+
+  flowers.textures[0].u =  0;
+  flowers.textures[0].v =  0;
+  flowers.textures[1].u = -1;
+  flowers.textures[1].v =  0;
+  flowers.textures[2].u = -1;
+  flowers.textures[2].v = -1;
+  flowers.textures[3].u =  0;
+  flowers.textures[3].v = -1;
+
+  setup_data_buffers(&flowers);
+  flowers.texture = flower_texture;
+
+  flowers.shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  matrix_translate_y(.5, flowers.translation_matrix);
+  matrix_translate_x(6, flowers.translation_matrix);
+  matrix_translate_z(6, flowers.translation_matrix);
 
   init_object_data(&palm_tree);
   init_external_obj(&palm_tree, "models/Hyophorbe_lagenicaulis.obj");
@@ -518,7 +546,7 @@ void initialize() {
     init_object_data(&pillars[i]);
     cylinder(7, .03, PILLAR_HEIGHT, &pillars[i]);
     setup_data_buffers(&pillars[i]);
-    pillars[i].shader_program = shader_program;
+    pillars[i].shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
   }
 }
 
