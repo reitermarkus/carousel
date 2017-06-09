@@ -381,6 +381,30 @@ void on_idle() {
 }
 
 
+void setup_round_texture(GLuint texture, size_t edges, struct object_data* obj) {
+  obj->texture_count = obj->index_count * 3;
+  obj->textures = calloc(obj->texture_count, sizeof(*obj->textures));
+
+  for (size_t i = 0; i < obj->vertex_count; i++) {
+    SET_VERTEX_COLOR(obj->vertices[i], R(255), G(255), B(255), 1.0);
+  }
+
+  float step = 2 * M_PI / (float)edges;
+
+  for (size_t i = 0; i < edges; i++) {
+    obj->textures[i + 1].u = obj->textures[edges + 1 + i + 1].u = sinf(step * i) * 0.5 + 0.5;
+    obj->textures[i + 1].v = obj->textures[edges + 1 + i + 1].v = cosf(step * i) * 0.5 + 0.5;
+  }
+
+  obj->textures[0].u = 0.5;
+  obj->textures[0].v = 0.5;
+  obj->textures[edges + 1].u = 0.5;
+  obj->textures[edges + 1].v = 0.5;
+
+  obj->texture = texture;
+}
+
+
 /******************************************************************
 *
 * initialize
@@ -470,29 +494,10 @@ void initialize() {
   // Roof
 
   size_t roof_edges = 50;
-
   init_object_data(&roof);
   cone(roof_edges, BASE_RADIUS , ROOF_HEIGHT, &roof);
-
-  roof.texture_count = roof.index_count * 3;
-  roof.textures = calloc(roof.texture_count, sizeof(*roof.textures));
-
-  float angle = 2 * M_PI / (float)roof_edges;
-
-  for (size_t i = 0; i < roof_edges; i++) {
-    // Set grass texture for top side of scene floor.
-    roof.textures[i + 1].u = roof.textures[roof_edges + 1 + i + 1].u = sinf(angle * i) * 0.5 + 0.5;
-    roof.textures[i + 1].v = roof.textures[roof_edges + 1 + i + 1].v = cosf(angle * i) * 0.5 + 0.5;
-  }
-
-  roof.textures[0].u = 0.5;
-  roof.textures[0].v = 0.5;
-  roof.textures[roof_edges + 1].u = 0.5;
-  roof.textures[roof_edges + 1].v = 0.5;
-
+  setup_round_texture(roof_texture, roof_edges, &roof);
   setup_data_buffers(&roof);
-
-  roof.texture = roof_texture;
   roof.shader_program = shader_program;
 
   // Center Pillar Bottom
@@ -521,32 +526,10 @@ void initialize() {
 
    // Base
   size_t base_edges = 50;
-
   init_object_data(&base);
   cylinder(base_edges, BASE_RADIUS, BASE_HEIGHT, &base);
-
-  base.texture_count = base.index_count * 3;
-  base.textures = calloc(base.texture_count, sizeof(*base.textures));
-
-  angle = 2 * M_PI / (float)base_edges;
-
-  for (size_t i = 0; i < base.vertex_count; i++) {
-    SET_VERTEX_COLOR(base.vertices[i], R(255), G(255), B(255), 1.0);
-  }
-
-  for (size_t i = 0; i < base_edges; i++) {
-    // Set grass texture for top side of scene floor.
-    base.textures[i + 1].u = base.textures[base_edges + 1 + i + 1].u = sinf(angle * i) * 0.5 + 0.5;
-    base.textures[i + 1].v = base.textures[base_edges + 1 + i + 1].v = cosf(angle * i) * 0.5 + 0.5;
-  }
-
-  base.textures[0].u = 0.5;
-  base.textures[0].v = 0.5;
-  base.textures[base_edges + 1].u = 0.5;
-  base.textures[base_edges + 1].v = 0.5;
+  setup_round_texture(floor_texture, base_edges, &base);
   setup_data_buffers(&base);
-
-  base.texture = floor_texture;
   base.shader_program = shader_program;
 
   // Floor
