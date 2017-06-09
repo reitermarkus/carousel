@@ -20,13 +20,17 @@ static void set_shader_matrix(GLuint shader_program, const char* matrix_name, ma
 void draw(struct object_data* object, matrix projection_matrix, matrix view_matrix) {
   glBindVertexArray(object->vao);
 
+  use_shader(object->shader_program);
+
   // Bind texture if there is one.
   if (object->texture != 0) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, object->texture);
-  }
 
-  use_shader(object->shader_program);
+    glUniform1i(glGetUniformLocation(object->shader_program, "texture_enabled"), 1);
+  } else {
+    glUniform1i(glGetUniformLocation(object->shader_program, "texture_enabled"), 0);
+  }
 
   // Associate program with shader matrices.
   set_shader_matrix(object->shader_program, "projection_matrix", projection_matrix);

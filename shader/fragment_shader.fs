@@ -24,6 +24,8 @@ uniform float diffuse_factor;
 uniform float specular_factor;
 uniform float ambient_factor;
 
+uniform bool texture_enabled;
+
 out vec4 fragment_color;
 
 uniform sampler2D texture_sampler;
@@ -59,7 +61,11 @@ void main() {
 
   ambient_sum /= light_count;
 
-  vec4 texture_color = texture(texture_sampler, vector.texture);
+  vec4 texture_color = vec4(1);
+
+  if (texture_enabled) {
+    texture_color = texture(texture_sampler, vector.texture);
+  }
 
   fragment_color = vector.color * vec4(ambient_sum + diffuse_sum + spec_sum, 1) * texture_color;
 }
