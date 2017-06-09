@@ -11,7 +11,9 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
 
   // Vertex count is number of edges + 1 (center vertex) if height is 0,
   // otherwise (number of edges + 1) * 2.
-  if (height != 0 || top_center_y_offset != 0) {
+  if (height != 0) {
+    obj->vertex_count = edges * 4 + 2;
+  } else if (top_center_y_offset != 0) {
     obj->vertex_count = edges * 2 + 2;
   } else {
     obj->vertex_count = edges + 1;
@@ -31,12 +33,15 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
 
   obj->indices = malloc(obj->index_count * sizeof(*obj->indices));
 
+  size_t bci = 0;
+  size_t tci = edges + 1;
+
   // Assign coordinates to the center vertex of the base polygon.
-  SET_VERTEX_POSITION(obj->vertices[0], 0, bottom_center_y_offset, 0);
+  SET_VERTEX_POSITION(obj->vertices[bci], 0, bottom_center_y_offset, 0);
 
   if (height != 0 || top_center_y_offset != 0) {
     // Assign coordinates to the center vertex of the top polygon.
-    SET_VERTEX_POSITION(obj->vertices[edges + 1], 0, height + top_center_y_offset, 0);
+    SET_VERTEX_POSITION(obj->vertices[tci], 0, height + top_center_y_offset, 0);
   }
 
   // Make sure the first polygon vertex is at the top.
@@ -49,40 +54,41 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
 
     if (height != 0 || top_center_y_offset != 0) {
       // Assign coordinates to the nth vertex of the top polygon.
-      SET_VERTEX_POSITION(obj->vertices[(i + 1) + (edges + 1)], cosf(angle) * top_radius, height, sinf(angle) * top_radius);
+      SET_VERTEX_POSITION(obj->vertices[tci + (i + 1)], cosf(angle) * top_radius, height, sinf(angle) * top_radius);
+
+      if (height != 0) {
+        SET_VERTEX_POSITION(obj->vertices[tci + (i + 1) + (edges * 1)], cosf(angle) * bottom_radius, 0, sinf(angle) * bottom_radius);
+        SET_VERTEX_POSITION(obj->vertices[tci + (i + 1) + (edges * 2)], cosf(angle) * top_radius, height, sinf(angle) * top_radius);
+      }
     }
 
-    int curr_i_base = i + 1;
-    int next_i_base = (curr_i_base % edges) + 1;
+    int curr_i = i + 1;
+    int next_i = (curr_i % edges) + 1;
 
     // Connect the triangle between the center vertex,
     // the current and next vertex of the base polygon.
-    obj->indices[i].a = 0;
-    obj->indices[i].b = curr_i_base;
-    obj->indices[i].c = next_i_base;
-    // printf("Connecting %i (origin base) with %i and %i.\n", 0, curr_i_base, next_i_base);
+    obj->indices[i].a = bci;
+    obj->indices[i].b = curr_i;
+    obj->indices[i].c = next_i;
+    // printf("Connecting %i (origin base) with %i and %i.\n", 0, curr_i, next_i);
 
     if (height != 0 || top_center_y_offset != 0) {
-      int k = i + edges;
-      int curr_i_top = curr_i_base + edges + 1;
-      int next_i_top = next_i_base + edges + 1;
-
       // Connect the triangle between the top center vertex
       // with the current and next vertex of the top polygon.
-      obj->indices[k].a = 0 + edges + 1;
-      obj->indices[k].b = next_i_top;
-      obj->indices[k].c = curr_i_top;
+      obj->indices[i + edges].a = tci;
+      obj->indices[i + edges].b = next_i + tci;
+      obj->indices[i + edges].c = curr_i + tci;
 
       if (height != 0) {
         // Connect the first triangle of the side panel.
-        obj->indices[k * 2 + 0].a = curr_i_base;
-        obj->indices[k * 2 + 0].b = curr_i_top;
-        obj->indices[k * 2 + 0].c = next_i_base;
+        obj->indices[i + edges * 2].a = curr_i + tci + (edges * 1);
+        obj->indices[i + edges * 2].b = curr_i + tci + (edges * 2);
+        obj->indices[i + edges * 2].c = next_i + tci + edges;
 
         // Connect the second triangle of the side panel.
-        obj->indices[k * 2 + 1].a = curr_i_top;
-        obj->indices[k * 2 + 1].b = next_i_top;
-        obj->indices[k * 2 + 1].c = next_i_base;
+        obj->indices[i + edges * 3].a = curr_i + tci + (edges * 2);
+        obj->indices[i + edges * 3].b = next_i + tci + (edges * 2);
+        obj->indices[i + edges * 3].c = next_i + tci + edges;
       }
     }
 
