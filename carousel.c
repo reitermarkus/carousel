@@ -389,25 +389,14 @@ void setup_round_texture_side(GLuint texture, size_t edges, float factor, struct
     SET_VERTEX_COLOR(obj->vertices[i], R(255), G(255), B(255), 1.0);
   }
 
-  for (size_t i = 0; i < obj->texture_count; i++) {
-    obj->textures[i].u = 0;
-    obj->textures[i].v = 0;
-  }
-
   for (size_t i = 0; i < edges; i++) {
-    if (i < edges / 2) {
-      obj->textures[(i + 1) + (edges * 2 + 1)].u = i / (float)edges * factor;
-      obj->textures[(i + 1) + (edges * 2 + 1)].v = 1;
+    size_t multiplicator = i < edges / 2 ? i : edges - i;
 
-      obj->textures[(i + 1) + (edges * 3 + 1)].u = i / (float)edges * factor;
-      obj->textures[(i + 1) + (edges * 3 + 1)].v = 0;
-    } else {
-      obj->textures[(i + 1) + (edges * 2 + 1)].u = (edges - i) / (float)edges * factor;
-      obj->textures[(i + 1) + (edges * 2 + 1)].v = 1;
+    obj->textures[(i + 1) + (edges * 2 + 1)].u = multiplicator / (float)edges * factor;
+    obj->textures[(i + 1) + (edges * 2 + 1)].v = 1;
 
-      obj->textures[(i + 1) + (edges * 3 + 1)].u = (edges - i) / (float)edges * factor;
-      obj->textures[(i + 1) + (edges * 3 + 1)].v = 0;
-    }
+    obj->textures[(i + 1) + (edges * 3 + 1)].u = multiplicator / (float)edges * factor;
+    obj->textures[(i + 1) + (edges * 3 + 1)].v = 0;
   }
 
   obj->texture = texture;
