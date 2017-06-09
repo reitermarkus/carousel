@@ -414,6 +414,7 @@ void initialize() {
   GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
 
   GLuint roof_texture = load_texture("models/glass-dome.png");
+  GLuint floor_texture = load_texture("models/floor.png");
   GLuint plane_texture = load_texture("models/plane.jpg");
   GLuint grass_texture = load_texture("models/grass.png");
   GLuint palm_texture = load_texture("models/Hyophorbe_lagenicaulis_dif.jpg");
@@ -519,9 +520,33 @@ void initialize() {
   center_pillar_mid_top.shader_program = shader_program;
 
    // Base
+  size_t base_edges = 50;
+
   init_object_data(&base);
-  cylinder(20, BASE_RADIUS, BASE_HEIGHT, &base);
+  cylinder(base_edges, BASE_RADIUS, BASE_HEIGHT, &base);
+
+  base.texture_count = base.index_count * 3;
+  base.textures = calloc(base.texture_count, sizeof(*base.textures));
+
+  angle = 2 * M_PI / (float)base_edges;
+
+  for (size_t i = 0; i < base.vertex_count; i++) {
+    SET_VERTEX_COLOR(base.vertices[i], R(255), G(255), B(255), 1.0);
+  }
+
+  for (size_t i = 0; i < base_edges; i++) {
+    // Set grass texture for top side of scene floor.
+    base.textures[i + 1].u = base.textures[base_edges + 1 + i + 1].u = sinf(angle * i) * 0.5 + 0.5;
+    base.textures[i + 1].v = base.textures[base_edges + 1 + i + 1].v = cosf(angle * i) * 0.5 + 0.5;
+  }
+
+  base.textures[0].u = 0.5;
+  base.textures[0].v = 0.5;
+  base.textures[base_edges + 1].u = 0.5;
+  base.textures[base_edges + 1].v = 0.5;
   setup_data_buffers(&base);
+
+  base.texture = floor_texture;
   base.shader_program = shader_program;
 
   // Floor
