@@ -94,6 +94,7 @@ static struct object_data planes[number_of_sides];
 static struct object_data scene_floor;
 static struct object_data palm_tree;
 static struct object_data flowers;
+static struct object_data sky;
 
 static const float PILLAR_HEIGHT = 2.5;
 static const float BASE_HEIGHT = .25;
@@ -207,6 +208,7 @@ void display() {
   display_object(&center_pillar_top);
   display_object(&center_pillar_mid_bottom);
   display_object(&center_pillar_mid_top);
+  display_object(&sky);
   display_object(&scene_floor);
 
   display_object(&palm_tree);
@@ -329,6 +331,12 @@ void on_idle() {
   // Move floor under base.
   matrix_translate_y(-BASE_HEIGHT + 0.07, scene_floor.translation_matrix);
   matrix_multiply(mouse_matrix, scene_floor.translation_matrix, scene_floor.translation_matrix);
+
+  //Initialize floor matrix.
+  matrix_identity(sky.translation_matrix);
+
+  //Set position of sky
+  matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) * 3.5, sky.translation_matrix);
 
   for (int i = 0; i < number_of_sides; i++) {
     // Initialize pillar matrix.
@@ -481,6 +489,7 @@ void initialize() {
   GLuint grass_texture = load_texture("models/grass.png");
   GLuint palm_texture = load_texture("models/Hyophorbe_lagenicaulis_dif.jpg");
   GLuint flower_texture = load_texture("models/blue_flowers.png");
+  GLuint sky_texture = load_texture("models/clouds.png");
 
   init_object_data(&flowers);
   rectangle(1, 1, &flowers);
@@ -593,6 +602,28 @@ void initialize() {
 
   scene_floor.texture = grass_texture;
   scene_floor.shader_program = shader_program;
+
+  //Sky
+  init_object_data(&sky);
+  hyper_rectangle(BASE_RADIUS * 12, BASE_HEIGHT, BASE_RADIUS * 12, &sky);
+
+  sky.texture_count = sky.index_count * 3;
+  sky.textures = calloc(sky.texture_count, sizeof(*sky.textures));
+
+  // Set sky texture for the bottom side.
+  sky.textures[0 + 4 * 2].u = 0;
+  sky.textures[0 + 4 * 2].v = 0;
+  sky.textures[1 + 4 * 2].u = 0;
+  sky.textures[1 + 4 * 2].v = 2 * 1.77;
+  sky.textures[2 + 4 * 2].u = 2 * 1;
+  sky.textures[2 + 4 * 2].v = 2 * 1.77;
+  sky.textures[3 + 4 * 2].u = 2 * 1;
+  sky.textures[3 + 4 * 2].v = 0;
+
+  setup_data_buffers(&sky);
+
+  sky.texture = sky_texture;
+  sky.shader_program = shader_program;
 
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
     init_object_data(&light_object[i]);
