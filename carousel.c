@@ -413,6 +413,7 @@ void initialize() {
   GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
   GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
 
+  GLuint roof_texture = load_texture("models/glass-dome.png");
   GLuint plane_texture = load_texture("models/plane.jpg");
   GLuint grass_texture = load_texture("models/grass.png");
   GLuint palm_texture = load_texture("models/Hyophorbe_lagenicaulis_dif.jpg");
@@ -466,9 +467,31 @@ void initialize() {
   }
 
   // Roof
+
+  size_t roof_edges = 50;
+
   init_object_data(&roof);
-  cone(20, BASE_RADIUS , ROOF_HEIGHT, &roof);
+  cone(roof_edges, BASE_RADIUS , ROOF_HEIGHT, &roof);
+
+  roof.texture_count = roof.index_count * 3;
+  roof.textures = calloc(roof.texture_count, sizeof(*roof.textures));
+
+  float angle = 2 * M_PI / (float)roof_edges;
+
+  for (size_t i = 0; i < roof_edges; i++) {
+    // Set grass texture for top side of scene floor.
+    roof.textures[i + 1].u = sinf(angle * i) * 0.5 + 0.5;
+    roof.textures[i + 1].v = cosf(angle * i) * 0.5 + 0.5;
+  }
+
+  roof.textures[0].u = 0.5;
+  roof.textures[0].v = 0.5;
+  roof.textures[roof_edges + 1].u = 0.5;
+  roof.textures[roof_edges + 1].v = 0.5;
+
   setup_data_buffers(&roof);
+
+  roof.texture = roof_texture;
   roof.shader_program = shader_program;
 
   // Center Pillar Bottom
