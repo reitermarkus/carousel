@@ -11,20 +11,22 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
 
   // Vertex count is number of edges + 1 (center vertex) if height is 0,
   // otherwise (number of edges + 1) * 2.
-  obj->vertex_count = edges + 1;
   if (height != 0 || top_center_y_offset != 0) {
-    obj->vertex_count *= 2;
+    obj->vertex_count = edges * 2 + 2;
+  } else {
+    obj->vertex_count = edges + 1;
   }
 
   obj->vertices = malloc(obj->vertex_count * sizeof(*obj->vertices));
 
   // Index count is number of edges if height is 0,
   // otherwise (number of edges) * 4, to account for the side panels.
-  obj->index_count = edges;
-  if (top_center_y_offset != 0) {
-    obj->index_count *= 2;
-  } else if (height != 0) {
-    obj->index_count *= 4;
+  if (height != 0) {
+    obj->index_count = edges * 4;
+  } else if (top_center_y_offset != 0) {
+    obj->index_count = edges * 2;
+  } else {
+    obj->index_count = edges;
   }
 
   obj->indices = malloc(obj->index_count * sizeof(*obj->indices));
@@ -32,15 +34,9 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
   // Assign coordinates to the center vertex of the base polygon.
   SET_VERTEX_POSITION(obj->vertices[0], 0, bottom_center_y_offset, 0);
 
-  // Assign color values to the center vertex of the base polygon.
-  SET_VERTEX_COLOR(obj->vertices[0], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
-
   if (height != 0 || top_center_y_offset != 0) {
     // Assign coordinates to the center vertex of the top polygon.
     SET_VERTEX_POSITION(obj->vertices[edges + 1], 0, height + top_center_y_offset, 0);
-
-    // Assign color values to the center vertex of the top polygon.
-    SET_VERTEX_COLOR(obj->vertices[edges + 1], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
   }
 
   // Make sure the first polygon vertex is at the top.
@@ -51,15 +47,9 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
     SET_VERTEX_POSITION(obj->vertices[i + 1], cosf(angle) * bottom_radius, 0, sinf(angle) * bottom_radius);
     // printf("Angle: %8.2f, Position: (%8.2f, %8.2f, %8.2f)\n", rad_to_deg(angle), (*vertex).position.x, (*vertex).position.y, (*vertex).position.z);
 
-    // Assign color values to the nth vertex of the base polygon.
-    SET_VERTEX_COLOR(obj->vertices[i + 1], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
-
     if (height != 0 || top_center_y_offset != 0) {
       // Assign coordinates to the nth vertex of the top polygon.
       SET_VERTEX_POSITION(obj->vertices[(i + 1) + (edges + 1)], cosf(angle) * top_radius, height, sinf(angle) * top_radius);
-
-      // Assign color values to the nth vertex of the top polygon.
-      SET_VERTEX_COLOR(obj->vertices[(i + 1) + (edges + 1)], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
     }
 
     int curr_i_base = i + 1;
@@ -99,4 +89,7 @@ void abstract_shape(int edges, float bottom_radius, float top_radius, float heig
     angle += step;
   }
 
+  for (size_t i = 0; i < obj->vertex_count; i++) {
+    SET_VERTEX_COLOR(obj->vertices[i], R(RGB_RAND), G(RGB_RAND), B(RGB_RAND), ALPHA_RAND);
+  }
 }
