@@ -24,10 +24,9 @@ uniform float diffuse_factor;
 uniform float specular_factor;
 uniform float ambient_factor;
 
-uniform bool texture_enabled;
-
 out vec4 fragment_color;
 
+uniform bool texture_enabled;
 uniform sampler2D texture_sampler;
 
 void light(light_data light, vector_data vector, out vec3 ambient, out vec3 diffuse, out vec3 specular) {
