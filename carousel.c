@@ -481,6 +481,7 @@ void initialize() {
 
   GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
   GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
+  GLuint billboard_shader_program = create_shader_program("shader/billboard_vertex_shader.vs", "shader/fragment_shader.fs");
 
   GLuint roof_texture = load_texture("models/glass-dome.png");
   GLuint pillar_texture = load_texture("models/marble.jpg");
@@ -623,7 +624,7 @@ void initialize() {
   setup_data_buffers(&sky);
 
   sky.texture = sky_texture;
-  sky.shader_program = shader_program;
+  sky.shader_program = billboard_shader_program;
 
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
     init_object_data(&light_object[i]);
