@@ -4,6 +4,10 @@ OBJ = $(patsubst %.c, %.o, $(wildcard *.c */*.c))
 
 CFLAGS = -g -O2 -Wall -Werror -Wextra -std=c11 "-I$(CURDIR)" -D_POSIX_C_SOURCE=200112L
 
+ifeq ($(shell expr $(shell $(CC) -dumpversion) \>= 7), 1)
+  CFLAGS += -Wimplicit-fallthrough=2
+endif
+
 LDLIBS = -lm
 
 ifeq ($(OS), Windows_NT)
