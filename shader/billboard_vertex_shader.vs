@@ -20,6 +20,11 @@ out vector_data vector;
 
 void main()
 {
+
+    vector.texture = texture;
+    vector.color = color;
+    vector.normal = mat3(transpose(inverse(view_matrix * model_matrix))) * normal;
+
     mat4 model_view = model_matrix * view_matrix;
 
     model_view[0][0] = 1.0; 
@@ -31,9 +36,8 @@ void main()
     model_view[2][2] = 1.0; 
 
     vec4 model_view_position = model_view * vec4(position, 1.0);
+    vec4 projection_model_view_positon = projection_matrix * model_view_position;
+    vector.position = vec3(projection_model_view_positon);
+    gl_Position = projection_model_view_positon;
 
-    gl_Position = projection_matrix * model_view_position;
-
-    vector.texture = texture;
-    vector.color = color;
 }
