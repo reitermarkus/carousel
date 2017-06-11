@@ -281,7 +281,7 @@ void on_idle() {
 
   // Move center pillar onto the top.
   matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) * 0.63, center_pillar_top.translation_matrix);
-
+  
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar_top.translation_matrix);
   matrix_multiply(mouse_matrix, center_pillar_top.translation_matrix, center_pillar_top.translation_matrix);
@@ -371,7 +371,22 @@ void on_idle() {
     matrix_rotate_y(rotation, planes[i].translation_matrix);
     matrix_multiply(mouse_matrix, planes[i].translation_matrix, planes[i].translation_matrix);
   }
-
+  
+  // init palm tree
+  matrix_identity(palm_tree.translation_matrix);
+  matrix_scale(0.025, palm_tree.translation_matrix);
+  matrix_translate_x(BASE_RADIUS * 2 * 0.7, palm_tree.translation_matrix);
+  matrix_translate_z(-BASE_RADIUS * 2 * 0.7, palm_tree.translation_matrix);
+  matrix_multiply(mouse_matrix, palm_tree.translation_matrix, palm_tree.translation_matrix);
+  
+  // init flowers  
+  matrix_identity(flowers.translation_matrix);
+  matrix_translate_y(.5, flowers.translation_matrix);
+  matrix_translate_x(6, flowers.translation_matrix);
+  matrix_translate_z(6, flowers.translation_matrix);
+  matrix_multiply(mouse_matrix, flowers.translation_matrix, flowers.translation_matrix);
+  
+ 
   // Request redrawing of window content.
   glutPostRedisplay();
 
@@ -486,18 +501,13 @@ void initialize() {
   flowers.texture = flower_texture;
 
   flowers.shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
-  matrix_translate_y(.5, flowers.translation_matrix);
-  matrix_translate_x(6, flowers.translation_matrix);
-  matrix_translate_z(6, flowers.translation_matrix);
 
   init_object_data(&palm_tree);
   init_external_obj(&palm_tree, "models/Hyophorbe_lagenicaulis.obj");
   setup_data_buffers(&palm_tree);
   palm_tree.texture = palm_texture;
   palm_tree.shader_program = shader_program;
-  matrix_scale(0.025, palm_tree.translation_matrix);
-  matrix_translate_x(BASE_RADIUS * 2 * 0.7, palm_tree.translation_matrix);
-  matrix_translate_z(-BASE_RADIUS * 2 * 0.7, palm_tree.translation_matrix);
+ 
 
   // External Object
   for (int i = 0; i < number_of_sides; i++) {
