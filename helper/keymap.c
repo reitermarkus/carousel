@@ -44,6 +44,9 @@ bool keymap_set_key(struct keymap *keymap, unsigned char key, bool value) {
     case 'h':
       keymap->h = value;
       break;
+    case 'i':
+      keymap->i = value;
+      break;
     case 'j':
       keymap->j = value;
       break;

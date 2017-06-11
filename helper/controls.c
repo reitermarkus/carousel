@@ -67,6 +67,8 @@ void keyboard_event_down(unsigned char key, int x, int y) {
     automatic_camera = false;
   }
 
+  if (keymap.i) { lights[0].color.s = !lights[0].color.s; update_light_colors(); }
+
   glutPostRedisplay();
 }
 
@@ -110,8 +112,8 @@ void handle_controls() {
   if (keymap.eight) { specular_toggle = !specular_toggle; keymap.eight = false; }
 
   // Hue
-  if (keymap.k) { lights[0].color.h = fmod(lights[0].color.h + 1, 360); update_light_colors(); }
-  if (keymap.l) { lights[1].color.h = fmod(lights[1].color.h + 1, 360); update_light_colors(); }
+  if (keymap.k) { lights[0].color.h = fmod(lights[0].color.h - 1, 360); update_light_colors(); }
+  if (keymap.l) { lights[0].color.h = fmod(lights[0].color.h + 1, 360); update_light_colors(); }
 
   if (!automatic_camera) {
     if (keymap.a && !keymap.d) { matrix_translate_x(+camera_speed, camera_matrix);         } // left

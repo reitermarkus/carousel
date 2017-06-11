@@ -61,12 +61,12 @@ matrix mouse_matrix;
 
 struct light lights[] = {
   {
-    .position = { 0, 1.55, 1.5 },
-    .color    = { 90.0, 0, 1.0 },
+    .position = {  0.0, 1.55, 1.5 },
+    .color    = { 90.0, 0.0,  1.0 },
   },
   {
-    .position = { 0, 5.0, 7.0 },
-    .color    = { 0.0, 0, 1.0 },
+    .position = { 0.0, 5.0, 7.0 },
+    .color    = { 0.0, 0.0, 1.0 },
   },
 };
 
@@ -283,7 +283,7 @@ void on_idle() {
 
   // Move center pillar onto the top.
   matrix_translate_y((PILLAR_HEIGHT + BASE_HEIGHT) * 0.63, center_pillar_top.translation_matrix);
-  
+
   // Rotate center pillar.
   matrix_rotate_y(rotation, center_pillar_top.translation_matrix);
   matrix_multiply(mouse_matrix, center_pillar_top.translation_matrix, center_pillar_top.translation_matrix);
@@ -379,22 +379,22 @@ void on_idle() {
     matrix_rotate_y(rotation, planes[i].translation_matrix);
     matrix_multiply(mouse_matrix, planes[i].translation_matrix, planes[i].translation_matrix);
   }
-  
+
   // init palm tree
   matrix_identity(palm_tree.translation_matrix);
   matrix_scale(0.025, palm_tree.translation_matrix);
   matrix_translate_x(BASE_RADIUS * 2 * 0.7, palm_tree.translation_matrix);
   matrix_translate_z(-BASE_RADIUS * 2 * 0.7, palm_tree.translation_matrix);
   matrix_multiply(mouse_matrix, palm_tree.translation_matrix, palm_tree.translation_matrix);
-  
-  // init flowers  
+
+  // init flowers
   matrix_identity(flowers.translation_matrix);
   matrix_translate_y(.5, flowers.translation_matrix);
   matrix_translate_x(6, flowers.translation_matrix);
   matrix_translate_z(6, flowers.translation_matrix);
   matrix_multiply(mouse_matrix, flowers.translation_matrix, flowers.translation_matrix);
-  
- 
+
+
   // Request redrawing of window content.
   glutPostRedisplay();
 
@@ -517,7 +517,7 @@ void initialize() {
   setup_data_buffers(&palm_tree);
   palm_tree.texture = palm_texture;
   palm_tree.shader_program = shader_program;
- 
+
 
   // External Object
   for (int i = 0; i < number_of_sides; i++) {

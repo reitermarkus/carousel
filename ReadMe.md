@@ -34,8 +34,9 @@ switch back to automatic mode, press the delete key.
 | F        | move down                  |
 | H        | brighten ambient color     |
 | J        | darken ambient color       |
-| K        | change light 1 hue         |
-| L        | change light 2 hue         |
+| K        | change light hue (-)       |
+| L        | change light hue (+)       |
+| I        | toggle light saturation    |
 | 1        | toggle light 1             |
 | 2        | toggle light 2             |
 | 6        | toggle ambient light       |

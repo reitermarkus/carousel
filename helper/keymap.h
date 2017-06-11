@@ -18,6 +18,7 @@
   .r     = false,     \
   .f     = false,     \
   .h      = false,    \
+  .i      = false,    \
   .j      = false,    \
   .k      = false,    \
   .l      = false,    \
@@ -40,6 +41,7 @@ struct keymap {
     r,
     f,
     h,
+    i,
     j,
     k,
     l,
