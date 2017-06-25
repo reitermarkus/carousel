@@ -1,0 +1,24 @@
+% !TEX TS-program = xelatex
+%
+\documentclass{report}
+
+\usepackage[english]{babel}
+\usepackage{parskip}
+\title{CG-Report}
+\author{Markus Reiter, Hüseyin Gündogan, Michael Kaltschmid}
+
+\begin{document}
+\maketitle
+
+The goal of the proseminar computer graphics this year was to create a merry-go-round.  
+Throughout the lecture there were 5 assignments to complete. Each assignment enhanced the complexity of the project further. 
+\par
+the first assignment was about setting up the basic geometrical model and adding a basic animation. the second assignment asked for improvements concerning the geometrical model and the addition of camera controls including a camera which moves around the base in an automatic fashion. Some more advanced features like controllable light sources and phong shading were required for the completion of the third assignment. The fourth task was all about texturing and lastly it was up to the students to come up with an unique effect which enhances the merry-go-round and finalizes the project.
+\par
+Our team consisted out of three members which are Markus Reiter, Huesyin Gündogan and Michael Kaltschmid. The organization was straight forward. Pretty much all of our communication and decisions regarding the project were made online through the text messaging app Telegram. For structuring our code we decided on using GitHub. GitHub offers a very clean and functional user interface and rich functionality and therefore was a great tool for keeping all our progress synchronized. 
+\par
+Most of our time during the first assignment was devoted to building function which were of great help in the process of creating abstract shapes for the carousel. cubes, cylinders and variations of those shapes were among a vast array of forms which ended up being the basis of many creations which followed. To make our lives easier we also introduced various macros. One of our favourites has to be the notorious \texttt{RGB\_RAND} macro which assigned random colours to our objects. Getting a grip of how OpenGL works was also a major aspect in the process of completing the first task. We were able to meet all requirements and we were proud of the result especially with the already mentioned helper function which paved the way for all assignments to follow.
+\par
+Our first goal for the second assignment was to refactor most of the project up until this date. Switching to C++ was also a discussion point which would have possibly lead to further modularity but was quickly dismissed because OpenGL in its core is a C API and therefore the introduction of C++ would not have been an improvement in every aspect. A proper C++ implementation would have also required a serious rewrite of many functions. Our main focus was still shifted towards implementing proper camera controls. Completing that task proved to be of not much difficulty. Making those controls work together with the automatic camera was a different story. Ultimately we came up with a satisfactory solution. Our beloved abstract shape functions came in handy ones more for the requirement of enhancing the geometry of the merry-go-round. In hindsight we probably should have added more enhancements to the geometry to completely fulfill the requirements of the task.
+
+\end{document}
