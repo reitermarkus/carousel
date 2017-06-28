@@ -17,12 +17,16 @@ struct vector_data {
 };
 
 out vector_data vector;
+smooth out vec4 vEyeSpacePos;
 
 void main() {
-  gl_Position = projection_matrix * view_matrix * model_matrix * vec4(position, 1.0);
+   vec4 vEyeSpacePosVertex = view_matrix * model_matrix *vec4(position, 1.0);
+   gl_Position = projection_matrix * vEyeSpacePosVertex;
 
   vector.position = vec3(view_matrix * model_matrix * vec4(position, 1.0));
   vector.color = color;
   vector.normal = mat3(transpose(inverse(view_matrix * model_matrix))) * normal;
   vector.texture = texture;
+
+  vEyeSpacePos = vEyeSpacePosVertex;  
 }

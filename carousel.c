@@ -103,6 +103,24 @@ static const float ROOF_HEIGHT = 1.5;
 static const float CENTER_PILLAR_RADIUS = .8;
 static const float LIGHT_SIZE = 0.2;
 
+#define FOG_EQUATION_LINEAR		0
+#define FOG_EQUATION_EXP		1
+#define FOG_EQUATION_EXP2		2
+
+struct fogParameters {
+	float fDensity;
+	float fStart;
+	float fEnd;
+	int iFogEquation;
+};
+
+GLuint fog_shader_program;
+const float v1 = .7f;
+const float v2 = .7f;
+const float v3 = .7f;
+const float v4 = 1.0f;
+
+struct fogParameters fogParams;
 
 /******************************************************************
 *
@@ -116,6 +134,7 @@ static const float LIGHT_SIZE = 0.2;
 *******************************************************************/
 
 void display_object(struct object_data* object) {
+
   GLint model_matrix = glGetUniformLocation(object->shader_program, "model_matrix");
   if (model_matrix == -1) {
     fprintf(stderr, "Could not bind uniform model_matrix\n");
@@ -195,6 +214,55 @@ void display_object(struct object_data* object) {
   glUniform1f(specular_factor_uniform, specular_factor * specular_toggle);
 
   draw(object, projection_matrix, view_matrix);
+  
+  // ----------------------
+  
+  glFogi(GL_FOG_COORDINATE_SOURCE, GL_FOG_COORDINATE);
+  
+  GLint iEquation_uniform = glGetUniformLocation(object->shader_program,
+      "fogParams.iEquation");  
+  if (iEquation_uniform == -1) {
+    fprintf(stderr, "Could not bind uniform fogParams.iEquation\n");
+    exit(EXIT_FAILURE);
+  }
+  glUniform1f(iEquation_uniform, fogParams.iFogEquation);
+  
+  GLint vFogColor_uniform = glGetUniformLocation(object->shader_program,
+      "fogParams.vFogColor");
+  if (vFogColor_uniform == -1) {
+    fprintf(stderr, "Could not bind uniform fogParams.iEquation\n");
+    exit(EXIT_FAILURE);
+  }
+  glUniform4f(iEquation_uniform, v1, v2, v3, v4);
+    
+  if(fogParams.iFogEquation == FOG_EQUATION_LINEAR)
+	{
+		GLint fStart_uniform = glGetUniformLocation(object->shader_program,
+			 "fogParams.fStart");
+		if (fStart_uniform == -1) {
+			fprintf(stderr, "Could not bind uniform fogParams.fStart\n");
+			exit(EXIT_FAILURE);
+		}
+		glUniform1f(fStart_uniform, fogParams.fStart);
+		
+		GLint fEnd_uniform = glGetUniformLocation(object->shader_program,
+			 "fogParams.fEnd");
+		if (fEnd_uniform == -1) {
+			fprintf(stderr, "Could not bind uniform fogParams.fEnd\n");
+			exit(EXIT_FAILURE);
+		}
+		glUniform1f(fEnd_uniform, fogParams.fEnd);
+	} else {
+		GLint fDensity_uniform = glGetUniformLocation(object->shader_program,
+			 "fogParams.fDensity");
+		if (fDensity_uniform == -1) {
+			fprintf(stderr, "Could not bind uniform fogParams.fDensity\n");
+			exit(EXIT_FAILURE);
+		}
+		glUniform1f(fDensity_uniform, fogParams.fDensity);
+	}
+  
+  // ----------------------  
 }
 
 void display() {
@@ -478,7 +546,12 @@ void initialize() {
   matrix_identity(view_matrix);
   matrix_identity(camera_matrix);
   matrix_identity(mouse_matrix);
-
+  
+  fogParams.fDensity = 0.04f;
+  fogParams.fStart = 10.0f;
+  fogParams.fEnd = 75.0f;
+  fogParams.iFogEquation = FOG_EQUATION_EXP;
+  
   GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
   GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
   GLuint billboard_shader_program = create_shader_program("shader/billboard_vertex_shader.vs", "shader/fragment_shader.fs");
