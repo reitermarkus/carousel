@@ -465,7 +465,7 @@ void initialize() {
   matrix_identity(camera_matrix);
   matrix_identity(mouse_matrix);
 
-  fog.density = 0.04f;
+  fog.density = 0.06f;
   fog.start = 10.0f;
   fog.end = 75.0f;
   fog.equation = FOG_EQUATION_EXP2;
