@@ -103,15 +103,17 @@ static const float ROOF_HEIGHT = 1.5;
 static const float CENTER_PILLAR_RADIUS = .8;
 static const float LIGHT_SIZE = 0.2;
 
-#define FOG_EQUATION_LINEAR		0
-#define FOG_EQUATION_EXP		1
-#define FOG_EQUATION_EXP2		2
+enum {
+  FOG_EQUATION_LINEAR = 0,
+  FOG_EQUATION_EXP    = 1,
+  FOG_EQUATION_EXP2   = 2,
+};
 
-struct fogParameters {
-	float fDensity;
-	float fStart;
-	float fEnd;
-	int iFogEquation;
+struct fog_data {
+	float density;
+	float start;
+	float end;
+	int equation;
 };
 
 GLuint fog_shader_program;
@@ -120,7 +122,7 @@ const float v2 = .7f;
 const float v3 = .7f;
 const float v4 = 1.0f;
 
-struct fogParameters fogParams;
+struct fog_data fog;
 
 /******************************************************************
 *
@@ -135,25 +137,11 @@ struct fogParameters fogParams;
 
 void display_object(struct object_data* object) {
 
-  GLint model_matrix = glGetUniformLocation(object->shader_program, "model_matrix");
-  if (model_matrix == -1) {
-    fprintf(stderr, "Could not bind uniform model_matrix\n");
-    exit(EXIT_FAILURE);
-  }
+  glUniformMatrix4fv(glGetUniformLocation(object->shader_program, "view_matrix"),
+    1, GL_TRUE, *view_matrix);
 
-  GLint view_uniform = glGetUniformLocation(object->shader_program, "view_matrix");
-  if (view_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform ViewMatrix\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniformMatrix4fv(view_uniform, 1, GL_TRUE, *view_matrix);
-
-  GLint light_count_uniform = glGetUniformLocation(object->shader_program, "light_count");
-  if (view_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform lights[0].position\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniform1i(light_count_uniform, sizeof(lights) / sizeof(*lights));
+  glUniform1i(glGetUniformLocation(object->shader_program, "light_count"),
+    sizeof(lights) / sizeof(*lights));
 
   for (size_t i = 0; i < sizeof(lights) / sizeof(*lights); i++) {
     struct rgb color;
@@ -164,105 +152,35 @@ void display_object(struct object_data* object) {
     char * pos_string = alloca(pos_string_size + 1);
     sprintf(pos_string, pos_format_string, i);
 
-    GLint light_pos_uniform = glGetUniformLocation(object->shader_program, pos_string);
-    if (view_uniform == -1) {
-      fprintf(stderr, "Could not bind uniform %s\n", pos_string);
-      exit(EXIT_FAILURE);
-    }
-    glUniform3fv(light_pos_uniform, 1, &(lights[i].position.x));
+    glUniform3fv(glGetUniformLocation(object->shader_program, pos_string),
+      1, &(lights[i].position.x));
 
     char* color_format_string = "lights[%d].color";
     int color_string_size = snprintf(NULL, 0, color_format_string, i);
     char * color_string = alloca(color_string_size + 1);
     sprintf(color_string, color_format_string, i);
 
-    GLint light_col_uniform = glGetUniformLocation(object->shader_program, color_string);
-    if (view_uniform == -1) {
-      fprintf(stderr, "Could not bind uniform %s\n", color_string);
-      exit(EXIT_FAILURE);
-    }
-
-    glUniform3f(light_col_uniform,
+    glUniform3f(glGetUniformLocation(object->shader_program, color_string),
       color.r * light_toggle[i],
       color.g * light_toggle[i],
       color.b * light_toggle[i]
     );
   }
 
-  GLint ambient_factor_uniform = glGetUniformLocation(object->shader_program,
-      "ambient_factor");
-  if (view_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform ambient_factor\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniform1f(ambient_factor_uniform, ambient_factor * ambient_toggle);
+  glUniform1f(glGetUniformLocation(object->shader_program, "ambient_factor"), ambient_factor * ambient_toggle);
+  glUniform1f(glGetUniformLocation(object->shader_program, "diffuse_factor"), diffuse_factor * diffuse_toggle);
+  glUniform1f(glGetUniformLocation(object->shader_program, "specular_factor"), specular_factor * specular_toggle);
 
-  GLint diffuse_factor_uniform = glGetUniformLocation(object->shader_program,
-      "diffuse_factor");
-  if (view_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform diffuse_factor\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniform1f(diffuse_factor_uniform, diffuse_factor * diffuse_toggle);
+  glFogi(GL_FOG_COORDINATE_SOURCE, GL_FOG_COORDINATE);
 
-  GLint specular_factor_uniform = glGetUniformLocation(object->shader_program,
-      "specular_factor");
-  if (view_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform specular_factor\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniform1f(specular_factor_uniform, specular_factor * specular_toggle);
+  glUniform1i(glGetUniformLocation(object->shader_program, "fog.equation"), fog.equation);
+  glUniform4f(glGetUniformLocation(object->shader_program, "fog.color"), v1, v2, v3, v4);
+
+	glUniform1f(glGetUniformLocation(object->shader_program, "fog.start"), fog.start);
+	glUniform1f(glGetUniformLocation(object->shader_program, "fog.end"), fog.end);
+	glUniform1f(glGetUniformLocation(object->shader_program, "fog.density"), fog.density);
 
   draw(object, projection_matrix, view_matrix);
-  
-  // ----------------------
-  
-  glFogi(GL_FOG_COORDINATE_SOURCE, GL_FOG_COORDINATE);
-  
-  GLint iEquation_uniform = glGetUniformLocation(object->shader_program,
-      "fogParams.iEquation");  
-  if (iEquation_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform fogParams.iEquation\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniform1f(iEquation_uniform, fogParams.iFogEquation);
-  
-  GLint vFogColor_uniform = glGetUniformLocation(object->shader_program,
-      "fogParams.vFogColor");
-  if (vFogColor_uniform == -1) {
-    fprintf(stderr, "Could not bind uniform fogParams.iEquation\n");
-    exit(EXIT_FAILURE);
-  }
-  glUniform4f(iEquation_uniform, v1, v2, v3, v4);
-    
-  if(fogParams.iFogEquation == FOG_EQUATION_LINEAR)
-	{
-		GLint fStart_uniform = glGetUniformLocation(object->shader_program,
-			 "fogParams.fStart");
-		if (fStart_uniform == -1) {
-			fprintf(stderr, "Could not bind uniform fogParams.fStart\n");
-			exit(EXIT_FAILURE);
-		}
-		glUniform1f(fStart_uniform, fogParams.fStart);
-		
-		GLint fEnd_uniform = glGetUniformLocation(object->shader_program,
-			 "fogParams.fEnd");
-		if (fEnd_uniform == -1) {
-			fprintf(stderr, "Could not bind uniform fogParams.fEnd\n");
-			exit(EXIT_FAILURE);
-		}
-		glUniform1f(fEnd_uniform, fogParams.fEnd);
-	} else {
-		GLint fDensity_uniform = glGetUniformLocation(object->shader_program,
-			 "fogParams.fDensity");
-		if (fDensity_uniform == -1) {
-			fprintf(stderr, "Could not bind uniform fogParams.fDensity\n");
-			exit(EXIT_FAILURE);
-		}
-		glUniform1f(fDensity_uniform, fogParams.fDensity);
-	}
-  
-  // ----------------------  
 }
 
 void display() {
@@ -546,12 +464,12 @@ void initialize() {
   matrix_identity(view_matrix);
   matrix_identity(camera_matrix);
   matrix_identity(mouse_matrix);
-  
-  fogParams.fDensity = 0.04f;
-  fogParams.fStart = 10.0f;
-  fogParams.fEnd = 75.0f;
-  fogParams.iFogEquation = FOG_EQUATION_EXP;
-  
+
+  fog.density = 0.04f;
+  fog.start = 10.0f;
+  fog.end = 75.0f;
+  fog.equation = FOG_EQUATION_EXP2;
+
   GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
   GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
   GLuint billboard_shader_program = create_shader_program("shader/billboard_vertex_shader.vs", "shader/fragment_shader.fs");
@@ -583,7 +501,7 @@ void initialize() {
   setup_data_buffers(&flowers);
   flowers.texture = flower_texture;
 
-  flowers.shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
+  flowers.shader_program = shader_program;
 
   init_object_data(&palm_tree);
   init_external_obj(&palm_tree, "models/Hyophorbe_lagenicaulis.obj");
@@ -722,7 +640,7 @@ void initialize() {
     init_object_data(&pillars[i]);
     cylinder(7, .03, PILLAR_HEIGHT, &pillars[i]);
     setup_data_buffers(&pillars[i]);
-    pillars[i].shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
+    pillars[i].shader_program = shader_program;
   }
 }
 

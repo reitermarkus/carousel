@@ -9,24 +9,25 @@ layout (location = 1) in vec4 color;
 layout (location = 2) in vec2 texture;
 layout (location = 3) in vec3 normal;
 
-struct vector_data {
+struct vertex_data {
   vec3 position;
   vec4 color;
   vec3 normal;
   vec2 texture;
+  vec4 eye_space_position;
 };
 
-out vector_data vector;
-smooth out vec4 vEyeSpacePos;
+out vertex_data vertex;
 
 void main() {
-   vec4 vEyeSpacePosVertex = view_matrix * model_matrix *vec4(position, 1.0);
-   gl_Position = projection_matrix * vEyeSpacePosVertex;
+  vec4 ppp = view_matrix * model_matrix * vec4(position, 1.0);
 
-  vector.position = vec3(view_matrix * model_matrix * vec4(position, 1.0));
-  vector.color = color;
-  vector.normal = mat3(transpose(inverse(view_matrix * model_matrix))) * normal;
-  vector.texture = texture;
+  gl_Position = projection_matrix * ppp;
 
-  vEyeSpacePos = vEyeSpacePosVertex;  
+  vertex.position = vec3(view_matrix * model_matrix * vec4(position, 1.0));
+  vertex.color = color;
+  vertex.normal = mat3(transpose(inverse(view_matrix * model_matrix))) * normal;
+  vertex.texture = texture;
+
+  vertex.eye_space_position = ppp;
 }

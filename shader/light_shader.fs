@@ -1,16 +1,24 @@
 #version 330
 
-struct vector_data {
+struct vertex_data {
   vec3 position;
   vec4 color;
   vec3 normal;
   vec2 texture;
+  vec4 eye_space_position;
 };
 
-in vector_data vector;
+struct light_data {
+  vec3 position;
+  vec3 color;
+};
+
+uniform mat4 view_matrix;
+
+in vertex_data vertex;
 
 out vec4 fragment_color;
 
 void main() {
-  fragment_color = vector.color;
+  fragment_color = vertex.color;
 }
