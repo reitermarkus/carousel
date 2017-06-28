@@ -20,14 +20,14 @@ struct vertex_data {
 out vertex_data vertex;
 
 void main() {
-  vec4 ppp = view_matrix * model_matrix * vec4(position, 1.0);
+  vec4 eye_space_position = view_matrix * model_matrix * vec4(position, 1.0);
 
-  gl_Position = projection_matrix * ppp;
+  gl_Position = projection_matrix * eye_space_position;
 
   vertex.position = vec3(view_matrix * model_matrix * vec4(position, 1.0));
   vertex.color = color;
   vertex.normal = mat3(transpose(inverse(view_matrix * model_matrix))) * normal;
   vertex.texture = texture;
 
-  vertex.eye_space_position = ppp;
+  vertex.eye_space_position = eye_space_position;
 }
