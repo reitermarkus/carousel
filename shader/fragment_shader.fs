@@ -15,7 +15,7 @@ struct light_data {
 
 struct fog_data {
   int   equation;
-  vec4  color;
+  vec3  color;
   float start;
   float end;
   float density;
@@ -55,7 +55,7 @@ void light(light_data light, vertex_data vertex, out vec3 ambient, out vec3 diff
   specular = vec3(specular_factor * pow(max(dot(reflect_direction, view_direction), 0.0), specular_shininess));
 }
 
-float getFogFactor(fog_data fog, float fog_coordinates) {
+float fog_factor(fog_data fog, float fog_coordinates) {
 	float result = 0.0;
 
 	if(fog.equation == 0) {
@@ -97,5 +97,5 @@ void main() {
   fragment_color = vertex.color * vec4(ambient_sum + diffuse_sum + spec_sum, 1) * texture_color;
 
   float fog_coordinates = abs(vertex.eye_space_position.z / vertex.eye_space_position.w);
-  fragment_color = mix(fragment_color, fog.color, getFogFactor(fog, fog_coordinates));
+  fragment_color = mix(fragment_color, vec4(fog.color, fragment_color.a), fog_factor(fog, fog_coordinates));
 }

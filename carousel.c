@@ -110,17 +110,12 @@ enum {
 };
 
 struct fog_data {
+  struct rgb color;
 	float density;
 	float start;
 	float end;
 	int equation;
 };
-
-GLuint fog_shader_program;
-const float v1 = .7f;
-const float v2 = .7f;
-const float v3 = .7f;
-const float v4 = 1.0f;
 
 struct fog_data fog;
 
@@ -174,7 +169,7 @@ void display_object(struct object_data* object) {
   glFogi(GL_FOG_COORDINATE_SOURCE, GL_FOG_COORDINATE);
 
   glUniform1i(glGetUniformLocation(object->shader_program, "fog.equation"), fog.equation);
-  glUniform4f(glGetUniformLocation(object->shader_program, "fog.color"), v1, v2, v3, v4);
+  glUniform3f(glGetUniformLocation(object->shader_program, "fog.color"), fog.color.r, fog.color.g, fog.color.b);
 
 	glUniform1f(glGetUniformLocation(object->shader_program, "fog.start"), fog.start);
 	glUniform1f(glGetUniformLocation(object->shader_program, "fog.end"), fog.end);
@@ -469,6 +464,9 @@ void initialize() {
   fog.start = 10.0f;
   fog.end = 75.0f;
   fog.equation = FOG_EQUATION_EXP2;
+  fog.color.r = .7f;
+  fog.color.g = .7f;
+  fog.color.b = .7f;
 
   GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
   GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
