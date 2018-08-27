@@ -446,9 +446,15 @@ void initialize() {
   time_t current_time = time(NULL);
   int hour = localtime(&current_time)->tm_hour;
   if (hour >= 20 || hour <= 6) {
-    glClearColor(R(0), G(25), B(50), 0.0);
+    glClearColor(R(0), G(20), B(30), 0.0);
+    fog.color.r = R(0);
+    fog.color.g = G(20);
+    fog.color.b = B(30);
   } else {
     glClearColor(R(220), G(220), B(220), 0.0);
+    fog.color.r = R(220);
+    fog.color.g = G(220);
+    fog.color.b = B(220);
   }
 
   // Enable depth testing.
@@ -464,9 +470,6 @@ void initialize() {
   fog.start = 10.0f;
   fog.end = 75.0f;
   fog.equation = FOG_EQUATION_EXP2;
-  fog.color.r = .7f;
-  fog.color.g = .7f;
-  fog.color.b = .7f;
 
   GLuint shader_program = create_shader_program("shader/vertex_shader.vs", "shader/fragment_shader.fs");
   GLuint light_shader_program = create_shader_program("shader/vertex_shader.vs", "shader/light_shader.fs");
@@ -573,7 +576,7 @@ void initialize() {
 
   // Floor
   init_object_data(&scene_floor);
-  hyper_rectangle(BASE_RADIUS * 4, BASE_HEIGHT, BASE_RADIUS * 4, &scene_floor);
+  hyper_rectangle(BASE_RADIUS * 20, BASE_HEIGHT, BASE_RADIUS * 20, &scene_floor);
 
   scene_floor.texture_count = scene_floor.index_count * 3;
   scene_floor.textures = calloc(scene_floor.texture_count, sizeof(*scene_floor.textures));
@@ -582,10 +585,10 @@ void initialize() {
   scene_floor.textures[0 + 4 * 3].u = 0;
   scene_floor.textures[0 + 4 * 3].v = 0;
   scene_floor.textures[1 + 4 * 3].u = 0;
-  scene_floor.textures[1 + 4 * 3].v = 2 * 1.77;
-  scene_floor.textures[2 + 4 * 3].u = 2 * 1;
-  scene_floor.textures[2 + 4 * 3].v = 2 * 1.77;
-  scene_floor.textures[3 + 4 * 3].u = 2 * 1;
+  scene_floor.textures[1 + 4 * 3].v = 10 * 1.77;
+  scene_floor.textures[2 + 4 * 3].u = 10 * 1;
+  scene_floor.textures[2 + 4 * 3].v = 10 * 1.77;
+  scene_floor.textures[3 + 4 * 3].u = 10 * 1;
   scene_floor.textures[3 + 4 * 3].v = 0;
 
   setup_data_buffers(&scene_floor);
